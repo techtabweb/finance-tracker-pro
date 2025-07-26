@@ -5,11 +5,13 @@ import { Progress } from '@/components/ui/progress';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { formatCurrency } from '@/lib/format';
 import { SetBudgetDialog } from './SetBudgetDialog';
-import { Plus, Target } from '@phosphor-icons/react';
+import { SetMonthlyBudgetDialog } from './SetMonthlyBudgetDialog';
+import { Plus, Target, Wallet } from '@phosphor-icons/react';
 
 export function BudgetsList() {
-  const { budgets, categories, getTotalBudget, getTotalSpent } = useFinanceData();
+  const { budgets, categories, monthlyBudget, getTotalBudget, getTotalSpent } = useFinanceData();
   const [showSetBudget, setShowSetBudget] = useState(false);
+  const [showSetMonthlyBudget, setShowSetMonthlyBudget] = useState(false);
 
   const totalBudget = getTotalBudget();
   const totalSpent = getTotalSpent();
@@ -27,50 +29,118 @@ export function BudgetsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Budgets</h2>
-        <Button onClick={() => setShowSetBudget(true)} className="flex items-center gap-2">
-          <Plus size={20} />
-          Set Budget
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowSetMonthlyBudget(true)} className="flex items-center gap-2">
+            <Wallet size={20} />
+            Monthly Budget
+          </Button>
+          <Button onClick={() => setShowSetBudget(true)} variant="outline" className="flex items-center gap-2">
+            <Plus size={20} />
+            Category Budget
+          </Button>
+        </div>
       </div>
 
-      {/* Budget Summary */}
+      {/* Monthly Budget Overview */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Target size={24} />
-            Budget Summary
+            <Wallet size={24} />
+            Monthly Budget Overview
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Total Budget:</span>
-              <span className="font-semibold text-lg">{formatCurrency(totalBudget)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Total Spent:</span>
-              <span className="font-semibold text-lg">{formatCurrency(totalSpent)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Remaining:</span>
-              <span className={`font-semibold text-lg ${totalBudget - totalSpent < 0 ? 'text-destructive' : 'text-foreground'}`}>
-                {formatCurrency(totalBudget - totalSpent)}
-              </span>
-            </div>
-            {totalBudget > 0 && (
-              <div className="space-y-2">
-                <Progress 
-                  value={Math.min((totalSpent / totalBudget) * 100, 100)} 
-                  className="h-3"
-                />
-                <p className="text-xs text-muted-foreground text-center">
-                  {((totalSpent / totalBudget) * 100).toFixed(1)}% of total budget used
+            {monthlyBudget > 0 ? (
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Monthly Limit:</span>
+                  <span className="font-semibold text-lg">{formatCurrency(monthlyBudget)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Total Spent:</span>
+                  <span className="font-semibold text-lg">{formatCurrency(totalSpent)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Remaining:</span>
+                  <span className={`font-semibold text-lg ${monthlyBudget - totalSpent < 0 ? 'text-destructive' : 'text-foreground'}`}>
+                    {formatCurrency(monthlyBudget - totalSpent)}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <Progress 
+                    value={Math.min((totalSpent / monthlyBudget) * 100, 100)} 
+                    className="h-3"
+                  />
+                  <p className="text-xs text-muted-foreground text-center">
+                    {((totalSpent / monthlyBudget) * 100).toFixed(1)}% of monthly budget used
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowSetMonthlyBudget(true)}
+                  className="w-full"
+                >
+                  Update Monthly Budget
+                </Button>
+              </>
+            ) : (
+              <div className="text-center py-6">
+                <Wallet size={48} className="mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No monthly budget set</h3>
+                <p className="text-muted-foreground mb-4">
+                  Set an overall monthly spending limit to track your total expenses
                 </p>
+                <Button onClick={() => setShowSetMonthlyBudget(true)}>
+                  Set Monthly Budget
+                </Button>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Category Budget Summary */}
+      {budgets.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target size={24} />
+              Category Budget Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Total Category Budgets:</span>
+                <span className="font-semibold text-lg">{formatCurrency(totalBudget)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Total Spent:</span>
+                <span className="font-semibold text-lg">{formatCurrency(totalSpent)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Remaining:</span>
+                <span className={`font-semibold text-lg ${totalBudget - totalSpent < 0 ? 'text-destructive' : 'text-foreground'}`}>
+                  {formatCurrency(totalBudget - totalSpent)}
+                </span>
+              </div>
+              {totalBudget > 0 && (
+                <div className="space-y-2">
+                  <Progress 
+                    value={Math.min((totalSpent / totalBudget) * 100, 100)} 
+                    className="h-3"
+                  />
+                  <p className="text-xs text-muted-foreground text-center">
+                    {((totalSpent / totalBudget) * 100).toFixed(1)}% of category budgets used
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Individual Budgets */}
       {budgetsWithCategories.length > 0 && (
@@ -192,6 +262,11 @@ export function BudgetsList() {
       <SetBudgetDialog 
         open={showSetBudget} 
         onOpenChange={setShowSetBudget}
+      />
+      
+      <SetMonthlyBudgetDialog 
+        open={showSetMonthlyBudget} 
+        onOpenChange={setShowSetMonthlyBudget}
       />
     </div>
   );

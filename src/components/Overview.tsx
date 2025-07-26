@@ -12,6 +12,7 @@ export function Overview() {
     getCurrentMonthExpenses, 
     getTotalSpent, 
     getTotalBudget, 
+    monthlyBudget,
     budgets,
     categories 
   } = useFinanceData();
@@ -20,16 +21,18 @@ export function Overview() {
   
   const totalSpent = getTotalSpent();
   const totalBudget = getTotalBudget();
-  const remaining = totalBudget - totalSpent;
+  const categoryRemaining = totalBudget - totalSpent;
+  const monthlyRemaining = monthlyBudget - totalSpent;
   const currentMonthExpenses = getCurrentMonthExpenses();
   const recentExpenses = currentMonthExpenses.slice(0, 3);
 
-  const budgetProgress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+  const categoryBudgetProgress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+  const monthlyBudgetProgress = monthlyBudget > 0 ? (totalSpent / monthlyBudget) * 100 : 0;
   
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
@@ -45,59 +48,119 @@ export function Overview() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
+            <CardTitle className="text-sm font-medium">Monthly Budget</CardTitle>
             <CurrencyInr className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalBudget)}</div>
+            <div className="text-2xl font-bold">
+              {monthlyBudget > 0 ? formatCurrency(monthlyBudget) : 'Not Set'}
+            </div>
             <p className="text-xs text-muted-foreground">
-              Monthly limit
+              {monthlyBudget > 0 
+                ? (monthlyRemaining < 0 ? `${formatCurrency(Math.abs(monthlyRemaining))} over` : `${formatCurrency(monthlyRemaining)} left`)
+                : 'Set your monthly limit'
+              }
             </p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Remaining</CardTitle>
+            <CardTitle className="text-sm font-medium">Category Budgets</CardTitle>
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${remaining < 0 ? 'text-destructive' : 'text-foreground'}`}>
-              {formatCurrency(remaining)}
+            <div className="text-2xl font-bold">
+              {totalBudget > 0 ? formatCurrency(totalBudget) : 'Not Set'}
             </div>
             <p className="text-xs text-muted-foreground">
-              {remaining < 0 ? 'Over budget' : 'Available to spend'}
+              {totalBudget > 0 
+                ? (categoryRemaining < 0 ? `${formatCurrency(Math.abs(categoryRemaining))} over` : `${formatCurrency(categoryRemaining)} left`)
+                : 'Set category limits'
+              }
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Budget Status</CardTitle>
+            <TrendingDown className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${
+              (monthlyBudget > 0 && monthlyRemaining < 0) || (totalBudget > 0 && categoryRemaining < 0) 
+                ? 'text-destructive' 
+                : 'text-foreground'
+            }`}>
+              {(monthlyBudget > 0 && monthlyRemaining < 0) || (totalBudget > 0 && categoryRemaining < 0) 
+                ? 'Over Budget' 
+                : 'On Track'
+              }
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {monthlyBudget > 0 || totalBudget > 0 ? 'Budget tracking active' : 'No budgets set'}
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Budget Progress */}
-      {totalBudget > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Budget Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span>Spent: {formatCurrency(totalSpent)}</span>
-                <span>Budget: {formatCurrency(totalBudget)}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Monthly Budget Progress */}
+        {monthlyBudget > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Budget Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span>Spent: {formatCurrency(totalSpent)}</span>
+                  <span>Monthly Limit: {formatCurrency(monthlyBudget)}</span>
+                </div>
+                <Progress 
+                  value={Math.min(monthlyBudgetProgress, 100)} 
+                  className="h-3"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {monthlyBudgetProgress > 100 
+                    ? `${(monthlyBudgetProgress - 100).toFixed(1)}% over monthly budget`
+                    : `${(100 - monthlyBudgetProgress).toFixed(1)}% of monthly budget remaining`
+                  }
+                </p>
               </div>
-              <Progress 
-                value={Math.min(budgetProgress, 100)} 
-                className="h-3"
-              />
-              <p className="text-xs text-muted-foreground">
-                {budgetProgress > 100 
-                  ? `${(budgetProgress - 100).toFixed(1)}% over budget`
-                  : `${(100 - budgetProgress).toFixed(1)}% remaining`
-                }
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Category Budget Progress */}
+        {totalBudget > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Category Budget Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span>Spent: {formatCurrency(totalSpent)}</span>
+                  <span>Category Total: {formatCurrency(totalBudget)}</span>
+                </div>
+                <Progress 
+                  value={Math.min(categoryBudgetProgress, 100)} 
+                  className="h-3"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {categoryBudgetProgress > 100 
+                    ? `${(categoryBudgetProgress - 100).toFixed(1)}% over category budgets`
+                    : `${(100 - categoryBudgetProgress).toFixed(1)}% of category budgets remaining`
+                  }
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Quick Actions */}
       <div className="flex gap-4">
