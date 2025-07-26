@@ -16,11 +16,13 @@ Indian users need a finance tracker that understands local spending patterns, us
 
 ### Current Features
 1. **Expense Tracking**: Log expenses with amount (₹), category, description, and date
-2. **Budget Management**: Set monthly limits for categories and track progress
+2. **Budget Management**: Set monthly overall budget and category-specific limits
 3. **Overview Dashboard**: Quick snapshot of total spent vs budget
 4. **Analytics**: Visual charts showing spending patterns and trends
-5. **Indian Currency**: All amounts displayed in ₹ with proper Indian number formatting
-6. **Indian Categories**: Includes relevant categories like Groceries, Mobile & Internet, Fuel, Maintenance
+5. **Savings Goals**: Set and track specific savings targets with progress indicators
+6. **Reports & Export**: Comprehensive expense reports with charts and PDF export functionality
+7. **Indian Currency**: All amounts displayed in ₹ with proper Indian number formatting
+8. **Indian Categories**: Includes relevant categories like Groceries, Mobile & Internet, Fuel, Maintenance
 
 ### Suggested New Features for Indian Users
 1. **EMI Tracker**: Track monthly EMIs for loans, credit cards
@@ -67,3 +69,13 @@ Indian users need a finance tracker that understands local spending patterns, us
 - **Scalability Needs**: Modular component structure allows easy feature additions
 - **Data Persistence**: Uses useKV for reliable data storage across sessions
 - **Indian Localization**: Currency formatting, number formatting, relevant categories
+- **Reports & Analytics**: Advanced reporting with multiple chart types and PDF export capability
+
+### Reports Feature Details
+The Reports section provides comprehensive expense analysis with:
+- **Time Period Selection**: 1, 3, 6, or 12 month views
+- **Visual Charts**: Pie charts for category breakdown, bar charts for monthly trends, line charts for daily spending
+- **Summary Metrics**: Total expenses, budget utilization, average monthly spending
+- **Top Categories**: Ranked list of highest spending categories with percentages
+- **PDF Export**: High-quality PDF generation for sharing and record-keeping
+- **Interactive Elements**: Responsive charts with tooltips and hover effects

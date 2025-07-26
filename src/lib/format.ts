@@ -24,3 +24,9 @@ export const getMonthName = (monthString: string): string => {
   const date = new Date(parseInt(year), parseInt(month) - 1);
   return date.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 };
+
+export const getMonthNameByNumber = (monthNumber: number): string => {
+  const date = new Date();
+  date.setMonth(monthNumber - 1);
+  return date.toLocaleDateString('en-IN', { month: 'long' });
+};
