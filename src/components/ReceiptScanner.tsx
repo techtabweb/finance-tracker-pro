@@ -156,7 +156,6 @@ export function ReceiptScanner({ onExpenseScanned, onScanningStateChange }: Rece
     // Also dismiss any loading toasts
     toast.dismiss('scanning');
   };
-  };
 
   return (
     <div className="space-y-4">
