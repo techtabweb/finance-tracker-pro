@@ -1,18 +1,25 @@
 # Finance Tracker PRD - Indian Edition
 
 ## Core Purpose & Success
-- **Mission Statement**: A comprehensive personal finance tracker designed specifically for Indian users to manage expenses, set budgets, and analyze spending patterns using Indian Rupees.
-- **Success Indicators**: Users successfully track daily expenses, stay within budgets, and gain insights into spending habits with Indian currency and categories.
-- **Experience Qualities**: Intuitive, organized, culturally relevant
+- **Mission Statement**: A comprehensive personal finance tracker designed specifically for Indian users to manage expenses, set budgets, and analyze spending patterns using Indian Rupees with secure user authentication.
+- **Success Indicators**: Users successfully create accounts, track daily expenses, stay within budgets, and gain insights into spending habits with Indian currency and categories in a secure, personalized environment.
+- **Experience Qualities**: Secure, intuitive, organized, culturally relevant
 
 ## Project Classification & Approach
-- **Complexity Level**: Light Application (multiple features with persistent state)
-- **Primary User Activity**: Creating and tracking financial data, analyzing patterns
+- **Complexity Level**: Complex Application (advanced functionality with user accounts and data isolation)
+- **Primary User Activity**: Creating accounts, tracking financial data, analyzing patterns in a personalized dashboard
 
 ## Core Problem Analysis
-Indian users need a finance tracker that understands local spending patterns, uses INR currency, and includes categories relevant to Indian lifestyle (like fuel, mobile recharge, groceries, etc.).
+Indian users need a secure finance tracker that understands local spending patterns, uses INR currency, includes categories relevant to Indian lifestyle, and protects their personal financial data with proper authentication.
 
 ## Essential Features
+
+### Authentication & Security
+1. **User Registration**: Secure signup with name, email, and password validation
+2. **User Login**: Email/password authentication with session management
+3. **User Profile Management**: Editable profile with personal information and preferences
+4. **Data Isolation**: User-specific data storage ensuring privacy and security
+5. **Account Management**: Profile updates, password management, and account deletion
 
 ### Current Features
 1. **Expense Tracking**: Log expenses with amount (₹), category, description, and date

@@ -2,6 +2,7 @@ import { useKV } from '@github/spark/hooks';
 import { useMemo } from 'react';
 import { Expense, Budget, SavingsGoal, WellnessScore, Achievement, PersonalizedTip } from '@/lib/types';
 import { getCurrentMonth, getLastThreeMonths } from '@/lib/format';
+import { useAuth } from './use-auth';
 
 export function useWellnessScore(
   expenses: Expense[],
@@ -9,8 +10,13 @@ export function useWellnessScore(
   savingsGoals: SavingsGoal[],
   monthlyBudget: number
 ) {
-  const [achievements, setAchievements] = useKV<Achievement[]>('achievements', []);
-  const [wellnessHistory, setWellnessHistory] = useKV<WellnessScore[]>('wellness-history', []);
+  const { user } = useAuth();
+  
+  // Create user-specific keys for data isolation
+  const getUserKey = (key: string) => user ? `user_${user.id}_${key}` : `guest_${key}`;
+  
+  const [achievements, setAchievements] = useKV<Achievement[]>(getUserKey('achievements'), []);
+  const [wellnessHistory, setWellnessHistory] = useKV<WellnessScore[]>(getUserKey('wellness-history'), []);
 
   // Calculate financial wellness score
   const wellnessScore = useMemo(() => {

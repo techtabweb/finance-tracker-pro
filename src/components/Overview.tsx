@@ -5,6 +5,7 @@ import { useFinanceData } from '@/hooks/use-finance-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { formatCurrency, getMonthName, getCurrentMonth } from '@/lib/format';
 import { AddExpenseDialog } from './AddExpenseDialog';
+import { WelcomeGuide } from './WelcomeGuide';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Target, AlertTriangle } from '@phosphor-icons/react';
@@ -16,11 +17,19 @@ export function Overview() {
     getTotalBudget, 
     monthlyBudget,
     budgets,
-    categories 
+    categories,
+    expenses
   } = useFinanceData();
   
   const [showAddExpense, setShowAddExpense] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Check if user is new (no expenses and no budget set)
+  const isNewUser = expenses.length === 0 && monthlyBudget === 0 && budgets.length === 0;
+  
+  if (isNewUser) {
+    return <WelcomeGuide onGetStarted={() => setShowAddExpense(true)} />;
+  }
   
   const totalSpent = getTotalSpent();
   const totalBudget = getTotalBudget();

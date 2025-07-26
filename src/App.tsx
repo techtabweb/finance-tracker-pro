@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
 import { useFinanceData } from '@/hooks/use-finance-data';
+import { useAuth } from '@/hooks/use-auth';
 import { Overview } from '@/components/Overview';
 import { ExpensesList } from '@/components/ExpensesList';
 import { BudgetsList } from '@/components/BudgetsList';
@@ -9,13 +10,26 @@ import { SavingsGoals } from '@/components/SavingsGoals';
 import { Reports } from '@/components/Reports';
 import { Wellness } from '@/components/Wellness';
 import { Learning } from '@/components/Learning';
+import { AuthScreen } from '@/components/AuthScreen';
+import { UserProfile } from '@/components/UserProfile';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
+  const { user, isAuthenticated } = useAuth();
   const { activeTab, setActiveTab } = useFinanceData();
   const isMobile = useIsMobile();
+
+  // Show auth screen if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <>
+        <AuthScreen />
+        <Toaster position="top-center" richColors closeButton />
+      </>
+    );
+  }
 
   const tabs = [
     { value: 'overview', label: 'Overview', icon: '📊', emoji: '💰', shortLabel: 'Home' },
@@ -25,7 +39,8 @@ function App() {
     { value: 'wellness', label: 'Wellness', icon: '❤️', emoji: '💯', shortLabel: 'Health' },
     { value: 'learning', label: 'Learning', icon: '🧠', emoji: '✨', shortLabel: 'Learn' },
     { value: 'analytics', label: 'Analytics', icon: '📈', emoji: '🔍', shortLabel: 'Charts' },
-    { value: 'reports', label: 'Reports', icon: '📄', emoji: '📋', shortLabel: 'Reports' }
+    { value: 'reports', label: 'Reports', icon: '📄', emoji: '📋', shortLabel: 'Reports' },
+    { value: 'profile', label: 'Profile', icon: '👤', emoji: '⚙️', shortLabel: 'Profile' }
   ];
 
   const currentTab = tabs.find(tab => tab.value === activeTab);
@@ -80,8 +95,8 @@ function App() {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <div className="text-center">
-                  <div className="text-xs text-gray-500">Current Tab</div>
-                  <div className="font-medium text-gray-700">{currentTab?.label}</div>
+                  <div className="text-xs text-gray-500">Welcome back</div>
+                  <div className="font-medium text-gray-700">{user?.name}</div>
                 </div>
               </motion.div>
             )}
@@ -91,37 +106,37 @@ function App() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-          {/* Desktop Navigation */}
-          {!isMobile && (
-            <motion.div 
-              className="mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Card className="p-3 bg-white/70 backdrop-blur-sm border-white/30 shadow-lg">
-                <TabsList className="grid w-full grid-cols-8 bg-transparent gap-2 h-auto">
-                  {tabs.map((tab, index) => (
-                    <motion.div
-                      key={tab.value}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                      className="h-full"
-                    >
-                      <TabsTrigger 
-                        value={tab.value} 
-                        className="flex flex-col items-center gap-2 p-4 h-full data-[state=active]:bg-white/90 data-[state=active]:shadow-md data-[state=active]:scale-105 rounded-xl transition-all duration-300 hover:bg-white/50 hover:scale-102 group"
+            {/* Desktop Navigation */}
+            {!isMobile && (
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Card className="p-3 bg-white/70 backdrop-blur-sm border-white/30 shadow-lg">
+                  <TabsList className="grid w-full grid-cols-9 bg-transparent gap-2 h-auto">
+                    {tabs.map((tab, index) => (
+                      <motion.div
+                        key={tab.value}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                        className="h-full"
                       >
-                        <span className="text-2xl group-data-[state=active]:scale-110 transition-transform">{tab.icon}</span>
-                        <span className="text-xs font-medium group-data-[state=active]:text-gray-900 text-gray-700">{tab.label}</span>
-                      </TabsTrigger>
-                    </motion.div>
-                  ))}
-                </TabsList>
-              </Card>
-            </motion.div>
-          )}
+                        <TabsTrigger 
+                          value={tab.value} 
+                          className="flex flex-col items-center gap-2 p-4 h-full data-[state=active]:bg-white/90 data-[state=active]:shadow-md data-[state=active]:scale-105 rounded-xl transition-all duration-300 hover:bg-white/50 hover:scale-102 group"
+                        >
+                          <span className="text-2xl group-data-[state=active]:scale-110 transition-transform">{tab.icon}</span>
+                          <span className="text-xs font-medium group-data-[state=active]:text-gray-900 text-gray-700">{tab.label}</span>
+                        </TabsTrigger>
+                      </motion.div>
+                    ))}
+                  </TabsList>
+                </Card>
+              </motion.div>
+            )}
 
           {/* Mobile Bottom Navigation */}
           {isMobile && (
@@ -131,7 +146,7 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <TabsList className="grid w-full grid-cols-8 bg-transparent p-3 gap-1 h-auto">
+                <TabsList className="grid w-full grid-cols-9 bg-transparent p-3 gap-1 h-auto">
                   {tabs.map((tab, index) => (
                     <motion.div
                       key={tab.value}
@@ -193,6 +208,10 @@ function App() {
               
               <TabsContent value="reports" className="mt-0">
                 <Reports />
+              </TabsContent>
+              
+              <TabsContent value="profile" className="mt-0">
+                <UserProfile />
               </TabsContent>
             </motion.div>
           </AnimatePresence>
