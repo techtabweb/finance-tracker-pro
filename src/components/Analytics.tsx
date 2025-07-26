@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceData } from '@/hooks/use-finance-data';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { formatCurrency } from '@/lib/format';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown, BarChart3, PieChart as PieChartIcon } from '@phosphor-icons/react';
 
 export function Analytics() {
   const { expenses, categories, getCurrentMonthExpenses } = useFinanceData();
+  const isMobile = useIsMobile();
 
   const currentMonthExpenses = getCurrentMonthExpenses();
 
