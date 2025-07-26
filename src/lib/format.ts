@@ -30,3 +30,15 @@ export const getMonthNameByNumber = (monthNumber: number): string => {
   date.setMonth(monthNumber - 1);
   return date.toLocaleDateString('en-IN', { month: 'long' });
 };
+
+export const getLastThreeMonths = (): string[] => {
+  const months: string[] = [];
+  const now = new Date();
+  
+  for (let i = 0; i < 3; i++) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`);
+  }
+  
+  return months;
+};

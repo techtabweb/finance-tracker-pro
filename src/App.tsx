@@ -7,6 +7,7 @@ import { BudgetsList } from '@/components/BudgetsList';
 import { Analytics } from '@/components/Analytics';
 import { SavingsGoals } from '@/components/SavingsGoals';
 import { Reports } from '@/components/Reports';
+import { Wellness } from '@/components/Wellness';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,6 +21,7 @@ function App() {
     { value: 'expenses', label: 'Expenses', icon: '🧾', emoji: '💸', shortLabel: 'Expenses' },
     { value: 'budgets', label: 'Budgets', icon: '💰', emoji: '🎯', shortLabel: 'Budget' },
     { value: 'goals', label: 'Goals', icon: '🎯', emoji: '💎', shortLabel: 'Goals' },
+    { value: 'wellness', label: 'Wellness', icon: '❤️', emoji: '💯', shortLabel: 'Health' },
     { value: 'analytics', label: 'Analytics', icon: '📈', emoji: '🔍', shortLabel: 'Charts' },
     { value: 'reports', label: 'Reports', icon: '📄', emoji: '📋', shortLabel: 'Reports' }
   ];
@@ -96,7 +98,7 @@ function App() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Card className="p-3 bg-white/70 backdrop-blur-sm border-white/30 shadow-lg">
-                <TabsList className="grid w-full grid-cols-6 bg-transparent gap-2 h-auto">
+                <TabsList className="grid w-full grid-cols-7 bg-transparent gap-2 h-auto">
                   {tabs.map((tab, index) => (
                     <motion.div
                       key={tab.value}
@@ -128,7 +130,7 @@ function App() {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <Card className="rounded-t-3xl rounded-b-none border-0 bg-white/95 backdrop-blur-md shadow-2xl border-t border-gray-200/50">
-                  <TabsList className="grid w-full grid-cols-6 bg-transparent p-3 gap-1 h-auto">
+                  <TabsList className="grid w-full grid-cols-7 bg-transparent p-3 gap-1 h-auto">
                     {tabs.map((tab, index) => (
                       <motion.div
                         key={tab.value}
@@ -175,6 +177,10 @@ function App() {
               
               <TabsContent value="goals" className="mt-0">
                 <SavingsGoals />
+              </TabsContent>
+              
+              <TabsContent value="wellness" className="mt-0">
+                <Wellness />
               </TabsContent>
               
               <TabsContent value="analytics" className="mt-0">

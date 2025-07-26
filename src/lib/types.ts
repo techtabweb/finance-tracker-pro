@@ -40,6 +40,42 @@ export interface EMI {
   category: 'loan' | 'credit-card' | 'other';
 }
 
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  emoji: string;
+  category: 'budgeting' | 'saving' | 'spending' | 'consistency' | 'milestone';
+  points: number;
+  unlockedAt?: string;
+  progress: number;
+  maxProgress: number;
+  difficulty: 'easy' | 'medium' | 'hard' | 'legendary';
+}
+
+export interface WellnessScore {
+  overall: number;
+  budgetHealth: number;
+  savingsRate: number;
+  spendingControl: number;
+  consistencyScore: number;
+  diversityScore: number;
+  lastCalculated: string;
+}
+
+export interface PersonalizedTip {
+  id: string;
+  category: 'budget' | 'savings' | 'spending' | 'investment' | 'emergency';
+  title: string;
+  description: string;
+  actionable: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  icon: string;
+  emoji: string;
+  estimatedImpact: string;
+}
+
 export const DEFAULT_CATEGORIES: Category[] = [
   { id: '1', name: 'Food & Dining', icon: 'Coffee', color: 'oklch(0.6 0.15 30)' },
   { id: '2', name: 'Transportation', icon: 'Car', color: 'oklch(0.55 0.12 240)' },

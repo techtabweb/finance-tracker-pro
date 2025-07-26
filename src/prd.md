@@ -21,8 +21,25 @@ Indian users need a finance tracker that understands local spending patterns, us
 4. **Analytics**: Visual charts showing spending patterns and trends
 5. **Savings Goals**: Set and track specific savings targets with progress indicators
 6. **Reports & Export**: Comprehensive expense reports with charts and PDF export functionality
-7. **Indian Currency**: All amounts displayed in ₹ with proper Indian number formatting
-8. **Indian Categories**: Includes relevant categories like Groceries, Mobile & Internet, Fuel, Maintenance
+7. **Financial Wellness Score**: Comprehensive scoring system (0-100) that evaluates:
+   - Budget Health (0-30 points): How well you stick to budgets
+   - Savings Rate (0-25 points): Progress towards savings goals
+   - Spending Control (0-20 points): Consistency in spending patterns
+   - Tracking Consistency (0-15 points): Regular expense logging
+   - Category Diversity (0-10 points): Variety in spending categories
+8. **Achievements System**: Gamified rewards for financial milestones:
+   - Budget achievements (first budget, staying within limits)
+   - Savings milestones (₹10K, ₹1L clubs)
+   - Consistency rewards (daily/monthly tracking)
+   - Wellness score achievements (50+, 80+ scores)
+9. **Personalized Tips**: AI-driven financial advice based on spending patterns:
+   - Budget alerts and spending warnings
+   - Savings goal recommendations
+   - Emergency fund guidance
+   - Investment suggestions for good savers
+   - Category-specific optimization tips
+10. **Indian Currency**: All amounts displayed in ₹ with proper Indian number formatting
+11. **Indian Categories**: Includes relevant categories like Groceries, Mobile & Internet, Fuel, Maintenance
 
 ### Suggested New Features for Indian Users
 1. **EMI Tracker**: Track monthly EMIs for loans, credit cards
