@@ -1,13 +1,14 @@
 import { useKV } from '@github/spark/hooks';
 import { useState } from 'react';
-import { Expense, Budget, Category, DEFAULT_CATEGORIES } from '@/lib/types';
+import { Expense, Budget, Category, SavingsGoal, DEFAULT_CATEGORIES } from '@/lib/types';
 import { getCurrentMonth } from '@/lib/format';
 
 export function useFinanceData() {
   const [expenses, setExpenses] = useKV<Expense[]>('expenses', []);
   const [budgets, setBudgets] = useKV<Budget[]>('budgets', []);
   const [categories, setCategories] = useKV<Category[]>('categories', DEFAULT_CATEGORIES);
-  const [activeTab, setActiveTab] = useState<'overview' | 'expenses' | 'budgets' | 'analytics'>('overview');
+  const [savingsGoals, setSavingsGoals] = useKV<SavingsGoal[]>('savings-goals', []);
+  const [activeTab, setActiveTab] = useState<'overview' | 'expenses' | 'budgets' | 'analytics' | 'goals'>('overview');
 
   const addExpense = (expense: Omit<Expense, 'id'>) => {
     const newExpense = {
@@ -83,15 +84,41 @@ export function useFinanceData() {
     return budgets.reduce((sum, budget) => sum + budget.limit, 0);
   };
 
+  const addSavingsGoal = (goal: Omit<SavingsGoal, 'id'>) => {
+    const newGoal = {
+      ...goal,
+      id: Date.now().toString(),
+    };
+    setSavingsGoals((current) => [newGoal, ...current]);
+  };
+
+  const updateSavingsGoal = (goalId: string, amount: number) => {
+    setSavingsGoals((current) =>
+      current.map(goal =>
+        goal.id === goalId
+          ? { ...goal, current: Math.min(goal.target, goal.current + amount) }
+          : goal
+      )
+    );
+  };
+
+  const deleteSavingsGoal = (goalId: string) => {
+    setSavingsGoals((current) => current.filter(goal => goal.id !== goalId));
+  };
+
   return {
     expenses,
     budgets,
     categories,
+    savingsGoals,
     activeTab,
     setActiveTab,
     addExpense,
     deleteExpense,
     setBudget,
+    addSavingsGoal,
+    updateSavingsGoal,
+    deleteSavingsGoal,
     getCurrentMonthExpenses,
     getTotalSpent,
     getTotalBudget,

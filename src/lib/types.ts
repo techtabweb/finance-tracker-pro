@@ -20,6 +20,26 @@ export interface Category {
   color: string;
 }
 
+export interface SavingsGoal {
+  id: string;
+  name: string;
+  target: number;
+  current: number;
+  deadline: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
+export interface EMI {
+  id: string;
+  name: string;
+  monthlyAmount: number;
+  totalAmount: number;
+  remainingAmount: number;
+  startDate: string;
+  endDate: string;
+  category: 'loan' | 'credit-card' | 'other';
+}
+
 export const DEFAULT_CATEGORIES: Category[] = [
   { id: '1', name: 'Food & Dining', icon: 'Coffee', color: 'oklch(0.6 0.15 30)' },
   { id: '2', name: 'Transportation', icon: 'Car', color: 'oklch(0.55 0.12 240)' },
@@ -29,4 +49,8 @@ export const DEFAULT_CATEGORIES: Category[] = [
   { id: '6', name: 'Healthcare', icon: 'Heart', color: 'oklch(0.6 0.18 10)' },
   { id: '7', name: 'Education', icon: 'GraduationCap', color: 'oklch(0.55 0.12 200)' },
   { id: '8', name: 'Travel', icon: 'Airplane', color: 'oklch(0.6 0.15 120)' },
+  { id: '9', name: 'Groceries', icon: 'ShoppingCart', color: 'oklch(0.65 0.15 90)' },
+  { id: '10', name: 'Mobile & Internet', icon: 'DeviceMobile', color: 'oklch(0.5 0.12 260)' },
+  { id: '11', name: 'Fuel', icon: 'Drop', color: 'oklch(0.45 0.15 50)' },
+  { id: '12', name: 'Maintenance', icon: 'Wrench', color: 'oklch(0.55 0.1 160)' },
 ];

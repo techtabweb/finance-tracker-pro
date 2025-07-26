@@ -5,7 +5,8 @@ import { Overview } from '@/components/Overview';
 import { ExpensesList } from '@/components/ExpensesList';
 import { BudgetsList } from '@/components/BudgetsList';
 import { Analytics } from '@/components/Analytics';
-import { Wallet, Receipt, TrendingUp, LayoutDashboard } from '@phosphor-icons/react';
+import { SavingsGoals } from '@/components/SavingsGoals';
+import { Wallet, Receipt, TrendingUp, LayoutDashboard, Target } from '@phosphor-icons/react';
 
 function App() {
   const { activeTab, setActiveTab } = useFinanceData();
@@ -19,7 +20,7 @@ function App() {
         </header>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <LayoutDashboard size={20} />
               <span className="hidden sm:inline">Overview</span>
@@ -31,6 +32,10 @@ function App() {
             <TabsTrigger value="budgets" className="flex items-center gap-2">
               <Wallet size={20} />
               <span className="hidden sm:inline">Budgets</span>
+            </TabsTrigger>
+            <TabsTrigger value="goals" className="flex items-center gap-2">
+              <Target size={20} />
+              <span className="hidden sm:inline">Goals</span>
             </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <TrendingUp size={20} />
@@ -48,6 +53,10 @@ function App() {
           
           <TabsContent value="budgets">
             <BudgetsList />
+          </TabsContent>
+          
+          <TabsContent value="goals">
+            <SavingsGoals />
           </TabsContent>
           
           <TabsContent value="analytics">
