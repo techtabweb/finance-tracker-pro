@@ -28,21 +28,6 @@ export function Overview() {
   
   return (
     <div className="space-y-6">
-      {/* India Localization Notice */}
-      <Card className="border-green-200 bg-green-50">
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-              <CurrencyInr className="h-4 w-4 text-green-600" />
-            </div>
-            <div>
-              <p className="font-medium text-green-800">Indian Currency Enabled</p>
-              <p className="text-sm text-green-600">All amounts are displayed in Indian Rupees (₹) with expanded categories for Indian users.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
