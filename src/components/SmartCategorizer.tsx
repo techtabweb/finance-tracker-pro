@@ -91,73 +91,41 @@ export function SmartCategorizer({
     setIsAnalyzing(true);
     
     try {
-      // Create AI prompt for intelligent categorization
-      const prompt = spark.llmPrompt`
-You are an AI assistant specialized in categorizing Indian expenses and transactions. Analyze the following expense details and suggest the most appropriate categories.
-
-Expense Details:
-- Description: "${description}"
-- Merchant: "${merchant || 'Unknown'}"
-
-Available Categories:
-${categories.map(cat => `- ${cat.name}`).join('\n')}
-
-Consider these factors:
-1. Merchant name and type of business
-2. Keywords in the description
-3. Common Indian shopping patterns and brands
-4. Regional variations and local businesses
-
-For each relevant category, provide:
-1. Category name (must match exactly from the available list)
-2. Confidence score (70-99%)
-3. Brief reason for the suggestion
-
-Return a JSON array with up to 3 suggestions, ordered by confidence:
-[
-  {
-    "category": "exact category name",
-    "confidence": number,
-    "reason": "brief explanation"
-  }
-]
-
-Focus on accuracy and relevance to Indian context.`;
-
-      const response = await spark.llm(prompt, 'gpt-4o-mini', true);
-      const aiSuggestions = JSON.parse(response);
+      // Import and use Gemini API
+      const { categorizeExpenseWithGemini } = await import('@/lib/gemini-api');
       
-      // Validate and format the AI response
-      const validSuggestions: CategorySuggestion[] = aiSuggestions
-        .filter((suggestion: any) => 
-          suggestion.category && 
-          suggestion.confidence && 
-          categories.some(cat => cat.name === suggestion.category)
-        )
-        .map((suggestion: any) => ({
-          category: suggestion.category,
-          confidence: Math.min(99, Math.max(70, Number(suggestion.confidence))),
-          reason: String(suggestion.reason || 'AI suggested match').substring(0, 100),
-          source: 'ai' as const
-        }))
-        .slice(0, 3);
+      const categoryNames = categories.map(cat => cat.name);
+      
+      const validSuggestions = await categorizeExpenseWithGemini(
+        description,
+        merchant || '',
+        categoryNames
+      );
+
+      // Convert to our CategorySuggestion format
+      const aiSuggestions: CategorySuggestion[] = validSuggestions.map(suggestion => ({
+        category: suggestion.category,
+        confidence: suggestion.confidence,
+        reason: suggestion.reason,
+        source: 'ai' as const
+      }));
 
       // Store the top AI suggestion for learning
-      if (validSuggestions.length > 0) {
-        setLastAiSuggestion(validSuggestions[0].category);
+      if (aiSuggestions.length > 0) {
+        setLastAiSuggestion(aiSuggestions[0].category);
       }
 
       // Combine with existing learned suggestions, prioritizing learned ones
       const existingLearned = suggestions.filter(s => s.source === 'learned');
       const combinedSuggestions = [
         ...existingLearned,
-        ...validSuggestions.filter(ai => !existingLearned.some(learned => learned.category === ai.category))
+        ...aiSuggestions.filter(ai => !existingLearned.some(learned => learned.category === ai.category))
       ].slice(0, 3);
 
       setSuggestions(combinedSuggestions);
       
     } catch (error) {
-      console.error('AI categorization error:', error);
+      console.error('Gemini categorization error:', error);
       
       // Fallback to rule-based categorization
       const categoryRules = {
@@ -336,7 +304,7 @@ Focus on accuracy and relevance to Indian context.`;
             className={`w-full ${isMobile ? 'h-10' : 'h-9'} text-sm bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100`}
           >
             <Sparkle className="w-4 h-4 mr-2" />
-            Get AI Category Suggestions (GPT-4o)
+            Get AI Category Suggestions (Gemini)
           </Button>
         </motion.div>
       )}

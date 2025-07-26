@@ -83,76 +83,34 @@ export function ReceiptScanner({ onExpenseScanned, onScanningStateChange }: Rece
 
   const analyzeReceiptWithAI = async (imageFile: File): Promise<ScannedExpense> => {
     try {
-      // Convert image to base64 for AI processing
+      // Convert image to base64 for Gemini API
       const base64Image = await convertImageToBase64(imageFile);
       
-      // Create a comprehensive prompt for receipt analysis
-      const prompt = spark.llmPrompt`
-You are an advanced OCR and receipt analysis AI specialized in Indian retail and business receipts. Analyze this receipt image and extract structured expense data.
-
-Image: data:image/${imageFile.type.split('/')[1]};base64,${base64Image}
-
-Extract the following information with high accuracy:
-
-1. **Amount**: Total amount paid (look for "Total", "Amount", "Grand Total", etc.)
-2. **Merchant/Store Name**: Business name or store name (usually at the top)
-3. **Date**: Transaction date (various formats: DD/MM/YYYY, DD-MM-YY, etc.)
-4. **Category**: Classify into one of these categories based on merchant and items:
-   - Groceries (supermarkets, food items, daily needs)
-   - Food & Dining (restaurants, cafes, food delivery)
-   - Transportation (fuel, parking, tolls, transport services)
-   - Shopping (clothing, electronics, general merchandise)
-   - Utilities (mobile recharge, bills, telecom)
-   - Healthcare (medicines, medical services)
-   - Entertainment (movies, games, subscriptions)
-   - Other (if none match)
-
-5. **Items**: List of main items purchased (extract 3-5 key items if visible)
-6. **Confidence**: Rate your confidence in the extraction accuracy (70-99%)
-
-Consider these Indian business patterns:
-- Common chains: Big Bazaar, Reliance, DMart, Spencer's, More, McDonald's, Domino's, CCD, etc.
-- Currency: All amounts in Indian Rupees (₹)
-- Date formats: DD/MM/YYYY or DD-MM-YY common in India
-- GST numbers, FSSAI numbers may be present
-- Hindi/regional language text may be present
-
-Return a JSON object with this exact structure:
-{
-  "amount": number,
-  "merchant": "string",
-  "date": "YYYY-MM-DD",
-  "category": "string",
-  "items": ["string", "string"],
-  "confidence": number
-}
-
-If you cannot clearly read certain fields, use your best interpretation based on context clues.`;
-
-      // Call the LLM API with JSON mode enabled
-      const response = await spark.llm(prompt, 'gpt-4o', true);
+      // Import Gemini API function
+      const { scanReceiptWithGemini } = await import('@/lib/gemini-api');
       
-      // Parse the JSON response
-      const extractedData = JSON.parse(response);
+      // Call Gemini API for receipt analysis
+      const extractedData = await scanReceiptWithGemini(
+        base64Image,
+        imageFile.type
+      );
       
-      // Validate and sanitize the response
+      // Convert to our expected format
       const scannedExpense: ScannedExpense = {
-        amount: Math.max(0, Number(extractedData.amount) || 0),
-        merchant: String(extractedData.merchant || 'Unknown Merchant').trim(),
-        category: String(extractedData.category || 'Other').trim(),
-        date: extractedData.date || new Date().toISOString().split('T')[0],
-        confidence: Math.min(99, Math.max(70, Number(extractedData.confidence) || 75)),
-        items: Array.isArray(extractedData.items) 
-          ? extractedData.items.map(item => String(item).trim()).filter(Boolean).slice(0, 5)
-          : []
+        amount: extractedData.amount,
+        merchant: extractedData.merchant,
+        category: extractedData.category,
+        date: extractedData.date,
+        confidence: extractedData.confidence,
+        items: extractedData.items || []
       };
 
       return scannedExpense;
       
     } catch (error) {
-      console.error('AI receipt analysis error:', error);
+      console.error('Gemini receipt analysis error:', error);
       
-      // Fallback to simulated data if AI fails
+      // Fallback to simulated data if Gemini fails
       return simulateAIScanning(imageFile);
     }
   };
@@ -206,7 +164,7 @@ If you cannot clearly read certain fields, use your best interpretation based on
     onScanningStateChange(true);
     
     try {
-      toast.loading('🤖 GPT-4o is analyzing your receipt...', { 
+      toast.loading('🤖 Gemini AI is analyzing your receipt...', { 
         id: 'scanning',
         duration: Infinity // Keep loading toast until completion
       });
@@ -466,7 +424,7 @@ If you cannot clearly read certain fields, use your best interpretation based on
                 <div className="flex-1">
                   <h4 className="font-medium text-blue-800 mb-1">Smart Receipt Scanner</h4>
                   <p className="text-sm text-blue-700 leading-relaxed mb-2">
-                    Powered by <strong>GPT-4o Vision</strong> - Advanced AI that can read and extract expense details from your receipt photos with high accuracy.
+                    Powered by <strong>Google Gemini AI</strong> - Advanced AI that can read and extract expense details from your receipt photos with high accuracy.
                   </p>
                   <div className="text-xs text-blue-600 space-y-1">
                     <div>✓ Extracts amount, merchant, date automatically</div>

@@ -38,16 +38,19 @@ Indian users need a finance tracker that understands local spending patterns, us
    - Emergency fund guidance
    - Investment suggestions for good savers
    - Category-specific optimization tips
-10. **AI-Powered Receipt Scanning**: Smart expense entry through:
+10. **AI-Powered Receipt Scanning**: Smart expense entry through Google Gemini AI:
     - Camera capture or gallery upload for receipt photos
+    - Advanced OCR with Google Gemini 1.5 Flash model
     - Automatic extraction of amount, merchant, date, and category
-    - Smart categorization with confidence scores
+    - Smart categorization with confidence scores optimized for Indian receipts
     - Item-level recognition for detailed tracking
-11. **Smart Expense Categorization**: AI-powered category suggestions:
-    - Analyzes description and merchant names
+    - Handles Hindi text and mixed-language receipts
+11. **Smart Expense Categorization**: Gemini AI-powered category suggestions:
+    - Analyzes description and merchant names using advanced NLP
     - Provides confidence-based category recommendations
-    - Learns from common Indian spending patterns
+    - Learns from common Indian spending patterns and local businesses
     - Offers real-time suggestions during manual entry
+    - Fallback to rule-based categorization for reliability
 12. **Personalized Category Learning**: Advanced AI learning system that:
     - Records user corrections and preferences over time
     - Builds personalized categorization patterns based on user behavior
@@ -118,6 +121,43 @@ Indian users need a finance tracker that understands local spending patterns, us
 - **Data Persistence**: Uses useKV for reliable data storage across sessions
 - **Indian Localization**: Currency formatting, number formatting, relevant categories
 - **Reports & Analytics**: Advanced reporting with multiple chart types and PDF export capability
+- **AI Integration**: Google Gemini AI API for advanced receipt scanning and expense categorization
+
+### AI Technical Implementation
+The application integrates with **Google Gemini AI** using API key: `AIzaSyB83WwA2IAHN4U6Npa44yYPdhtzkEdwtu4`
+
+**Gemini Model Used**: `gemini-1.5-flash`
+- **Advantages**: Best free model with vision + text capabilities
+- **Use Cases**: 
+  - Receipt scanning with OCR capabilities
+  - Expense categorization with Indian context awareness
+  - Mixed-language text processing (English + Hindi)
+
+**Features Enhanced by Gemini AI**:
+1. **Receipt Scanner**: 
+   - Advanced OCR for receipt images
+   - Extracts amount, merchant, date, category, and items
+   - Handles Indian receipt formats and GST details
+   - Processes Hindi/regional language text
+
+2. **Smart Categorizer**:
+   - Analyzes expense descriptions and merchant names
+   - Provides confidence-scored category suggestions
+   - Understands Indian business patterns and local brands
+   - Falls back to rule-based categorization if AI fails
+
+**API Implementation**:
+- Custom service layer in `/src/lib/gemini-api.ts`
+- Error handling with graceful fallbacks
+- JSON mode for structured responses
+- Optimized prompts for Indian financial context
+- Rate limiting and token management for free tier
+
+**Performance Optimizations**:
+- Lazy loading of Gemini API module
+- Fallback to local pattern matching
+- Efficient base64 image processing
+- Minimal API calls with comprehensive prompts
 
 ### Reports Feature Details
 The Reports section provides comprehensive expense analysis with:
