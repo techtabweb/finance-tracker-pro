@@ -38,8 +38,24 @@ Indian users need a finance tracker that understands local spending patterns, us
    - Emergency fund guidance
    - Investment suggestions for good savers
    - Category-specific optimization tips
-10. **Indian Currency**: All amounts displayed in ₹ with proper Indian number formatting
-11. **Indian Categories**: Includes relevant categories like Groceries, Mobile & Internet, Fuel, Maintenance
+10. **AI-Powered Receipt Scanning**: Smart expense entry through:
+    - Camera capture or gallery upload for receipt photos
+    - Automatic extraction of amount, merchant, date, and category
+    - Smart categorization with confidence scores
+    - Item-level recognition for detailed tracking
+11. **Smart Expense Categorization**: AI-powered category suggestions:
+    - Analyzes description and merchant names
+    - Provides confidence-based category recommendations
+    - Learns from common Indian spending patterns
+    - Offers real-time suggestions during manual entry
+12. **AI Financial Insights**: Intelligent analysis and recommendations:
+    - Spending pattern analysis and warnings
+    - Budget utilization alerts and predictions
+    - Category-wise spending trends
+    - Personalized money-saving tips
+    - Weekend/seasonal spending pattern detection
+13. **Indian Currency**: All amounts displayed in ₹ with proper Indian number formatting
+14. **Indian Categories**: Includes relevant categories like Groceries, Mobile & Internet, Fuel, Maintenance
 
 ### Suggested New Features for Indian Users
 1. **EMI Tracker**: Track monthly EMIs for loans, credit cards

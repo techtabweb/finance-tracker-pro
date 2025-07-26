@@ -5,11 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ReceiptScanner } from '@/components/ReceiptScanner';
+import { SmartCategorizer } from '@/components/SmartCategorizer';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Plus, Calendar, Tag, FileText, IndianRupee } from '@phosphor-icons/react';
+import { Plus, Calendar, Tag, FileText, IndianRupee, PencilSimple, Scan } from '@phosphor-icons/react';
 
 interface AddExpenseDialogProps {
   open: boolean;
@@ -19,6 +22,8 @@ interface AddExpenseDialogProps {
 export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) {
   const { categories, addExpense } = useFinanceData();
   const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState('manual');
+  const [isScanning, setIsScanning] = useState(false);
   const [formData, setFormData] = useState({
     amount: '',
     category: '',
@@ -27,6 +32,19 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleExpenseScanned = (scannedExpense: any) => {
+    setFormData({
+      amount: scannedExpense.amount.toString(),
+      category: scannedExpense.category,
+      description: scannedExpense.merchant + (scannedExpense.items ? ' - ' + scannedExpense.items.join(', ') : ''),
+      date: scannedExpense.date,
+    });
+    setActiveTab('manual');
+    toast.success('✨ Receipt details filled automatically!', {
+      description: 'Review and submit your expense'
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +81,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
         description: '',
         date: new Date().toISOString().split('T')[0],
       });
+      setActiveTab('manual');
       onOpenChange(false);
     } catch (error) {
       toast.error('Failed to add expense. Please try again.');
@@ -73,7 +92,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`${isMobile ? 'sm:max-w-md w-[95vw] max-h-[85vh] overflow-y-auto' : 'sm:max-w-lg'}`}>
+      <DialogContent className={`${isMobile ? 'sm:max-w-md w-[95vw] max-h-[90vh] overflow-y-auto' : 'sm:max-w-lg max-h-[90vh] overflow-y-auto'}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <span className="text-2xl">💸</span>
@@ -81,13 +100,33 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
           </DialogTitle>
         </DialogHeader>
         
-        <motion.form 
-          onSubmit={handleSubmit} 
-          className="space-y-5"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="scan" className="flex items-center gap-2">
+              <Scan className="w-4 h-4" />
+              {isMobile ? 'Scan' : 'Scan Receipt'}
+            </TabsTrigger>
+            <TabsTrigger value="manual" className="flex items-center gap-2">
+              <PencilSimple className="w-4 h-4" />
+              {isMobile ? 'Manual' : 'Manual Entry'}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="scan" className="space-y-4">
+            <ReceiptScanner 
+              onExpenseScanned={handleExpenseScanned}
+              onScanningStateChange={setIsScanning}
+            />
+          </TabsContent>
+
+          <TabsContent value="manual" className="space-y-5">
+            <motion.form 
+              onSubmit={handleSubmit} 
+              className="space-y-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
           {/* Amount Field */}
           <motion.div 
             className="space-y-2"
@@ -146,6 +185,14 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Smart Categorizer */}
+            <SmartCategorizer
+              description={formData.description}
+              categories={categories}
+              onCategorySelect={(category) => setFormData(prev => ({ ...prev, category }))}
+              selectedCategory={formData.category}
+            />
           </motion.div>
 
           {/* Description Field */}
@@ -225,6 +272,8 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
             </Button>
           </motion.div>
         </motion.form>
+      </TabsContent>
+    </Tabs>
       </DialogContent>
     </Dialog>
   );

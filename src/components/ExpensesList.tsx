@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { formatCurrency, formatDate } from '@/lib/format';
 import { AddExpenseDialog } from './AddExpenseDialog';
+import { AIInsights } from './AIInsights';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -144,6 +145,15 @@ export function ExpensesList() {
             </div>
           </CardContent>
         </Card>
+      </motion.div>
+
+      {/* AI Insights */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+      >
+        <AIInsights />
       </motion.div>
 
       {/* Expenses List */}
