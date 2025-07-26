@@ -48,6 +48,21 @@ Indian users need a finance tracker that understands local spending patterns, us
     - Provides confidence-based category recommendations
     - Learns from common Indian spending patterns
     - Offers real-time suggestions during manual entry
+12. **Personalized Category Learning**: Advanced AI learning system that:
+    - Records user corrections and preferences over time
+    - Builds personalized categorization patterns based on user behavior
+    - Provides increasingly accurate suggestions based on merchant and description history
+    - Tracks learning statistics and accuracy improvements
+    - Offers insights into recognized merchants and spending patterns
+    - Continuous improvement through user feedback and corrections
+
+### NEW: Learning Intelligence Features
+- **Learning Dashboard**: Dedicated tab showing AI learning progress and statistics
+- **Pattern Recognition**: System learns from user corrections and preferences
+- **Merchant Recognition**: Smart identification of frequently used merchants
+- **Accuracy Tracking**: Monitors AI suggestion accuracy over time
+- **Learning Insights**: Visual feedback on system learning progress
+- **Optimization Tools**: Features to improve learning performance
 12. **AI Financial Insights**: Intelligent analysis and recommendations:
     - Spending pattern analysis and warnings
     - Budget utilization alerts and predictions

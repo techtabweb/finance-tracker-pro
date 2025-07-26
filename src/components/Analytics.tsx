@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { CategoryLearningInsights } from '@/components/CategoryLearningInsights';
 import { formatCurrency } from '@/lib/format';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { motion } from 'framer-motion';
@@ -301,6 +302,15 @@ export function Analytics() {
                 </div>
               </CardContent>
             </Card>
+          </motion.div>
+
+          {/* Category Learning Insights */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <CategoryLearningInsights />
           </motion.div>
         </>
       )}

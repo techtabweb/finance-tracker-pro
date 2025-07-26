@@ -8,6 +8,7 @@ import { Analytics } from '@/components/Analytics';
 import { SavingsGoals } from '@/components/SavingsGoals';
 import { Reports } from '@/components/Reports';
 import { Wellness } from '@/components/Wellness';
+import { Learning } from '@/components/Learning';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,6 +23,7 @@ function App() {
     { value: 'budgets', label: 'Budgets', icon: '💰', emoji: '🎯', shortLabel: 'Budget' },
     { value: 'goals', label: 'Goals', icon: '🎯', emoji: '💎', shortLabel: 'Goals' },
     { value: 'wellness', label: 'Wellness', icon: '❤️', emoji: '💯', shortLabel: 'Health' },
+    { value: 'learning', label: 'Learning', icon: '🧠', emoji: '✨', shortLabel: 'Learn' },
     { value: 'analytics', label: 'Analytics', icon: '📈', emoji: '🔍', shortLabel: 'Charts' },
     { value: 'reports', label: 'Reports', icon: '📄', emoji: '📋', shortLabel: 'Reports' }
   ];
@@ -98,7 +100,7 @@ function App() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Card className="p-3 bg-white/70 backdrop-blur-sm border-white/30 shadow-lg">
-                <TabsList className="grid w-full grid-cols-7 bg-transparent gap-2 h-auto">
+                <TabsList className="grid w-full grid-cols-8 bg-transparent gap-2 h-auto">
                   {tabs.map((tab, index) => (
                     <motion.div
                       key={tab.value}
@@ -129,7 +131,7 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <TabsList className="grid w-full grid-cols-7 bg-transparent p-3 gap-1 h-auto">
+                <TabsList className="grid w-full grid-cols-8 bg-transparent p-3 gap-1 h-auto">
                   {tabs.map((tab, index) => (
                     <motion.div
                       key={tab.value}
@@ -179,6 +181,10 @@ function App() {
               
               <TabsContent value="wellness" className="mt-0">
                 <Wellness />
+              </TabsContent>
+              
+              <TabsContent value="learning" className="mt-0">
+                <Learning />
               </TabsContent>
               
               <TabsContent value="analytics" className="mt-0">

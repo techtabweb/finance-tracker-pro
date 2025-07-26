@@ -76,6 +76,25 @@ export interface PersonalizedTip {
   estimatedImpact: string;
 }
 
+export interface CategoryLearningPattern {
+  id: string;
+  merchant: string;
+  description: string;
+  userSelectedCategory: string;
+  aiSuggestedCategory?: string;
+  confidence: number;
+  timestamp: string;
+  correctionReason?: string;
+}
+
+export interface LearningInsight {
+  pattern: string;
+  category: string;
+  frequency: number;
+  confidence: number;
+  keywords: string[];
+}
+
 export const DEFAULT_CATEGORIES: Category[] = [
   { id: '1', name: 'Food & Dining', icon: 'Coffee', color: 'oklch(0.6 0.15 30)' },
   { id: '2', name: 'Transportation', icon: 'Car', color: 'oklch(0.55 0.12 240)' },

@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFinanceData } from '@/hooks/use-finance-data';
+import { useCategoryLearning } from '@/hooks/use-category-learning';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ReceiptScanner } from '@/components/ReceiptScanner';
 import { SmartCategorizer } from '@/components/SmartCategorizer';
@@ -21,6 +22,7 @@ interface AddExpenseDialogProps {
 
 export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) {
   const { categories, addExpense } = useFinanceData();
+  const { recordCategoryCorrection } = useCategoryLearning();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState('manual');
   const [isScanning, setIsScanning] = useState(false);
@@ -32,6 +34,29 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Extract merchant name from description for better categorization
+  const extractMerchant = (description: string): string => {
+    if (!description) return '';
+    
+    // Look for common patterns that indicate merchant names
+    const lines = description.split('\n').map(line => line.trim()).filter(Boolean);
+    if (lines.length > 0) {
+      // First line is often the merchant name
+      const firstLine = lines[0];
+      
+      // Remove common expense-related words to get cleaner merchant name
+      const cleanedMerchant = firstLine
+        .replace(/\b(bought|purchased|paid|at|from|for|bill|payment|expense)\b/gi, '')
+        .replace(/[₹$£€]\d+.*/, '') // Remove amounts
+        .replace(/\d{4}[-/]\d{2}[-/]\d{2}/, '') // Remove dates
+        .trim();
+      
+      return cleanedMerchant || firstLine;
+    }
+    
+    return description.substring(0, 50); // Fallback to first 50 characters
+  };
 
   const handleExpenseScanned = (scannedExpense: any) => {
     setFormData({
@@ -190,9 +215,14 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
             {formData.description && (
               <SmartCategorizer
                 description={formData.description}
+                merchant={extractMerchant(formData.description)}
                 categories={categories}
                 onCategorySelect={(category) => setFormData(prev => ({ ...prev, category }))}
                 selectedCategory={formData.category}
+                onLearningRecord={(category, aiSuggestion, confidence) => {
+                  // This will be called when user selects a category, recording learning patterns
+                  console.log('Learning recorded:', { category, aiSuggestion, confidence });
+                }}
               />
             )}
           </motion.div>
