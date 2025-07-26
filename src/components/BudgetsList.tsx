@@ -26,13 +26,18 @@ export function BudgetsList() {
   );
 
   const categoryEmojis: { [key: string]: string } = {
-    'Food': '🍽️',
-    'Transport': '🚗',
+    'Food & Dining': '🍽️',
+    'Transportation': '🚗',
     'Entertainment': '🎬',
     'Shopping': '🛍️',
     'Healthcare': '🏥',
     'Education': '📚',
-    'Bills': '📄',
+    'Bills & Utilities': '📄',
+    'Groceries': '🛒',
+    'Mobile & Internet': '📱',
+    'Fuel': '⛽',
+    'Maintenance': '🔧',
+    'Travel': '✈️',
     'Other': '📦'
   };
 

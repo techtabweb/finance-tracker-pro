@@ -118,7 +118,7 @@ export function Overview() {
       </motion.div>
 
       {/* Summary Cards */}
-      <div className={`grid grid-cols-2 ${isMobile ? 'lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-4'} gap-3 sm:gap-4`}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {summaryCards.map((card, index) => (
           <motion.div
             key={card.title}
@@ -156,7 +156,7 @@ export function Overview() {
       </div>
 
       {/* Budget Progress */}
-      <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'lg:grid-cols-2 gap-6'}`}>
+      <div className={`grid grid-cols-1 ${!isMobile ? 'lg:grid-cols-2' : ''} gap-4 sm:gap-6`}>
         {/* Monthly Budget Progress */}
         {monthlyBudget > 0 && (
           <motion.div
@@ -183,11 +183,13 @@ export function Overview() {
                       value={Math.min(monthlyBudgetProgress, 100)} 
                       className="h-3 sm:h-4 bg-gray-200 progress-enhanced"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-medium text-white drop-shadow-md">
-                        {monthlyBudgetProgress.toFixed(0)}%
-                      </span>
-                    </div>
+                    {monthlyBudgetProgress > 0 && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-medium text-white drop-shadow-md">
+                          {monthlyBudgetProgress.toFixed(0)}%
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs text-gray-600 text-center">
                     {monthlyBudgetProgress > 100 
@@ -204,7 +206,7 @@ export function Overview() {
         {/* Category Budget Progress */}
         {totalBudget > 0 && (
           <motion.div
-            initial={{ opacity: 0, x: isMobile ? 0 : 20 }}
+            initial={{ opacity: 0, x: !isMobile ? 20 : 0 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
@@ -227,11 +229,13 @@ export function Overview() {
                       value={Math.min(categoryBudgetProgress, 100)} 
                       className="h-3 sm:h-4 bg-gray-200 progress-enhanced"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-medium text-white drop-shadow-md">
-                        {categoryBudgetProgress.toFixed(0)}%
-                      </span>
-                    </div>
+                    {categoryBudgetProgress > 0 && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-medium text-white drop-shadow-md">
+                          {categoryBudgetProgress.toFixed(0)}%
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs text-gray-600 text-center">
                     {categoryBudgetProgress > 100 

@@ -123,32 +123,30 @@ function App() {
 
           {/* Mobile Bottom Navigation */}
           {isMobile && (
-            <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb">
+            <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb bg-white/95 backdrop-blur-md shadow-2xl border-t border-gray-200/50">
               <motion.div
                 initial={{ opacity: 0, y: 100 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Card className="rounded-t-3xl rounded-b-none border-0 bg-white/95 backdrop-blur-md shadow-2xl border-t border-gray-200/50">
-                  <TabsList className="grid w-full grid-cols-7 bg-transparent p-3 gap-1 h-auto">
-                    {tabs.map((tab, index) => (
-                      <motion.div
-                        key={tab.value}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.03 }}
+                <TabsList className="grid w-full grid-cols-7 bg-transparent p-3 gap-1 h-auto">
+                  {tabs.map((tab, index) => (
+                    <motion.div
+                      key={tab.value}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.03 }}
+                    >
+                      <TabsTrigger 
+                        value={tab.value} 
+                        className="flex flex-col items-center gap-1 p-2 h-full data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 rounded-xl transition-all duration-200 hover:bg-gray-100"
                       >
-                        <TabsTrigger 
-                          value={tab.value} 
-                          className="flex flex-col items-center gap-1 p-2 h-full data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 rounded-xl transition-all duration-200 hover:bg-gray-100"
-                        >
-                          <span className="text-lg">{tab.icon}</span>
-                          <span className="text-[9px] font-medium leading-tight">{tab.shortLabel}</span>
-                        </TabsTrigger>
-                      </motion.div>
-                    ))}
-                  </TabsList>
-                </Card>
+                        <span className="text-lg">{tab.icon}</span>
+                        <span className="text-[9px] font-medium leading-tight">{tab.shortLabel}</span>
+                      </TabsTrigger>
+                    </motion.div>
+                  ))}
+                </TabsList>
               </motion.div>
             </div>
           )}
@@ -161,7 +159,7 @@ function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
-              className={`${isMobile ? 'pb-28' : 'pb-6'}`}
+              className={`${isMobile ? 'pb-24 mobile-content' : 'pb-6'}`}
             >
               <TabsContent value="overview" className="mt-0">
                 <Overview />

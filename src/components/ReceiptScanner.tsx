@@ -113,7 +113,10 @@ export function ReceiptScanner({ onExpenseScanned, onScanningStateChange }: Rece
     onScanningStateChange(true);
     
     try {
-      toast.loading('🤖 AI is analyzing your receipt...', { id: 'scanning' });
+      toast.loading('🤖 AI is analyzing your receipt...', { 
+        id: 'scanning',
+        duration: Infinity // Keep loading toast until completion
+      });
       
       const scannedData = await simulateAIScanning(selectedImage);
       
@@ -123,6 +126,7 @@ export function ReceiptScanner({ onExpenseScanned, onScanningStateChange }: Rece
         description: `Found expense: ${scannedData.merchant} - ₹${scannedData.amount}`
       });
     } catch (error) {
+      console.error('Receipt scanning error:', error);
       toast.error('Failed to scan receipt. Please try again.', { id: 'scanning' });
     } finally {
       setIsScanning(false);
@@ -142,13 +146,16 @@ export function ReceiptScanner({ onExpenseScanned, onScanningStateChange }: Rece
     setSelectedImage(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
     }
-    setPreviewUrl(null);
     setScannedExpense(null);
     setIsScanning(false);
     onScanningStateChange(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
     if (cameraInputRef.current) cameraInputRef.current.value = '';
+    // Also dismiss any loading toasts
+    toast.dismiss('scanning');
+  };
   };
 
   return (

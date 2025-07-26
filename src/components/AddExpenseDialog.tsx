@@ -92,7 +92,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`${isMobile ? 'sm:max-w-md w-[95vw] max-h-[90vh] overflow-y-auto' : 'sm:max-w-lg max-h-[90vh] overflow-y-auto'}`}>
+      <DialogContent className={`sm:max-w-lg w-[95vw] max-w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto ${isMobile ? 'rounded-t-2xl rounded-b-none fixed bottom-0 top-auto' : ''}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <span className="text-2xl">💸</span>
@@ -187,12 +187,14 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
             </Select>
 
             {/* Smart Categorizer */}
-            <SmartCategorizer
-              description={formData.description}
-              categories={categories}
-              onCategorySelect={(category) => setFormData(prev => ({ ...prev, category }))}
-              selectedCategory={formData.category}
-            />
+            {formData.description && (
+              <SmartCategorizer
+                description={formData.description}
+                categories={categories}
+                onCategorySelect={(category) => setFormData(prev => ({ ...prev, category }))}
+                selectedCategory={formData.category}
+              />
+            )}
           </motion.div>
 
           {/* Description Field */}

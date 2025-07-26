@@ -12,37 +12,50 @@ export function useFinanceData() {
   const [activeTab, setActiveTab] = useState<'overview' | 'expenses' | 'budgets' | 'analytics' | 'goals' | 'wellness' | 'reports'>('overview');
 
   const addExpense = (expense: Omit<Expense, 'id'>) => {
-    const newExpense = {
-      ...expense,
-      id: Date.now().toString(),
-    };
-    
-    setExpenses((current) => [newExpense, ...current]);
-    
-    // Update budget spent amount
-    setBudgets((current) => 
-      current.map(budget => 
-        budget.category === expense.category
-          ? { ...budget, spent: budget.spent + expense.amount }
-          : budget
-      )
-    );
+    try {
+      const newExpense = {
+        ...expense,
+        id: Date.now().toString(),
+      };
+      
+      setExpenses((current) => [newExpense, ...current]);
+      
+      // Update budget spent amount
+      setBudgets((current) => 
+        current.map(budget => 
+          budget.category === expense.category
+            ? { ...budget, spent: budget.spent + expense.amount }
+            : budget
+        )
+      );
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      throw error; // Re-throw so the UI can handle it
+    }
   };
 
   const deleteExpense = (expenseId: string) => {
-    const expense = expenses.find(e => e.id === expenseId);
-    if (!expense) return;
+    try {
+      const expense = expenses.find(e => e.id === expenseId);
+      if (!expense) {
+        console.warn('Expense not found for deletion:', expenseId);
+        return;
+      }
 
-    setExpenses((current) => current.filter(e => e.id !== expenseId));
-    
-    // Update budget spent amount
-    setBudgets((current) => 
-      current.map(budget => 
-        budget.category === expense.category
-          ? { ...budget, spent: Math.max(0, budget.spent - expense.amount) }
-          : budget
-      )
-    );
+      setExpenses((current) => current.filter(e => e.id !== expenseId));
+      
+      // Update budget spent amount
+      setBudgets((current) => 
+        current.map(budget => 
+          budget.category === expense.category
+            ? { ...budget, spent: Math.max(0, budget.spent - expense.amount) }
+            : budget
+        )
+      );
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      throw error; // Re-throw so the UI can handle it
+    }
   };
 
   const setBudget = (category: string, limit: number) => {
