@@ -12,26 +12,26 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.25 0.02 200);
+  --background: oklch(0.98 0.01 200);
+  --foreground: oklch(0.15 0.02 200);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.02 200);
+  --card-foreground: oklch(0.15 0.02 200);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.02 200);
-  --primary: oklch(0.45 0.15 200);
+  --popover-foreground: oklch(0.15 0.02 200);
+  --primary: oklch(0.5 0.15 240);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.01 200);
-  --secondary-foreground: oklch(0.25 0.02 200);
-  --muted: oklch(0.95 0.01 200);
-  --muted-foreground: oklch(0.6 0.02 200);
-  --accent: oklch(0.65 0.15 50);
+  --secondary: oklch(0.96 0.01 200);
+  --secondary-foreground: oklch(0.15 0.02 200);
+  --muted: oklch(0.96 0.01 200);
+  --muted-foreground: oklch(0.5 0.02 200);
+  --accent: oklch(0.6 0.15 60);
   --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.65 0.2 30);
+  --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.9 0.01 200);
   --input: oklch(0.9 0.01 200);
-  --ring: oklch(0.45 0.15 200);
-  --radius: 0.5rem;
+  --ring: oklch(0.5 0.15 240);
+  --radius: 0.75rem;
 }
 
 @theme {
@@ -61,4 +61,32 @@
   --radius-xl: calc(var(--radius) * 2);
   --radius-2xl: calc(var(--radius) * 3);
   --radius-full: 9999px;
+}
+
+/* Custom gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.glass-effect {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.7 0.1 200);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.6 0.1 200);
 }
