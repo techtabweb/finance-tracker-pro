@@ -36,63 +36,119 @@ export function SmartCategorizer({
 
     setIsAnalyzing(true);
     
-    // Simulate AI analysis
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Create AI prompt for intelligent categorization
+      const prompt = spark.llmPrompt`
+You are an AI assistant specialized in categorizing Indian expenses and transactions. Analyze the following expense details and suggest the most appropriate categories.
 
-    const categoryRules = {
-      'Food & Dining': {
-        keywords: ['restaurant', 'cafe', 'pizza', 'burger', 'food', 'dining', 'domino', 'mcdonald', 'kfc', 'subway', 'zomato', 'swiggy'],
-        confidence: 95
-      },
-      'Groceries': {
-        keywords: ['supermarket', 'grocery', 'bazaar', 'mart', 'fresh', 'vegetables', 'rice', 'dal', 'milk', 'bread', 'reliance', 'big bazaar', 'dmart'],
-        confidence: 90
-      },
-      'Transportation': {
-        keywords: ['petrol', 'diesel', 'fuel', 'gas', 'station', 'uber', 'ola', 'taxi', 'bus', 'metro', 'train', 'toll', 'parking', 'bpcl', 'hp', 'indian oil'],
-        confidence: 85
-      },
-      'Shopping': {
-        keywords: ['clothes', 'shoes', 'electronics', 'shopping', 'mall', 'store', 'myntra', 'flipkart', 'amazon', 'brand'],
-        confidence: 80
-      },
-      'Utilities': {
-        keywords: ['recharge', 'bill', 'electricity', 'water', 'gas', 'internet', 'mobile', 'airtel', 'jio', 'vodafone', 'tata sky', 'dish'],
-        confidence: 85
-      },
-      'Healthcare': {
-        keywords: ['hospital', 'doctor', 'medicine', 'pharmacy', 'medical', 'clinic', 'apollo', 'health'],
-        confidence: 88
-      },
-      'Entertainment': {
-        keywords: ['movie', 'cinema', 'game', 'entertainment', 'netflix', 'spotify', 'booking', 'ticket'],
-        confidence: 82
-      }
-    };
+Expense Details:
+- Description: "${description}"
+- Merchant: "${merchant || 'Unknown'}"
 
-    const text = `${description} ${merchant || ''}`.toLowerCase();
-    const matchedCategories: CategorySuggestion[] = [];
+Available Categories:
+${categories.map(cat => `- ${cat.name}`).join('\n')}
 
-    Object.entries(categoryRules).forEach(([category, rules]) => {
-      const matchCount = rules.keywords.filter(keyword => text.includes(keyword)).length;
-      if (matchCount > 0) {
-        const confidence = Math.min(rules.confidence + (matchCount - 1) * 5, 99);
-        const matchedKeywords = rules.keywords.filter(keyword => text.includes(keyword));
-        matchedCategories.push({
-          category,
-          confidence,
-          reason: `Detected keywords: ${matchedKeywords.slice(0, 2).join(', ')}`
-        });
-      }
-    });
+Consider these factors:
+1. Merchant name and type of business
+2. Keywords in the description
+3. Common Indian shopping patterns and brands
+4. Regional variations and local businesses
 
-    // Sort by confidence and take top 3
-    const topSuggestions = matchedCategories
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, 3)
-      .filter(suggestion => categories.some(cat => cat.name === suggestion.category));
+For each relevant category, provide:
+1. Category name (must match exactly from the available list)
+2. Confidence score (70-99%)
+3. Brief reason for the suggestion
 
-    setSuggestions(topSuggestions);
+Return a JSON array with up to 3 suggestions, ordered by confidence:
+[
+  {
+    "category": "exact category name",
+    "confidence": number,
+    "reason": "brief explanation"
+  }
+]
+
+Focus on accuracy and relevance to Indian context.`;
+
+      const response = await spark.llm(prompt, 'gpt-4o-mini', true);
+      const aiSuggestions = JSON.parse(response);
+      
+      // Validate and format the AI response
+      const validSuggestions: CategorySuggestion[] = aiSuggestions
+        .filter((suggestion: any) => 
+          suggestion.category && 
+          suggestion.confidence && 
+          categories.some(cat => cat.name === suggestion.category)
+        )
+        .map((suggestion: any) => ({
+          category: suggestion.category,
+          confidence: Math.min(99, Math.max(70, Number(suggestion.confidence))),
+          reason: String(suggestion.reason || 'AI suggested match').substring(0, 100)
+        }))
+        .slice(0, 3);
+
+      setSuggestions(validSuggestions);
+      
+    } catch (error) {
+      console.error('AI categorization error:', error);
+      
+      // Fallback to rule-based categorization
+      const categoryRules = {
+        'Food & Dining': {
+          keywords: ['restaurant', 'cafe', 'pizza', 'burger', 'food', 'dining', 'domino', 'mcdonald', 'kfc', 'subway', 'zomato', 'swiggy'],
+          confidence: 95
+        },
+        'Groceries': {
+          keywords: ['supermarket', 'grocery', 'bazaar', 'mart', 'fresh', 'vegetables', 'rice', 'dal', 'milk', 'bread', 'reliance', 'big bazaar', 'dmart'],
+          confidence: 90
+        },
+        'Transportation': {
+          keywords: ['petrol', 'diesel', 'fuel', 'gas', 'station', 'uber', 'ola', 'taxi', 'bus', 'metro', 'train', 'toll', 'parking', 'bpcl', 'hp', 'indian oil'],
+          confidence: 85
+        },
+        'Shopping': {
+          keywords: ['clothes', 'shoes', 'electronics', 'shopping', 'mall', 'store', 'myntra', 'flipkart', 'amazon', 'brand'],
+          confidence: 80
+        },
+        'Utilities': {
+          keywords: ['recharge', 'bill', 'electricity', 'water', 'gas', 'internet', 'mobile', 'airtel', 'jio', 'vodafone', 'tata sky', 'dish'],
+          confidence: 85
+        },
+        'Healthcare': {
+          keywords: ['hospital', 'doctor', 'medicine', 'pharmacy', 'medical', 'clinic', 'apollo', 'health'],
+          confidence: 88
+        },
+        'Entertainment': {
+          keywords: ['movie', 'cinema', 'game', 'entertainment', 'netflix', 'spotify', 'booking', 'ticket'],
+          confidence: 82
+        }
+      };
+
+      const text = `${description} ${merchant || ''}`.toLowerCase();
+      const matchedCategories: CategorySuggestion[] = [];
+
+      Object.entries(categoryRules).forEach(([category, rules]) => {
+        const matchCount = rules.keywords.filter(keyword => text.includes(keyword)).length;
+        if (matchCount > 0) {
+          const confidence = Math.min(rules.confidence + (matchCount - 1) * 5, 99);
+          const matchedKeywords = rules.keywords.filter(keyword => text.includes(keyword));
+          matchedCategories.push({
+            category,
+            confidence,
+            reason: `Detected keywords: ${matchedKeywords.slice(0, 2).join(', ')}`
+          });
+        }
+      });
+
+      // Sort by confidence and take top 3
+      const topSuggestions = matchedCategories
+        .sort((a, b) => b.confidence - a.confidence)
+        .slice(0, 3)
+        .filter(suggestion => categories.some(cat => cat.name === suggestion.category));
+
+      setSuggestions(topSuggestions);
+    }
+    
     setIsAnalyzing(false);
   };
 
@@ -119,7 +175,7 @@ export function SmartCategorizer({
             className={`w-full ${isMobile ? 'h-10' : 'h-9'} text-sm bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100`}
           >
             <Sparkle className="w-4 h-4 mr-2" />
-            Get AI Category Suggestions
+            Get AI Category Suggestions (GPT-4o)
           </Button>
         </motion.div>
       )}
