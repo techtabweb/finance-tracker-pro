@@ -10,15 +10,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { formatAmount, getCurrentMonth } from '@/lib/format';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  MessageCircle, 
-  Send, 
-  TrendingUp, 
-  PieChart, 
+  ChatCircle, 
+  PaperPlaneRight, 
+  ChartLineUp, 
+  ChartPie, 
   Calendar,
-  DollarSign,
+  CurrencyDollar,
   Target,
-  Sparkles,
-  RotateCcw,
+  Sparkle,
+  ArrowClockwise,
   Lightbulb
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
@@ -37,12 +37,12 @@ interface ChatMessage {
 
 const QUICK_QUESTIONS = [
   {
-    icon: <TrendingUp className="w-4 h-4" />,
+    icon: <ChartLineUp className="w-4 h-4" />,
     text: "How much did I spend this month?",
     category: "spending"
   },
   {
-    icon: <PieChart className="w-4 h-4" />,
+    icon: <ChartPie className="w-4 h-4" />,
     text: "What's my biggest expense category?",
     category: "analysis"
   },
@@ -52,7 +52,7 @@ const QUICK_QUESTIONS = [
     category: "trends"
   },
   {
-    icon: <DollarSign className="w-4 h-4" />,
+    icon: <CurrencyDollar className="w-4 h-4" />,
     text: "How am I doing with my budgets?",
     category: "budget"
   },
@@ -99,9 +99,9 @@ export function FinanceChat() {
           content: `Hello! 👋 I'm your AI financial assistant powered by advanced AI. I can analyze your financial data and provide personalized insights about your spending patterns, budget performance, and financial health.
 
 📊 **Your Current Data:**
-• ${expenses.length} total expense${expenses.length !== 1 ? 's' : ''} tracked
-• ${budgets.length} active budget${budgets.length !== 1 ? 's' : ''}
-• ${savingsGoals.length} savings goal${savingsGoals.length !== 1 ? 's' : ''}
+• ${expenses?.length || 0} total expense${(expenses?.length || 0) !== 1 ? 's' : ''} tracked
+• ${budgets?.length || 0} active budget${(budgets?.length || 0) !== 1 ? 's' : ''}
+• ${savingsGoals?.length || 0} savings goal${(savingsGoals?.length || 0) !== 1 ? 's' : ''}
 • ₹${formatAmount(totalSpent)} spent this month
 
 I can help you with questions like:
@@ -114,7 +114,7 @@ Ask me anything about your finances! 💰`,
           timestamp: new Date().toISOString(),
           metadata: {
             analysisType: 'welcome',
-            dataPoints: expenses.length + budgets.length + savingsGoals.length
+            dataPoints: (expenses?.length || 0) + (budgets?.length || 0) + (savingsGoals?.length || 0)
           }
         };
         setMessages([welcomeMessage]);
@@ -124,7 +124,7 @@ Ask me anything about your finances! 💰`,
         setIsInitialized(true);
       }
     }
-  }, [isInitialized, expenses.length, budgets.length, savingsGoals.length, getTotalSpent]);
+  }, [isInitialized, expenses?.length, budgets?.length, savingsGoals?.length, getTotalSpent]);
 
   // Auto-scroll to bottom with better error handling
   useEffect(() => {
@@ -153,43 +153,43 @@ Ask me anything about your finances! 💰`,
     }, {} as Record<string, number>);
 
     // Calculate budget performance
-    const budgetPerformance = budgets.map(budget => ({
+    const budgetPerformance = budgets?.map(budget => ({
       category: budget.category,
       budgeted: budget.limit,
       spent: budget.spent,
       remaining: budget.limit - budget.spent,
       utilizationPercent: budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0
-    }));
+    })) || [];
 
     // Calculate savings progress
-    const savingsProgress = savingsGoals.map(goal => ({
+    const savingsProgress = savingsGoals?.map(goal => ({
       name: goal.name,
       target: goal.target,
       current: goal.current,
       remaining: goal.target - goal.current,
       progressPercent: goal.target > 0 ? (goal.current / goal.target) * 100 : 0,
       deadline: goal.deadline
-    }));
+    })) || [];
 
     // Recent spending patterns (last 7 and 30 days)
     const now = new Date();
     const last7Days = expenses
-      .filter(expense => {
+      ?.filter(expense => {
         const expenseDate = new Date(expense.date);
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
         return expenseDate >= weekAgo;
       })
-      .reduce((sum, expense) => sum + expense.amount, 0);
+      ?.reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
     const last30Days = expenses
-      .filter(expense => {
+      ?.filter(expense => {
         const expenseDate = new Date(expense.date);
         const monthAgo = new Date();
         monthAgo.setDate(monthAgo.getDate() - 30);
         return expenseDate >= monthAgo;
       })
-      .reduce((sum, expense) => sum + expense.amount, 0);
+      ?.reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
     // Calculate monthly trends (last 3 months)
     const monthlyTrends = [];
@@ -198,7 +198,7 @@ Ask me anything about your finances! 💰`,
       targetDate.setMonth(targetDate.getMonth() - i);
       const monthStr = targetDate.toISOString().slice(0, 7); // YYYY-MM format
       
-      const monthExpenses = expenses.filter(expense => expense.date.startsWith(monthStr));
+      const monthExpenses = expenses?.filter(expense => expense.date.startsWith(monthStr)) || [];
       const monthTotal = monthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
       
       monthlyTrends.push({
@@ -209,10 +209,10 @@ Ask me anything about your finances! 💰`,
     }
 
     // Top spending categories (all time)
-    const allTimeCategories = expenses.reduce((acc, expense) => {
+    const allTimeCategories = expenses?.reduce((acc, expense) => {
       acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
       return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<string, number>) || {};
 
     const topCategories = Object.entries(allTimeCategories)
       .sort(([, a], [, b]) => b - a)
@@ -221,7 +221,7 @@ Ask me anything about your finances! 💰`,
 
     return {
       currentMonth,
-      totalExpenses: expenses.length,
+      totalExpenses: expenses?.length || 0,
       currentMonthExpenses: currentMonthExpenses.length,
       totalSpentThisMonth: getTotalSpent(),
       totalBudgetAllocated: getTotalBudget(),
@@ -237,7 +237,7 @@ Ask me anything about your finances! 💰`,
         monthlyTrends
       },
       topCategories,
-      availableCategories: categories.map(cat => cat.name),
+      availableCategories: categories?.map(cat => cat.name) || [],
       recentTransactions: currentMonthExpenses
         .slice(0, 10)
         .map(expense => ({
@@ -248,8 +248,8 @@ Ask me anything about your finances! 💰`,
         })),
       // Financial health indicators
       budgetUtilization: getTotalBudget() > 0 ? (getTotalSpent() / getTotalBudget()) * 100 : 0,
-      savingsGoalProgress: savingsGoals.reduce((acc, goal) => acc + (goal.current / goal.target) * 100, 0) / Math.max(savingsGoals.length, 1),
-      averageTransactionAmount: expenses.length > 0 ? expenses.reduce((sum, exp) => sum + exp.amount, 0) / expenses.length : 0
+      savingsGoalProgress: (savingsGoals?.reduce((acc, goal) => acc + (goal.current / goal.target) * 100, 0) || 0) / Math.max(savingsGoals?.length || 1, 1),
+      averageTransactionAmount: (expenses?.length || 0) > 0 ? (expenses?.reduce((sum, exp) => sum + exp.amount, 0) || 0) / (expenses?.length || 1) : 0
     };
   };
 
@@ -382,7 +382,7 @@ Provide a comprehensive, personalized response based on their actual financial d
       >
         <div className="flex items-center justify-center gap-3 sm:gap-4">
           <div className="p-2 sm:p-3 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl shadow-lg">
-            <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+            <ChatCircle className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
           </div>
           <div className="text-left">
             <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -397,15 +397,15 @@ Provide a comprehensive, personalized response based on their actual financial d
         {/* Data Summary - Mobile Optimized */}
         <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
           <Badge variant="secondary" className="gap-1 text-xs">
-            <Sparkles className="w-3 h-3" />
-            {expenses.length} Expenses
+            <Sparkle className="w-3 h-3" />
+            {expenses?.length || 0} Expenses
           </Badge>
           <Badge variant="secondary" className="gap-1 text-xs">
             <Target className="w-3 h-3" />
-            {budgets.length} Budgets
+            {budgets?.length || 0} Budgets
           </Badge>
           <Badge variant="secondary" className="gap-1 text-xs">
-            <TrendingUp className="w-3 h-3" />
+            <ChartLineUp className="w-3 h-3" />
             ₹{formatAmount(getTotalSpent())}
           </Badge>
         </div>
@@ -444,7 +444,7 @@ Provide a comprehensive, personalized response based on their actual financial d
                   onClick={clearChat}
                   className="text-muted-foreground hover:text-foreground h-8 px-2"
                 >
-                  <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <ArrowClockwise className="w-3 h-3 sm:w-4 sm:h-4" />
                   {!isMobile && <span className="ml-1">Clear</span>}
                 </Button>
               </motion.div>
@@ -486,7 +486,7 @@ Provide a comprehensive, personalized response based on their actual financial d
                             >
                               {message.metadata.analysisType === 'financial_analysis' && (
                                 <>
-                                  <Sparkles className="w-3 h-3" />
+                                  <Sparkle className="w-3 h-3" />
                                   <span>Analyzed {message.metadata.dataPoints} data points</span>
                                 </>
                               )}
@@ -523,7 +523,7 @@ Provide a comprehensive, personalized response based on their actual financial d
                             ))}
                           </div>
                           <span className="flex items-center gap-1">
-                            <Sparkles className="w-3 h-3" />
+                            <Sparkle className="w-3 h-3" />
                             Analyzing with AI...
                           </span>
                         </div>
@@ -604,13 +604,13 @@ Provide a comprehensive, personalized response based on their actual financial d
                     size={isMobile ? "default" : "icon"}
                     className={`shrink-0 ${isMobile ? 'px-4 min-h-[44px]' : ''} bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 transition-all duration-200`}
                   >
-                    <Send className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <PaperPlaneRight className="w-3 h-3 sm:w-4 sm:h-4" />
                     {isMobile && <span className="ml-2 text-xs">Send</span>}
                   </Button>
                 </motion.div>
               </div>
               <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                <Sparkles className="w-3 h-3" />
+                <Sparkle className="w-3 h-3" />
                 Try: "How much did I spend on food?" or "Budget analysis"
               </p>
             </div>

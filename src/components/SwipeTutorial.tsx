@@ -7,12 +7,12 @@ import { useKV } from '@github/spark/hooks';
 
 export function SwipeTutorial() {
   const isMobile = useIsMobile();
-  const [hasSeenTutorial, setHasSeenTutorial] = useKV('swipe-tutorial-seen', false);
+  const [hasSeenTutorial, setHasSeenTutorial] = useKV('swipe-tutorial-seen', 'false');
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Show tutorial only on mobile and if user hasn't seen it
-    if (isMobile && !hasSeenTutorial) {
+    if (isMobile && hasSeenTutorial !== 'true') {
       const timer = setTimeout(() => setIsVisible(true), 2000); // Show after 2 seconds
       return () => clearTimeout(timer);
     }
@@ -20,10 +20,10 @@ export function SwipeTutorial() {
 
   const handleDismiss = () => {
     setIsVisible(false);
-    setHasSeenTutorial(true);
+    setHasSeenTutorial('true'); // Store as string to match KV pattern
   };
 
-  if (!isMobile || hasSeenTutorial || !isVisible) return null;
+  if (!isMobile || hasSeenTutorial === 'true' || !isVisible) return null;
 
   return (
     <AnimatePresence>

@@ -79,7 +79,7 @@ export function BudgetInsights() {
         spent: budget.spent || 0
       }));
 
-      const prompt = spark.llmPrompt`
+      const prompt = window.spark.llmPrompt`
 You are a financial AI assistant. Analyze the following expense and budget data to provide insights and optimizations.
 
 Expense Data: ${JSON.stringify(expenseData)}
@@ -134,7 +134,7 @@ Requirements:
 - All amounts should be in Indian Rupees
 `;
 
-      const response = await spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       // Handle empty or invalid response
       if (!response || response.trim() === '') {

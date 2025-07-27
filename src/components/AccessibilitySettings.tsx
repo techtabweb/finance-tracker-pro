@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTheme, Theme, FontSize, ContrastMode } from '@/hooks/use-theme';
 import { motion } from 'framer-motion';
-import { Moon, Sun, Monitor, Type, Eye, Zap, Palette, Settings as SettingsIcon } from '@phosphor-icons/react';
+import { Moon, Sun, Monitor, TextAa, Eye, Lightning, Palette, Gear } from '@phosphor-icons/react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export function AccessibilitySettings() {
@@ -98,12 +98,12 @@ export function AccessibilitySettings() {
                 <Palette size={16} />
                 Theme Preference
               </Label>
-              <Select value={settings.theme} onValueChange={(value: Theme) => updateTheme(value)}>
+              <Select value={settings?.theme || 'system'} onValueChange={(value: Theme) => updateTheme(value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue>
                     <div className="flex items-center gap-2">
-                      {themeIcons[settings.theme]}
-                      <span className="capitalize">{settings.theme}</span>
+                      {themeIcons[settings?.theme || 'system']}
+                      <span className="capitalize">{settings?.theme || 'system'}</span>
                     </div>
                   </SelectValue>
                 </SelectTrigger>
@@ -133,13 +133,13 @@ export function AccessibilitySettings() {
             {/* Font Size */}
             <motion.div variants={itemVariants} className="space-y-3">
               <Label className="text-sm font-medium flex items-center gap-2">
-                <Type size={16} />
+                <TextAa size={16} />
                 Font Size
               </Label>
-              <Select value={settings.fontSize} onValueChange={(value: FontSize) => updateFontSize(value)}>
+              <Select value={settings?.fontSize || 'medium'} onValueChange={(value: FontSize) => updateFontSize(value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue>
-                    {fontSizeLabels[settings.fontSize]}
+                    {fontSizeLabels[settings?.fontSize || 'medium']}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -159,12 +159,12 @@ export function AccessibilitySettings() {
                 Contrast Mode
               </Label>
               <Select 
-                value={settings.contrastMode} 
+                value={settings?.contrastMode || 'normal'} 
                 onValueChange={(value: ContrastMode) => updateContrastMode(value)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue>
-                    <span className="capitalize">{settings.contrastMode} Contrast</span>
+                    <span className="capitalize">{settings?.contrastMode || 'normal'} Contrast</span>
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -177,12 +177,12 @@ export function AccessibilitySettings() {
             {/* Reduced Motion */}
             <motion.div variants={itemVariants} className="flex items-center justify-between">
               <Label htmlFor="reduced-motion" className="text-sm font-medium flex items-center gap-2">
-                <Zap size={16} />
+                <Lightning size={16} />
                 Reduce Motion
               </Label>
               <Switch
                 id="reduced-motion"
-                checked={settings.reducedMotion}
+                checked={settings?.reducedMotion || false}
                 onCheckedChange={toggleReducedMotion}
               />
             </motion.div>

@@ -13,7 +13,7 @@ import { ReceiptScanner } from '@/components/ReceiptScanner';
 import { SmartCategorizer } from '@/components/SmartCategorizer';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Plus, Calendar, Tag, FileText, IndianRupee, PencilSimple, Scan } from '@phosphor-icons/react';
+import { Plus, Calendar, Tag, FileText, CurrencyInr, PencilSimple, Scan } from '@phosphor-icons/react';
 
 interface AddExpenseDialogProps {
   open: boolean;
@@ -160,7 +160,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             <Label htmlFor="amount" className="flex items-center gap-2 text-sm font-medium">
-              <IndianRupee className="w-4 h-4" />
+              <CurrencyInr className="w-4 h-4" />
               Amount *
             </Label>
             <div className="relative">
@@ -197,7 +197,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent className={isMobile ? 'max-h-[200px]' : ''}>
-                {categories.map((category) => (
+                {categories?.map((category) => (
                   <SelectItem key={category.id} value={category.name}>
                     <div className="flex items-center gap-3 py-1">
                       <div 
@@ -216,7 +216,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
               <SmartCategorizer
                 description={formData.description}
                 merchant={extractMerchant(formData.description)}
-                categories={categories}
+                categories={categories || []}
                 onCategorySelect={(category) => setFormData(prev => ({ ...prev, category }))}
                 selectedCategory={formData.category}
                 onLearningRecord={(category, aiSuggestion, confidence) => {

@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { formatCurrency, getMonthNameByNumber } from '@/lib/format';
-import { Download, Calendar, TrendingDown, TrendingUp, FileText, PiggyBank, Wallet, CreditCard } from '@phosphor-icons/react';
+import { Download, Calendar, ChartLineDown, ChartLineUp, FileText, PiggyBank, Wallet, CreditCard } from '@phosphor-icons/react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
@@ -44,9 +44,9 @@ export function Reports() {
     const cutoffDate = new Date();
     cutoffDate.setMonth(cutoffDate.getMonth() - months);
     
-    const filteredExpenses = expenses.filter(expense => 
+    const filteredExpenses = expenses?.filter(expense => 
       new Date(expense.date) >= cutoffDate
-    );
+    ) || [];
 
     // Category breakdown
     const categoryTotals = filteredExpenses.reduce((acc, expense) => {
@@ -77,15 +77,15 @@ export function Reports() {
       return {
         month: getMonthNameByNumber(date.getMonth() + 1),
         amount,
-        budget: monthlyBudget
+        budget: monthlyBudget || 0
       };
     });
 
     // Daily spending for current month
     const currentMonth = new Date().toISOString().slice(0, 7);
-    const currentMonthExpenses = expenses.filter(expense => 
+    const currentMonthExpenses = expenses?.filter(expense => 
       expense.date.startsWith(currentMonth)
-    );
+    ) || [];
 
     const dailyData = currentMonthExpenses.reduce((acc, expense) => {
       const day = expense.date.split('-')[2];
@@ -98,7 +98,7 @@ export function Reports() {
       .sort((a, b) => parseInt(a.day) - parseInt(b.day));
 
     const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-    const totalBudget = budgets.reduce((sum, budget) => sum + budget.limit, 0) * months;
+    const totalBudget = (budgets?.reduce((sum, budget) => sum + budget.limit, 0) || 0) * months;
     const budgetUtilization = totalBudget > 0 ? (totalExpenses / totalBudget) * 100 : 0;
 
     // Top categories
@@ -267,7 +267,7 @@ export function Reports() {
       });
       yPosition += 10;
 
-      const insights = [];
+      const insights: string[] = [];
       
       if (reportData.budgetUtilization > 90) {
         insights.push('⚠️ High budget utilization - Consider reviewing spending patterns');

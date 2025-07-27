@@ -44,7 +44,7 @@ export function MLInsightsSummary() {
   const [loading, setLoading] = useState(true);
 
   const generateSummary = useCallback(async () => {
-    if (expenses.length === 0 || budgets.length === 0) {
+    if (!expenses || expenses.length === 0 || !budgets || budgets.length === 0) {
       setLoading(false);
       return;
     }
@@ -83,7 +83,7 @@ export function MLInsightsSummary() {
         overspentCategories: categorySpending.filter(cat => cat.overspend).length
       };
 
-      const prompt = spark.llmPrompt`
+      const prompt = window.spark.llmPrompt`
 Analyze this financial data and provide a concise ML insights summary:
 
 Data: ${JSON.stringify(analysisData)}
@@ -117,7 +117,7 @@ Focus on:
 5. Savings opportunities
 `;
 
-      const response = await spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       let result;
       try {

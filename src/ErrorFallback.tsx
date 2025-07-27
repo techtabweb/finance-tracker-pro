@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RotateCcw, Home } from '@phosphor-icons/react';
+import { Warning, ArrowClockwise, House } from '@phosphor-icons/react';
 
 interface ErrorFallbackProps {
   error: Error;
@@ -19,7 +19,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
       <Card className="w-full max-w-md shadow-lg border-destructive/20">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <AlertTriangle className="h-6 w-6 text-destructive" />
+            <Warning className="h-6 w-6 text-destructive" />
           </div>
           <CardTitle className="text-lg">Something went wrong</CardTitle>
         </CardHeader>
@@ -34,7 +34,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
               size="sm"
               className="flex-1"
             >
-              <RotateCcw className="mr-2 h-4 w-4" />
+              <ArrowClockwise className="mr-2 h-4 w-4" />
               Try Again
             </Button>
             <Button
@@ -43,7 +43,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
               size="sm"
               className="flex-1"
             >
-              <Home className="mr-2 h-4 w-4" />
+              <House className="mr-2 h-4 w-4" />
               Reload
             </Button>
           </div>

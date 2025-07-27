@@ -10,21 +10,21 @@ import { useFinanceData } from '@/hooks/use-finance-data';
 import { formatCurrency } from '@/lib/format';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  TrendingUp, 
-  TrendingDown, 
+  ChartLineUp, 
+  ChartLineDown, 
   Minus, 
-  RefreshCw, 
-  AlertTriangle, 
+  ArrowClockwise, 
+  Warning, 
   Brain,
   Calendar,
   Target,
   Activity,
   Clock,
   Lightbulb,
-  BarChart3,
+  ChartBar,
   Shield,
-  Zap
-} from 'lucide-react';
+  Lightning
+} from '@phosphor-icons/react';
 
 export function ExpensePredictions() {
   const { predictions, isAnalyzing, error, generatePredictions, refreshPredictions, hasEnoughData } = useExpensePrediction();

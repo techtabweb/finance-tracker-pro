@@ -5,7 +5,7 @@ import { CategoryLearningInsights } from '@/components/CategoryLearningInsights'
 import { formatCurrency } from '@/lib/format';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, BarChart3, PieChart as PieChartIcon } from '@phosphor-icons/react';
+import { ChartLineUp, ChartLineDown, ChartBar, ChartPie as ChartPieIcon } from '@phosphor-icons/react';
 
 export function Analytics() {
   const { expenses, categories, getCurrentMonthExpenses } = useFinanceData();
@@ -14,7 +14,7 @@ export function Analytics() {
   const currentMonthExpenses = getCurrentMonthExpenses();
 
   // Category breakdown for pie chart
-  const categoryData = categories.map(category => {
+  const categoryData = categories?.map(category => {
     const categoryExpenses = currentMonthExpenses.filter(expense => expense.category === category.name);
     const total = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     return {
@@ -22,7 +22,7 @@ export function Analytics() {
       value: total,
       color: category.color,
     };
-  }).filter(item => item.value > 0);
+  }).filter(item => item.value > 0) || [];
 
   // Monthly trend data (last 6 months)
   const monthlyData = [];
@@ -30,7 +30,7 @@ export function Analytics() {
     const date = new Date();
     date.setMonth(date.getMonth() - i);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-    const monthExpenses = expenses.filter(expense => expense.date.startsWith(monthKey));
+    const monthExpenses = expenses?.filter(expense => expense.date.startsWith(monthKey)) || [];
     const total = monthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     
     monthlyData.push({

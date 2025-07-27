@@ -89,7 +89,7 @@ export function SmartSpendingAlerts() {
         totalDaysInMonth: endOfMonth.getDate()
       };
 
-      const prompt = spark.llmPrompt`
+      const prompt = window.spark.llmPrompt`
 Analyze the following financial data and generate smart spending alerts and predictions:
 
 Data: ${JSON.stringify(analysisData)}
@@ -133,7 +133,7 @@ Focus on:
 5. Daily spending limits to stay on track
 `;
 
-      const response = await spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       let result;
       try {

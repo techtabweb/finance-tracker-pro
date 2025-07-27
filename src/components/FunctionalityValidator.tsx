@@ -126,9 +126,9 @@ export function FunctionalityValidator() {
 
     // Test 6: AI Services (non-blocking)
     try {
-      const testPrompt = spark.llmPrompt`Test connection - respond with 'OK'`;
+      const testPrompt = window.spark.llmPrompt`Test connection - respond with 'OK'`;
       const response = await Promise.race([
-        spark.llm(testPrompt, 'gpt-4o-mini'),
+        window.spark.llm(testPrompt, 'gpt-4o-mini'),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
       ]);
       

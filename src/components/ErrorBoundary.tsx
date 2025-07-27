@@ -2,7 +2,7 @@ import React from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, RotateCcw, Home } from '@phosphor-icons/react';
+import { Warning, ArrowClockwise, House } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
 
 interface ErrorFallbackProps {
@@ -22,7 +22,7 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
         <Card className="shadow-xl border-destructive/20 bg-card/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-4">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-              <AlertTriangle className="h-6 w-6 text-destructive" />
+              <Warning className="h-6 w-6 text-destructive" />
             </div>
             <CardTitle className="text-lg font-semibold text-foreground">
               Something went wrong
@@ -51,7 +51,7 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
                 size="sm"
                 className="flex-1"
               >
-                <RotateCcw className="mr-2 h-4 w-4" />
+                <ArrowClockwise className="mr-2 h-4 w-4" />
                 Try again
               </Button>
               <Button
@@ -60,7 +60,7 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
                 size="sm"
                 className="flex-1"
               >
-                <Home className="mr-2 h-4 w-4" />
+                <House className="mr-2 h-4 w-4" />
                 Home
               </Button>
             </div>

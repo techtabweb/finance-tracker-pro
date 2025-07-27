@@ -94,7 +94,7 @@ export function SmartCategorizer({
       // Use Spark LLM for categorization
       const categoryNames = categories.map(cat => cat.name);
       
-      const prompt = spark.llmPrompt`You are an AI assistant specialized in categorizing Indian expenses and transactions. Analyze the following expense details and suggest the most appropriate categories.
+      const prompt = window.spark.llmPrompt`You are an AI assistant specialized in categorizing Indian expenses and transactions. Analyze the following expense details and suggest the most appropriate categories.
 
 Expense Details:
 - Description: "${description}"
@@ -125,7 +125,7 @@ Return a JSON array with up to 3 suggestions, ordered by confidence:
 
 Focus on accuracy and relevance to Indian context.`;
 
-      const response = await spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       let suggestions;
       try {

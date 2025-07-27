@@ -79,7 +79,7 @@ export function useExpensePrediction() {
   };
 
   const generatePredictions = useCallback(async () => {
-    if (expenses.length < 5) {
+    if (!expenses || expenses.length < 5) {
       setError('Need at least 5 expenses for meaningful predictions');
       return;
     }
@@ -106,7 +106,7 @@ export function useExpensePrediction() {
         }))
       };
 
-      const prompt = spark.llmPrompt`You are a financial AI assistant specializing in Indian spending patterns. Analyze the expense data and provide predictions.
+      const prompt = window.spark.llmPrompt`You are a financial AI assistant specializing in Indian spending patterns. Analyze the expense data and provide predictions.
 
 Historical Data: ${JSON.stringify(analysisData, null, 2)}
 
@@ -150,7 +150,7 @@ Requirements:
 - Risk levels: low, medium, high
 - Trends: increasing, decreasing, stable`;
 
-      const response = await spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(prompt, 'gpt-4o', true);
 
       // Handle empty or invalid response
       if (!response || response.trim() === '') {
@@ -222,10 +222,10 @@ Requirements:
       : 7; // Force analysis if no previous analysis
 
     // Re-analyze if it's been more than 3 days or we have significant new data
-    if (daysSinceLastAnalysis >= 3 && expenses.length >= 10) {
+    if (daysSinceLastAnalysis >= 3 && expenses && expenses.length >= 10) {
       generatePredictions();
     }
-  }, [expenses.length, generatePredictions, predictions]);
+  }, [expenses?.length, generatePredictions, predictions]);
 
   const getPredictionForCategory = (category: string): ExpensePrediction | null => {
     return predictions?.categoryPredictions.find(p => p.category === category) || null;
@@ -256,6 +256,6 @@ Requirements:
     getPredictionForCategory,
     getUpcomingExpenseAlerts,
     refreshPredictions,
-    hasEnoughData: expenses.length >= 5
+    hasEnoughData: (expenses?.length || 0) >= 5
   };
 }

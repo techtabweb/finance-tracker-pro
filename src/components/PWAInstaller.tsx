@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, Smartphone, Monitor, Wifi, WifiOff, RefreshCw, Share2, Bell } from '@phosphor-icons/react';
+import { Download, DeviceMobile, Monitor, WifiHigh, WifiX, ArrowClockwise, Share, Bell } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
