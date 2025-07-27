@@ -215,9 +215,9 @@ Ask me anything about your finances! 💰`,
     }, {} as Record<string, number>) || {};
 
     const topCategories = Object.entries(allTimeCategories)
-      .sort(([, a], [, b]) => Number(b) - Number(a))
+      .sort(([, a], [, b]: [string, number]) => Number(b) - Number(a))
       .slice(0, 5)
-      .map(([category, amount]) => ({ category, amount: Number(amount) || 0 }));
+      .map(([category, amount]: [string, number]) => ({ category, amount: Number(amount) || 0 }));
 
     return {
       currentMonth,

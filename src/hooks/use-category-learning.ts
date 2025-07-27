@@ -47,7 +47,7 @@ export function useCategoryLearning() {
 
     const insights: LearningInsight[] = [];
 
-    Object.entries(categoryGroups).forEach(([category, patterns]) => {
+    Object.entries(categoryGroups).forEach(([category, patterns]: [string, CategoryLearningPattern[]]) => {
       let score = 0;
       let matchCount = 0;
       const matchedKeywords = new Set<string>();
@@ -148,9 +148,9 @@ export function useCategoryLearning() {
 
     const insights: Array<{category: string, merchant: string, frequency: number}> = [];
     
-    Object.entries(merchantsByCategory).forEach(([category, merchants]) => {
+    Object.entries(merchantsByCategory).forEach(([category, merchants]: [string, Record<string, number>]) => {
       const topMerchant = Object.entries(merchants)
-        .sort(([, a], [, b]) => Number(b) - Number(a))[0];
+        .sort(([, a], [, b]: [string, number]) => Number(b) - Number(a))[0];
       
       if (topMerchant && Number(topMerchant[1]) > 1) {
         insights.push({

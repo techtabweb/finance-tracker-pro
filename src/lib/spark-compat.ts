@@ -26,7 +26,6 @@ declare global {
   interface Window {
     spark: SparkLLM;
   }
-  const spark: SparkLLM;
 }
 
 // Mock storage for development
@@ -80,7 +79,7 @@ if (typeof window !== 'undefined' && !window.spark) {
 }
 
 // Make spark globally available
-if (typeof globalThis !== 'undefined') {
+if (typeof globalThis !== 'undefined' && !(globalThis as any).spark) {
   (globalThis as any).spark = window.spark;
 }
 
