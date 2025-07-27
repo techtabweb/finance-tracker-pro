@@ -18,7 +18,7 @@ import {
   Brain,
   Calendar,
   Target,
-  Activity,
+  TrendUp,
   Clock,
   Lightbulb,
   ChartBar,
@@ -45,7 +45,7 @@ export function ExpensePredictions() {
       case 'increasing': return <ChartLineUp className="h-4 w-4 text-red-500" />;
       case 'decreasing': return <ChartLineDown className="h-4 w-4 text-green-500" />;
       case 'stable': return <Minus className="h-4 w-4 text-blue-500" />;
-      default: return <Activity className="h-4 w-4 text-gray-500" />;
+      default: return <TrendUp className="h-4 w-4 text-gray-500" />;
     }
   };
 

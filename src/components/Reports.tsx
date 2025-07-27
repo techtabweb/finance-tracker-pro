@@ -54,7 +54,7 @@ export function Reports() {
       return acc;
     }, {} as Record<string, number>);
 
-    const categoryBreakdown = Object.entries(categoryTotals)
+    const categoryBreakdown: Array<{ name: string; value: number; color: string }> = Object.entries(categoryTotals)
       .map(([name, value], index) => ({
         name,
         value: Number(value) || 0,
@@ -93,7 +93,7 @@ export function Reports() {
       return acc;
     }, {} as Record<string, number>);
 
-    const dailySpending = Object.entries(dailyData)
+    const dailySpending: Array<{ day: string; amount: number }> = Object.entries(dailyData)
       .map(([day, amount]) => ({ day: `${day}`, amount: typeof amount === 'number' ? amount : 0 }))
       .sort((a, b) => parseInt(a.day) - parseInt(b.day));
 
@@ -102,7 +102,7 @@ export function Reports() {
     const budgetUtilization = totalBudget > 0 ? (totalExpenses / totalBudget) * 100 : 0;
 
     // Top categories
-    const topCategories = categoryBreakdown.slice(0, 5).map(cat => ({
+    const topCategories: Array<{ category: string; amount: number; percentage: number }> = categoryBreakdown.slice(0, 5).map(cat => ({
       category: cat.name,
       amount: Number(cat.value) || 0,
       percentage: totalExpenses > 0 ? (Number(cat.value) / totalExpenses) * 100 : 0

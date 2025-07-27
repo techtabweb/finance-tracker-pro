@@ -226,7 +226,7 @@ export function FunctionalityValidator() {
   // Auto-run tests on mount only if explicitly requested
   useEffect(() => {
     // Only run automatically in development if there's a URL parameter requesting it
-    const shouldAutoRun = process.env.NODE_ENV === 'development' && 
+    const shouldAutoRun = import.meta.env.DEV && 
       (window.location.search.includes('debug=true') || window.location.search.includes('test=true'));
     
     if (shouldAutoRun) {

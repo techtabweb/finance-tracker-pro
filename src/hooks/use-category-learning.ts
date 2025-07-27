@@ -152,7 +152,7 @@ export function useCategoryLearning() {
     
     Object.entries(merchantsByCategory).forEach(([category, merchants]) => {
       const topMerchant = Object.entries(merchants)
-        .sort(([, a], [, b]) => Number(b) - Number(a))[0];
+        .sort(([, a], [, b]: [string, number]) => Number(b) - Number(a))[0];
       
       if (topMerchant && Number(topMerchant[1]) > 1) {
         insights.push({

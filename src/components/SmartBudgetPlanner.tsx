@@ -212,7 +212,7 @@ export function SmartBudgetPlanner() {
   };
 
   const applyScenario = (scenario: BudgetScenario) => {
-    Object.entries(scenario.categoryAllocations).forEach(([category, amount]) => {
+    Object.entries(scenario.categoryAllocations).forEach(([category, amount]: [string, number]) => {
       setBudget(category, amount);
     });
     toast.success(`Applied ${scenario.name} budget scenario`);
@@ -432,7 +432,7 @@ export function SmartBudgetPlanner() {
 
                     <div className="space-y-2">
                       <div className="text-sm font-medium text-gray-700">Category Allocation:</div>
-                      {Object.entries(scenario.categoryAllocations).map(([category, amount]) => (
+                      {Object.entries(scenario.categoryAllocations).map(([category, amount]: [string, number]) => (
                         <div key={category} className="flex justify-between items-center text-sm">
                           <span className="text-gray-600">{category}</span>
                           <span className="font-medium">₹{formatCurrency(amount)}</span>

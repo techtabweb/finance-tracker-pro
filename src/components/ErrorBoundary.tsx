@@ -33,7 +33,7 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
               <p className="text-sm text-muted-foreground text-center">
                 An unexpected error occurred while loading this section.
               </p>
-              {process.env.NODE_ENV === 'development' && (
+              {import.meta.env.DEV && (
                 <details className="mt-2">
                   <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
                     Error details (dev only)
@@ -82,7 +82,7 @@ export function ErrorBoundary({ children, fallback: Fallback = ErrorFallback }: 
       FallbackComponent={Fallback}
       onError={(error, errorInfo) => {
         // Log error for debugging in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.error('Error Boundary caught an error:', error, errorInfo);
         }
       }}
