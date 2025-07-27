@@ -1,7 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
 import { useFinanceData } from '@/hooks/use-finance-data';
-import { useAuth } from '@/hooks/use-auth';
 import { Overview } from '@/components/Overview';
 import { ExpensesList } from '@/components/ExpensesList';
 import { BudgetsList } from '@/components/BudgetsList';
@@ -10,26 +9,14 @@ import { SavingsGoals } from '@/components/SavingsGoals';
 import { Reports } from '@/components/Reports';
 import { Wellness } from '@/components/Wellness';
 import { Learning } from '@/components/Learning';
-import { AuthScreen } from '@/components/AuthScreen';
 import { UserProfile } from '@/components/UserProfile';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
-  const { user, isAuthenticated } = useAuth();
   const { activeTab, setActiveTab } = useFinanceData();
   const isMobile = useIsMobile();
-
-  // Show auth screen if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <>
-        <AuthScreen />
-        <Toaster position="top-center" richColors closeButton />
-      </>
-    );
-  }
 
   const tabs = [
     { value: 'overview', label: 'Overview', icon: '📊', emoji: '💰', shortLabel: 'Home' },
@@ -95,8 +82,8 @@ function App() {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <div className="text-center">
-                  <div className="text-xs text-gray-500">Welcome back</div>
-                  <div className="font-medium text-gray-700">{user?.name}</div>
+                  <div className="text-xs text-gray-500">Welcome to</div>
+                  <div className="font-medium text-gray-700">Finance Tracker</div>
                 </div>
               </motion.div>
             )}

@@ -4,74 +4,103 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Briefcase, 
+  Settings, 
+  Bell, 
+  Palette, 
+  Moon, 
+  Sun, 
+  Monitor,
   IndianRupee, 
   Edit3, 
   Save, 
   X, 
-  LogOut, 
-  Trash2,
-  Calendar,
-  Shield
+  Globe,
+  Calculator,
+  Database,
+  Download,
+  Upload,
+  Calendar
 } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
 import { useFinanceData } from '@/hooks/use-finance-data';
+import { useKV } from '@github/spark/hooks';
 import { toast } from 'sonner';
 
 export const UserProfile = () => {
-  const { user, logout, updateProfile, deleteAccount } = useAuth();
   const { expenses, budgets, savingsGoals } = useFinanceData();
+  const [userSettings, setUserSettings] = useKV('user-settings', {
+    currency: 'INR',
+    language: 'en',
+    notifications: {
+      budgetAlerts: true,
+      goalReminders: true,
+      weeklyReports: true,
+      expenseAlerts: true
+    },
+    preferences: {
+      defaultCategory: 'General',
+      budgetPeriod: 'monthly',
+      theme: 'system'
+    }
+  });
+  
   const [isEditing, setIsEditing] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    phone: user?.profile?.phone || '',
-    location: user?.profile?.location || '',
-    occupation: user?.profile?.occupation || '',
-    monthlyIncome: user?.profile?.monthlyIncome || ''
+    currency: userSettings.currency,
+    language: userSettings.language,
+    defaultCategory: userSettings.preferences.defaultCategory,
+    budgetPeriod: userSettings.preferences.budgetPeriod,
+    theme: userSettings.preferences.theme
   });
 
-  if (!user) return null;
-
-  const handleSaveProfile = async () => {
-    const result = await updateProfile({
-      phone: formData.phone,
-      location: formData.location,
-      occupation: formData.occupation,
-      monthlyIncome: formData.monthlyIncome ? Number(formData.monthlyIncome) : undefined
+  const handleSaveSettings = async () => {
+    setUserSettings({
+      ...userSettings,
+      currency: formData.currency,
+      language: formData.language,
+      preferences: {
+        ...userSettings.preferences,
+        defaultCategory: formData.defaultCategory,
+        budgetPeriod: formData.budgetPeriod,
+        theme: formData.theme
+      }
     });
-
-    if (result.success) {
-      setIsEditing(false);
-    }
+    setIsEditing(false);
+    toast.success('Settings saved successfully! ✨');
   };
 
-  const handleDeleteAccount = async () => {
-    const result = await deleteAccount();
-    if (result.success) {
-      setShowDeleteConfirm(false);
-    }
-  };
-
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  const handleNotificationChange = (key: string, value: boolean) => {
+    setUserSettings({
+      ...userSettings,
+      notifications: {
+        ...userSettings.notifications,
+        [key]: value
+      }
     });
+  };
+
+  const exportData = () => {
+    const data = {
+      expenses,
+      budgets,
+      savingsGoals,
+      settings: userSettings,
+      exportDate: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `finance-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Data exported successfully! 📁');
   };
 
   return (
@@ -84,42 +113,15 @@ export const UserProfile = () => {
       >
         <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Avatar className="w-16 h-16 border-2 border-white/30">
-                  <AvatarImage src={user.profile?.avatar} />
-                  <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
-                    {getInitials(user.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h1 className="text-2xl font-bold">{user.name}</h1>
-                  <p className="text-white/80 flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    {user.email}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-white/80 text-sm">
-                      Member since {formatDate(user.createdAt)}
-                    </span>
-                  </div>
-                </div>
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <Settings className="w-8 h-8 text-white" />
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                  <Shield className="w-3 h-3 mr-1" />
-                  Verified
-                </Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={logout}
-                  className="border-white/30 text-white hover:bg-white/10"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
+              <div>
+                <h1 className="text-2xl font-bold">Settings & Preferences</h1>
+                <p className="text-white/80">
+                  Customize your Finance Tracker experience
+                </p>
               </div>
             </div>
           </CardContent>
@@ -127,7 +129,7 @@ export const UserProfile = () => {
       </motion.div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Profile Information */}
+        {/* Application Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -138,11 +140,11 @@ export const UserProfile = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <User className="w-5 h-5" />
-                    Profile Information
+                    <Settings className="w-5 h-5" />
+                    Application Settings
                   </CardTitle>
                   <CardDescription>
-                    Manage your personal information and preferences
+                    Configure your app preferences
                   </CardDescription>
                 </div>
                 <Button
@@ -151,11 +153,11 @@ export const UserProfile = () => {
                   onClick={() => {
                     if (isEditing) {
                       setFormData({
-                        name: user.name,
-                        phone: user.profile?.phone || '',
-                        location: user.profile?.location || '',
-                        occupation: user.profile?.occupation || '',
-                        monthlyIncome: user.profile?.monthlyIncome?.toString() || ''
+                        currency: userSettings.currency,
+                        language: userSettings.language,
+                        defaultCategory: userSettings.preferences.defaultCategory,
+                        budgetPeriod: userSettings.preferences.budgetPeriod,
+                        theme: userSettings.preferences.theme
                       });
                     }
                     setIsEditing(!isEditing);
@@ -179,137 +181,194 @@ export const UserProfile = () => {
               {isEditing ? (
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      disabled
-                      className="bg-gray-50"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Name cannot be changed</p>
+                    <Label htmlFor="currency">Currency</Label>
+                    <Select value={formData.currency} onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="INR">Indian Rupee (₹)</SelectItem>
+                        <SelectItem value="USD">US Dollar ($)</SelectItem>
+                        <SelectItem value="EUR">Euro (€)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      placeholder="+91 XXXXX XXXXX"
-                      value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    />
+                    <Label htmlFor="language">Language</Label>
+                    <Select value={formData.language} onValueChange={(value) => setFormData(prev => ({ ...prev, language: value }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="hi">Hindi</SelectItem>
+                        <SelectItem value="ta">Tamil</SelectItem>
+                        <SelectItem value="te">Telugu</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      placeholder="City, State"
-                      value={formData.location}
-                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                    />
+                    <Label htmlFor="defaultCategory">Default Expense Category</Label>
+                    <Select value={formData.defaultCategory} onValueChange={(value) => setFormData(prev => ({ ...prev, defaultCategory: value }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Food">Food & Dining</SelectItem>
+                        <SelectItem value="Transport">Transportation</SelectItem>
+                        <SelectItem value="Shopping">Shopping</SelectItem>
+                        <SelectItem value="Entertainment">Entertainment</SelectItem>
+                        <SelectItem value="Bills">Bills & Utilities</SelectItem>
+                        <SelectItem value="General">General</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
-                    <Label htmlFor="occupation">Occupation</Label>
-                    <Input
-                      id="occupation"
-                      placeholder="Your profession"
-                      value={formData.occupation}
-                      onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
-                    />
+                    <Label htmlFor="budgetPeriod">Default Budget Period</Label>
+                    <Select value={formData.budgetPeriod} onValueChange={(value) => setFormData(prev => ({ ...prev, budgetPeriod: value }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="quarterly">Quarterly</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
-                    <Label htmlFor="income">Monthly Income (₹)</Label>
-                    <Input
-                      id="income"
-                      type="number"
-                      placeholder="50000"
-                      value={formData.monthlyIncome}
-                      onChange={(e) => setFormData(prev => ({ ...prev, monthlyIncome: e.target.value }))}
-                    />
+                    <Label htmlFor="theme">Theme Preference</Label>
+                    <Select value={formData.theme} onValueChange={(value) => setFormData(prev => ({ ...prev, theme: value }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Light</SelectItem>
+                        <SelectItem value="dark">Dark</SelectItem>
+                        <SelectItem value="system">System</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
-                  <Button onClick={handleSaveProfile} className="w-full">
+                  <Button onClick={handleSaveSettings} className="w-full">
                     <Save className="w-4 h-4 mr-2" />
-                    Save Changes
+                    Save Settings
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Mail className="w-5 h-5 text-gray-500" />
+                    <IndianRupee className="w-5 h-5 text-gray-500" />
                     <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium">{user.email}</p>
+                      <p className="text-sm text-gray-500">Currency</p>
+                      <p className="font-medium">{userSettings.currency} - {userSettings.currency === 'INR' ? 'Indian Rupee (₹)' : userSettings.currency === 'USD' ? 'US Dollar ($)' : 'Euro (€)'}</p>
                     </div>
                   </div>
 
-                  {user.profile?.phone && (
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Phone className="w-5 h-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Phone</p>
-                        <p className="font-medium">{user.profile.phone}</p>
-                      </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Globe className="w-5 h-5 text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Language</p>
+                      <p className="font-medium">{userSettings.language === 'en' ? 'English' : userSettings.language === 'hi' ? 'Hindi' : userSettings.language === 'ta' ? 'Tamil' : 'Telugu'}</p>
                     </div>
-                  )}
+                  </div>
 
-                  {user.profile?.location && (
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <MapPin className="w-5 h-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Location</p>
-                        <p className="font-medium">{user.profile.location}</p>
-                      </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Calculator className="w-5 h-5 text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Default Category</p>
+                      <p className="font-medium">{userSettings.preferences.defaultCategory}</p>
                     </div>
-                  )}
+                  </div>
 
-                  {user.profile?.occupation && (
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Briefcase className="w-5 h-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Occupation</p>
-                        <p className="font-medium">{user.profile.occupation}</p>
-                      </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Calendar className="w-5 h-5 text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Budget Period</p>
+                      <p className="font-medium capitalize">{userSettings.preferences.budgetPeriod}</p>
                     </div>
-                  )}
-
-                  {user.profile?.monthlyIncome && (
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <IndianRupee className="w-5 h-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Monthly Income</p>
-                        <p className="font-medium">₹{user.profile.monthlyIncome.toLocaleString('en-IN')}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {!user.profile?.phone && !user.profile?.location && !user.profile?.occupation && !user.profile?.monthlyIncome && (
-                    <div className="text-center py-8 text-gray-500">
-                      <User className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      <p>Complete your profile to get personalized insights</p>
-                    </div>
-                  )}
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Account Settings */}
+        {/* Notifications & Data */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="space-y-6"
         >
-          {/* Account Stats */}
+          {/* Notifications */}
           <Card>
             <CardHeader>
-              <CardTitle>Account Overview</CardTitle>
-              <CardDescription>Your Finance Tracker journey</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="w-5 h-5" />
+                Notifications
+              </CardTitle>
+              <CardDescription>Manage your notification preferences</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Budget Alerts</p>
+                  <p className="text-sm text-gray-500">Get notified when you're close to budget limits</p>
+                </div>
+                <Switch
+                  checked={userSettings.notifications.budgetAlerts}
+                  onCheckedChange={(checked) => handleNotificationChange('budgetAlerts', checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Goal Reminders</p>
+                  <p className="text-sm text-gray-500">Reminders about your savings goals</p>
+                </div>
+                <Switch
+                  checked={userSettings.notifications.goalReminders}
+                  onCheckedChange={(checked) => handleNotificationChange('goalReminders', checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Weekly Reports</p>
+                  <p className="text-sm text-gray-500">Get weekly spending summaries</p>
+                </div>
+                <Switch
+                  checked={userSettings.notifications.weeklyReports}
+                  onCheckedChange={(checked) => handleNotificationChange('weeklyReports', checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Expense Alerts</p>
+                  <p className="text-sm text-gray-500">Notifications for large transactions</p>
+                </div>
+                <Switch
+                  checked={userSettings.notifications.expenseAlerts}
+                  onCheckedChange={(checked) => handleNotificationChange('expenseAlerts', checked)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Data Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="w-5 h-5" />
+                Data Management
+              </CardTitle>
+              <CardDescription>Backup and manage your financial data</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -321,66 +380,18 @@ export const UserProfile = () => {
                   <div className="text-2xl font-bold text-green-600">{budgets.length}</div>
                   <div className="text-sm text-gray-600">Active Budgets</div>
                 </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">{savingsGoals.length}</div>
-                  <div className="text-sm text-gray-600">Savings Goals</div>
-                </div>
-                <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                  <div className="text-2xl font-bold text-yellow-600">
-                    {new Date(user?.createdAt || '').getDate()}
-                  </div>
-                  <div className="text-sm text-gray-600">Days Active</div>
-                </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Danger Zone */}
-          <Card className="border-red-200">
-            <CardHeader>
-              <CardTitle className="text-red-700 flex items-center gap-2">
-                <Trash2 className="w-5 h-5" />
-                Danger Zone
-              </CardTitle>
-              <CardDescription>
-                Irreversible and destructive actions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {!showDeleteConfirm ? (
-                <Button
-                  variant="destructive"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Account
+              <div className="space-y-2">
+                <Button onClick={exportData} className="w-full" variant="outline">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Data
                 </Button>
-              ) : (
-                <div className="space-y-4">
-                  <Alert className="border-red-200 bg-red-50">
-                    <AlertDescription className="text-red-700">
-                      <strong>Warning:</strong> This action cannot be undone. All your data will be permanently deleted.
-                    </AlertDescription>
-                  </Alert>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="destructive"
-                      onClick={handleDeleteAccount}
-                      className="flex-1"
-                    >
-                      Yes, Delete My Account
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              )}
+                <Button className="w-full" variant="outline" disabled>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import Data (Coming Soon)
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

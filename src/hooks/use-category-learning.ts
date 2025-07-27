@@ -1,14 +1,9 @@
 import { useKV } from '@github/spark/hooks';
 import { CategoryLearningPattern, LearningInsight } from '@/lib/types';
-import { useAuth } from './use-auth';
 
 export function useCategoryLearning() {
-  const { user } = useAuth();
-  
-  // Create user-specific keys for data isolation
-  const getUserKey = (key: string) => user ? `user_${user.id}_${key}` : `guest_${key}`;
-  
-  const [learningPatterns, setLearningPatterns] = useKV<CategoryLearningPattern[]>(getUserKey('category-learning-patterns'), []);
+  // Use simple keys without user isolation since we removed auth
+  const [learningPatterns, setLearningPatterns] = useKV<CategoryLearningPattern[]>('category-learning-patterns', []);
 
   // Record a user correction when they manually change a category
   const recordCategoryCorrection = (

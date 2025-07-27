@@ -3,14 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Sparkles, TrendingUp, Target, Receipt, BarChart3 } from 'lucide-react';
 import { useFinanceData } from '@/hooks/use-finance-data';
-import { useAuth } from '@/hooks/use-auth';
 
 interface WelcomeGuideProps {
   onGetStarted: () => void;
 }
 
 export const WelcomeGuide = ({ onGetStarted }: WelcomeGuideProps) => {
-  const { user } = useAuth();
   const { setActiveTab } = useFinanceData();
 
   const features = [
@@ -40,7 +38,7 @@ export const WelcomeGuide = ({ onGetStarted }: WelcomeGuideProps) => {
     }
   ];
 
-  const firstName = user?.name?.split(' ')[0] || 'there';
+  const firstName = 'there'; // Generic greeting since we removed auth
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

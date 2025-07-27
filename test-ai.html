@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Test</title>
+</head>
+<body>
+    <h1>Testing AI Integration</h1>
+    <button onclick="testAI()">Test AI</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAI() {
+            try {
+                if (window.spark && window.spark.llm) {
+                    const prompt = window.spark.llmPrompt`What is 2+2?`;
+                    const result = await window.spark.llm(prompt, 'gpt-4o-mini');
+                    document.getElementById('result').innerHTML = `AI Result: ${result}`;
+                } else {
+                    document.getElementById('result').innerHTML = 'Spark AI not available';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

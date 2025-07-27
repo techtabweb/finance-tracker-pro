@@ -2,19 +2,14 @@ import { useKV } from '@github/spark/hooks';
 import { useState } from 'react';
 import { Expense, Budget, Category, SavingsGoal, DEFAULT_CATEGORIES } from '@/lib/types';
 import { getCurrentMonth } from '@/lib/format';
-import { useAuth } from './use-auth';
 
 export function useFinanceData() {
-  const { user } = useAuth();
-  
-  // Create user-specific keys for data isolation
-  const getUserKey = (key: string) => user ? `user_${user.id}_${key}` : `guest_${key}`;
-  
-  const [expenses, setExpenses] = useKV<Expense[]>(getUserKey('expenses'), []);
-  const [budgets, setBudgets] = useKV<Budget[]>(getUserKey('budgets'), []);
-  const [categories, setCategories] = useKV<Category[]>(getUserKey('categories'), DEFAULT_CATEGORIES);
-  const [savingsGoals, setSavingsGoals] = useKV<SavingsGoal[]>(getUserKey('savings-goals'), []);
-  const [monthlyBudget, setMonthlyBudget] = useKV<number>(getUserKey('monthly-budget'), 0);
+  // Use simple keys without user isolation since we removed auth
+  const [expenses, setExpenses] = useKV<Expense[]>('expenses', []);
+  const [budgets, setBudgets] = useKV<Budget[]>('budgets', []);
+  const [categories, setCategories] = useKV<Category[]>('categories', DEFAULT_CATEGORIES);
+  const [savingsGoals, setSavingsGoals] = useKV<SavingsGoal[]>('savings-goals', []);
+  const [monthlyBudget, setMonthlyBudget] = useKV<number>('monthly-budget', 0);
   const [activeTab, setActiveTab] = useState<'overview' | 'expenses' | 'budgets' | 'analytics' | 'goals' | 'wellness' | 'learning' | 'reports' | 'profile'>('overview');
 
   const addExpense = (expense: Omit<Expense, 'id'>) => {
