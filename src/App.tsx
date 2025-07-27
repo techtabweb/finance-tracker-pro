@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useTheme } from '@/hooks/use-theme';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -19,12 +22,12 @@ import { SystemValidator } from '@/components/SystemValidator';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect } from 'react';
 
 function App() {
   const { activeTab, setActiveTab } = useFinanceData();
   const { applyTheme, settings } = useTheme();
   const isMobile = useIsMobile();
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   // Apply theme on mount and when settings change
   useEffect(() => {
@@ -32,22 +35,37 @@ function App() {
   }, [settings, applyTheme]);
 
   const tabs = [
-    { value: 'overview', label: 'Overview', icon: '📊', emoji: '💰', shortLabel: 'Home' },
-    { value: 'expenses', label: 'Expenses', icon: '🧾', emoji: '💸', shortLabel: 'Expenses' },
-    { value: 'budgets', label: 'Budgets', icon: '💰', emoji: '🎯', shortLabel: 'Budget' },
-    { value: 'goals', label: 'Goals', icon: '🎯', emoji: '💎', shortLabel: 'Goals' },
-    { value: 'wellness', label: 'Wellness', icon: '❤️', emoji: '💯', shortLabel: 'Health' },
-    { value: 'learning', label: 'Learning', icon: '🧠', emoji: '✨', shortLabel: 'Learn' },
-    { value: 'insights', label: 'ML Insights', icon: '🤖', emoji: '🔮', shortLabel: 'AI' },
-    { value: 'predictions', label: 'Predictions', icon: '🔮', emoji: '🚀', shortLabel: 'Predict' },
-    { value: 'analytics', label: 'Analytics', icon: '📈', emoji: '🔍', shortLabel: 'Charts' },
-    { value: 'reports', label: 'Reports', icon: '📄', emoji: '📋', shortLabel: 'Reports' },
-    { value: 'chat', label: 'AI Chat', icon: '💬', emoji: '🤖', shortLabel: 'Chat' },
-    { value: 'validator', label: 'System Check', icon: '🔧', emoji: '🛠️', shortLabel: 'Check' },
-    { value: 'profile', label: 'Profile', icon: '👤', emoji: '⚙️', shortLabel: 'Profile' }
+    // Core functionality
+    { value: 'overview', label: 'Overview', icon: '📊', emoji: '💰', shortLabel: 'Home', category: 'core' },
+    { value: 'expenses', label: 'Expenses', icon: '🧾', emoji: '💸', shortLabel: 'Expenses', category: 'core' },
+    { value: 'budgets', label: 'Budgets', icon: '💰', emoji: '🎯', shortLabel: 'Budget', category: 'core' },
+    { value: 'analytics', label: 'Analytics', icon: '📈', emoji: '🔍', shortLabel: 'Charts', category: 'core' },
+    
+    // Goals & Planning
+    { value: 'goals', label: 'Goals', icon: '🎯', emoji: '💎', shortLabel: 'Goals', category: 'planning' },
+    { value: 'predictions', label: 'Predictions', icon: '🔮', emoji: '🚀', shortLabel: 'Predict', category: 'planning' },
+    { value: 'reports', label: 'Reports', icon: '📄', emoji: '📋', shortLabel: 'Reports', category: 'planning' },
+    
+    // AI & Intelligence
+    { value: 'chat', label: 'AI Chat', icon: '💬', emoji: '🤖', shortLabel: 'Chat', category: 'ai' },
+    { value: 'insights', label: 'ML Insights', icon: '🤖', emoji: '🔮', shortLabel: 'AI', category: 'ai' },
+    { value: 'learning', label: 'Learning', icon: '🧠', emoji: '✨', shortLabel: 'Learn', category: 'ai' },
+    
+    // Health & System
+    { value: 'wellness', label: 'Wellness', icon: '❤️', emoji: '💯', shortLabel: 'Health', category: 'system' },
+    { value: 'validator', label: 'System Check', icon: '🔧', emoji: '🛠️', shortLabel: 'Check', category: 'system' },
+    { value: 'profile', label: 'Profile', icon: '👤', emoji: '⚙️', shortLabel: 'Profile', category: 'system' }
   ];
 
   const currentTab = tabs.find(tab => tab.value === activeTab);
+  
+  // Priority tabs for mobile (most important ones)
+  const priorityTabs = [
+    'overview', 'expenses', 'budgets', 'analytics', 'chat'
+  ];
+  
+  const mobileMainTabs = tabs.filter(tab => priorityTabs.includes(tab.value));
+  const mobileSecondaryTabs = tabs.filter(tab => !priorityTabs.includes(tab.value));
 
   return (
     <ErrorBoundary>
@@ -79,15 +97,16 @@ function App() {
             </motion.div>
             
             {/* Mobile current tab indicator */}
-            {isMobile && (
+            {isMobile && currentTab && (
               <motion.div 
-                className="flex items-center gap-2 bg-card/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-border"
+                className="flex items-center gap-2 bg-primary/10 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-primary/20"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
+                key={activeTab}
               >
-                <span className="text-xl">{currentTab?.icon}</span>
-                <span className="font-medium text-foreground text-sm">{currentTab?.shortLabel}</span>
+                <span className="text-lg">{currentTab.icon}</span>
+                <span className="font-medium text-primary text-sm">{currentTab.shortLabel}</span>
               </motion.div>
             )}
 
@@ -111,7 +130,7 @@ function App() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-                {/* Desktop Navigation */}
+                {/* Desktop Navigation - Horizontal Scrolling with Indicators */}
                 {!isMobile && (
                   <motion.div 
                     className="mb-6"
@@ -119,31 +138,39 @@ function App() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
-                    <Card className="p-3 bg-card/70 backdrop-blur-sm border-border shadow-lg">
-                      <TabsList className="grid w-full grid-cols-13 bg-transparent gap-2 h-auto">
-                        {tabs.map((tab, index) => (
-                          <motion.div
-                            key={tab.value}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: index * 0.05 }}
-                            className="h-full"
-                          >
-                            <TabsTrigger 
-                              value={tab.value} 
-                              className="flex flex-col items-center gap-2 p-4 h-full data-[state=active]:bg-card/90 data-[state=active]:shadow-md data-[state=active]:scale-105 rounded-xl transition-all duration-300 hover:bg-card/50 hover:scale-102 group text-foreground"
-                            >
-                              <span className="text-2xl group-data-[state=active]:scale-110 transition-transform">{tab.icon}</span>
-                              <span className="text-xs font-medium group-data-[state=active]:text-foreground text-muted-foreground">{tab.label}</span>
-                            </TabsTrigger>
-                          </motion.div>
-                        ))}
-                      </TabsList>
+                    <Card className="p-4 bg-card/70 backdrop-blur-sm border-border shadow-lg relative">
+                      <div className="relative">
+                        {/* Gradient overlays for scroll indication */}
+                        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-card/70 to-transparent z-10 pointer-events-none" />
+                        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card/70 to-transparent z-10 pointer-events-none" />
+                        
+                        <div className="overflow-x-auto scrollbar-hide">
+                          <TabsList className="flex w-max bg-transparent gap-3 h-auto min-w-full px-4">
+                            {tabs.map((tab, index) => (
+                              <motion.div
+                                key={tab.value}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: index * 0.03 }}
+                                className="flex-shrink-0"
+                              >
+                                <TabsTrigger 
+                                  value={tab.value} 
+                                  className="flex flex-col items-center gap-2 p-3 min-w-[100px] data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-md data-[state=active]:border-primary/20 rounded-xl transition-all duration-300 hover:bg-muted/50 group text-foreground border border-transparent"
+                                >
+                                  <span className="text-xl group-data-[state=active]:scale-110 transition-transform">{tab.icon}</span>
+                                  <span className="text-[10px] font-medium text-center leading-tight">{tab.label}</span>
+                                </TabsTrigger>
+                              </motion.div>
+                            ))}
+                          </TabsList>
+                        </div>
+                      </div>
                     </Card>
                   </motion.div>
                 )}
 
-          {/* Mobile Bottom Navigation */}
+          {/* Mobile Bottom Navigation - Enhanced with More Menu */}
           {isMobile && (
             <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb bg-card/95 backdrop-blur-md shadow-2xl border-t border-border">
               <motion.div
@@ -151,23 +178,59 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <TabsList className="grid w-full grid-cols-13 bg-transparent p-3 gap-1 h-auto">
-                  {tabs.map((tab, index) => (
+                <TabsList className="flex w-full bg-transparent p-2 gap-1 h-auto">
+                  {/* Main tabs */}
+                  {mobileMainTabs.map((tab, index) => (
                     <motion.div
                       key={tab.value}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.03 }}
+                      transition={{ duration: 0.3, delay: index * 0.02 }}
+                      className="flex-1"
                     >
                       <TabsTrigger 
                         value={tab.value} 
-                        className="flex flex-col items-center gap-1 p-2 h-full data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-xl transition-all duration-200 hover:bg-muted text-muted-foreground"
+                        className="flex flex-col items-center gap-1 p-2 w-full data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg transition-all duration-200 hover:bg-muted/50 text-muted-foreground"
                       >
-                        <span className="text-lg">{tab.icon}</span>
-                        <span className="text-[9px] font-medium leading-tight">{tab.shortLabel}</span>
+                        <span className="text-base">{tab.icon}</span>
+                        <span className="text-[8px] font-medium leading-tight text-center">{tab.shortLabel}</span>
                       </TabsTrigger>
                     </motion.div>
                   ))}
+                  
+                  {/* More button */}
+                  <Sheet open={isMoreOpen} onOpenChange={setIsMoreOpen}>
+                    <SheetTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="flex flex-col items-center gap-1 p-2 flex-1 rounded-lg hover:bg-muted/50 text-muted-foreground"
+                      >
+                        <span className="text-base">⋯</span>
+                        <span className="text-[8px] font-medium leading-tight">More</span>
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="bottom" className="h-[50vh] rounded-t-2xl">
+                      <SheetHeader>
+                        <SheetTitle className="text-left">More Options</SheetTitle>
+                      </SheetHeader>
+                      <div className="grid grid-cols-4 gap-4 mt-6">
+                        {mobileSecondaryTabs.map((tab) => (
+                          <Button
+                            key={tab.value}
+                            variant={activeTab === tab.value ? "default" : "ghost"}
+                            className="flex flex-col items-center gap-2 p-4 h-auto"
+                            onClick={() => {
+                              setActiveTab(tab.value as any);
+                              setIsMoreOpen(false);
+                            }}
+                          >
+                            <span className="text-xl">{tab.icon}</span>
+                            <span className="text-xs font-medium text-center leading-tight">{tab.shortLabel}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </SheetContent>
+                  </Sheet>
                 </TabsList>
               </motion.div>
             </div>

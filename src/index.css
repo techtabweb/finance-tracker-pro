@@ -201,22 +201,7 @@
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: oklch(0.7 0.1 200);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.6 0.1 200);
-}
+::-webkit-scrollbar {\n  width: 6px;\n}\n\n::-webkit-scrollbar-track {\n  background: transparent;\n}\n\n::-webkit-scrollbar-thumb {\n  background: oklch(0.7 0.1 200);\n  border-radius: 3px;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background: oklch(0.6 0.1 200);\n}\n\n/* Hide scrollbar utility */\n.scrollbar-hide {\n  -ms-overflow-style: none;\n  scrollbar-width: none;\n}\n\n.scrollbar-hide::-webkit-scrollbar {\n  display: none;\n}
 
 /* Mobile touch improvements */
 @media (hover: none) and (pointer: coarse) {
@@ -291,6 +276,20 @@
   /* Improve touch targets */
   button:not(.tab-trigger) {
     padding: 12px 16px;
+  }
+
+  /* Better touch feedback */
+  button:active {
+    transform: scale(0.98);
+  }
+
+  /* Enhanced mobile navigation */
+  .mobile-nav-item {
+    transition: all 0.2s ease;
+  }
+
+  .mobile-nav-item:active {
+    transform: scale(0.95);
   }
 
   /* Better spacing for mobile cards */
