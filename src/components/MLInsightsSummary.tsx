@@ -83,8 +83,8 @@ export function MLInsightsSummary() {
         overspentCategories: categorySpending.filter(cat => cat.overspend).length
       };
 
-      const prompt = spark.llmPrompt`Analyze this financial data and provide a concise ML insights summary: ${JSON.stringify(analysisData)}`;
-      const response = await window.spark.llm(prompt, 'gpt-4o', true);
+      const promptText = `Analyze this financial data and provide a concise ML insights summary: ${JSON.stringify(analysisData)}`;
+      const response = await window.spark.llm(promptText, 'gpt-4o', true);
       
       let result;
       try {

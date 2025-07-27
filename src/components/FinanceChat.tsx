@@ -270,14 +270,14 @@ Ask me anything about your finances! 💰`,
     try {
       const financialContext = prepareFinancialContext();
       
-      const prompt = spark.llmPrompt`You are an AI financial advisor for Indian users. Analyze their financial data and answer their question: "${messageText}"
+      const promptText = `You are an AI financial advisor for Indian users. Analyze their financial data and answer their question: "${messageText}"
 
 FINANCIAL DATA:
 ${JSON.stringify(financialContext, null, 2)}
 
 Provide a helpful response with actual numbers from their data, using Indian Rupees (₹) format.`;
 
-      const response = await spark.llm(prompt, 'gpt-4o');
+      const response = await spark.llm(promptText, 'gpt-4o');
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),

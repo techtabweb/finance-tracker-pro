@@ -94,9 +94,9 @@ export function SmartCategorizer({
       // Use Spark LLM for categorization
       const categoryNames = categories.map(cat => cat.name);
       
-      const prompt = spark.llmPrompt`Categorize Indian expense: "${description}" from merchant "${merchant || 'Unknown'}". Available categories: ${categoryNames.join(', ')}`;
+      const promptText = `Categorize Indian expense: "${description}" from merchant "${merchant || 'Unknown'}". Available categories: ${categoryNames.join(', ')}`;
 
-      const response = await window.spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(promptText, 'gpt-4o', true);
       
       let suggestions;
       try {

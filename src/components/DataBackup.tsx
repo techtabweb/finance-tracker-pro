@@ -330,30 +330,30 @@ export function DataBackup() {
 
       if (importOptions.mergeExpenses && importPreview.data.expenses) {
         setExpenses(current => importOptions.replaceExisting ? 
-          importPreview.data.expenses : 
-          [...current, ...importPreview.data.expenses]
+          importPreview.data.expenses || [] : 
+          [...(current || []), ...(importPreview.data.expenses || [])]
         );
         setImportProgress(40);
       }
 
       if (importOptions.mergeBudgets && importPreview.data.budgets) {
         setBudgets(current => importOptions.replaceExisting ? 
-          importPreview.data.budgets : 
-          [...current, ...importPreview.data.budgets]
+          importPreview.data.budgets || [] : 
+          [...(current || []), ...(importPreview.data.budgets || [])]
         );
         setImportProgress(60);
       }
 
       if (importOptions.mergeGoals && importPreview.data.savingsGoals) {
         setSavingsGoals(current => importOptions.replaceExisting ? 
-          importPreview.data.savingsGoals : 
-          [...current, ...importPreview.data.savingsGoals]
+          importPreview.data.savingsGoals || [] : 
+          [...(current || []), ...(importPreview.data.savingsGoals || [])]
         );
         setImportProgress(80);
       }
 
       if (importPreview.data.monthlyBudget) {
-        setMonthlyBudget(Number(importPreview.data.monthlyBudget));
+        setMonthlyBudget(String(importPreview.data.monthlyBudget));
       }
 
       setImportProgress(100);

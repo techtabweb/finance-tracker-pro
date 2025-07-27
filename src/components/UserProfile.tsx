@@ -98,16 +98,24 @@ export const UserProfile = () => {
   };
 
   const handleNotificationChange = (key: string, value: boolean) => {
-    setUserSettings({
-      ...userSettings,
+    setUserSettings((current) => ({
+      ...current,
       notifications: {
-        budgetAlerts: userSettings?.notifications?.budgetAlerts ?? false,
-        goalReminders: userSettings?.notifications?.goalReminders ?? false,
-        weeklyReports: userSettings?.notifications?.weeklyReports ?? false,
-        expenseAlerts: userSettings?.notifications?.expenseAlerts ?? false,
+        budgetAlerts: current?.notifications?.budgetAlerts ?? false,
+        goalReminders: current?.notifications?.goalReminders ?? false,
+        weeklyReports: current?.notifications?.weeklyReports ?? false,
+        expenseAlerts: current?.notifications?.expenseAlerts ?? false,
         [key]: value
+      },
+      currency: current?.currency ?? 'INR',
+      language: current?.language ?? 'en',
+      preferences: current?.preferences ?? {
+        theme: 'system',
+        fontSize: 'medium',
+        highContrast: false,
+        reducedMotion: false
       }
-    });
+    }));
   };
 
   return (

@@ -89,8 +89,8 @@ export function SmartSpendingAlerts() {
         totalDaysInMonth: endOfMonth.getDate()
       };
 
-      const prompt = spark.llmPrompt`Analyze financial data and generate smart spending alerts: ${JSON.stringify(analysisData)}`;
-      const response = await window.spark.llm(prompt, 'gpt-4o', true);
+      const promptText = `Analyze financial data and generate smart spending alerts: ${JSON.stringify(analysisData)}`;
+      const response = await window.spark.llm(promptText, 'gpt-4o', true);
       
       let result;
       try {

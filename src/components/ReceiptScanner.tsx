@@ -102,10 +102,10 @@ export function ReceiptScanner({ onExpenseScanned, onScanningStateChange }: Rece
     const filename = imageFile.name.toLowerCase();
     
     // Use AI to predict category and merchant based on common patterns
-    const prompt = spark.llmPrompt`Based on the filename "${filename}" suggest merchant type, expense category, and confidence level for an Indian receipt.`;
+    const promptText = `Based on the filename "${filename}" suggest merchant type, expense category, and confidence level for an Indian receipt.`;
 
     try {
-      const response = await window.spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(promptText, 'gpt-4o', true);
       
       let aiSuggestion;
       try {

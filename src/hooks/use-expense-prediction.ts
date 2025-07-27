@@ -106,9 +106,9 @@ export function useExpensePrediction() {
         }))
       };
 
-      const prompt = spark.llmPrompt`Analyze expense data and provide predictions for Indian spending patterns. Data: ${JSON.stringify(analysisData, null, 2)}`;
+      const promptText = `Analyze expense data and provide predictions for Indian spending patterns. Data: ${JSON.stringify(analysisData, null, 2)}`;
 
-      const response = await window.spark.llm(prompt, 'gpt-4o', true);
+      const response = await window.spark.llm(promptText, 'gpt-4o', true);
 
       // Handle empty or invalid response
       if (!response || response.trim() === '') {
@@ -174,8 +174,6 @@ export function useExpensePrediction() {
 
   // Automatically analyze when expenses change significantly
   useEffect(() => {
-    if (!generatePredictions) return; // Ensure function is available
-    
     const lastAnalysisDate = predictions?.lastUpdated;
     const daysSinceLastAnalysis = lastAnalysisDate 
       ? Math.floor((Date.now() - new Date(lastAnalysisDate).getTime()) / (1000 * 60 * 60 * 24))
@@ -185,7 +183,7 @@ export function useExpensePrediction() {
     if (daysSinceLastAnalysis >= 3 && expenses && expenses.length >= 10) {
       generatePredictions();
     }
-  }, [expenses?.length, generatePredictions, predictions]);
+  }, [expenses?.length, predictions]); // Removed generatePredictions from deps to avoid circular dependency
 
   const getPredictionForCategory = (category: string): ExpensePrediction | null => {
     return predictions?.categoryPredictions.find(p => p.category === category) || null;
@@ -204,11 +202,9 @@ export function useExpensePrediction() {
       }));
   };
 
-  const refreshPredictions = () => {
-    if (generatePredictions) {
-      generatePredictions();
-    }
-  };
+  const refreshPredictions = useCallback(() => {
+    generatePredictions();
+  }, [generatePredictions]);
 
   return {
     predictions,

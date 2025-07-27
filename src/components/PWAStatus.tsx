@@ -16,7 +16,8 @@ import {
   CheckCircle,
   Warning,
   Info,
-  Gear
+  Gear,
+  WifiSlash
 } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePWA, usePWAStatus } from '@/hooks/use-pwa';
@@ -126,7 +127,7 @@ export function PWAStatus() {
                 {isOnline ? (
                   <WifiHigh className="h-4 w-4 text-green-600" />
                 ) : (
-                  <WifiOff className="h-4 w-4 text-red-600" />
+                  <WifiSlash className="h-4 w-4 text-red-600" />
                 )}
                 <span>Connection: {connectionStatus.text}</span>
               </div>

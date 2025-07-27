@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, DeviceMobile, Monitor, WifiHigh, ArrowClockwise, Share, Bell } from '@phosphor-icons/react';
+import { Download, DeviceMobile, Monitor, WifiHigh, ArrowClockwise, Share, Bell, WifiSlash } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -189,7 +189,7 @@ export function PWAInstaller() {
                 {isOnline ? (
                   <WifiHigh className="h-4 w-4 text-green-600" />
                 ) : (
-                  <WifiOff className="h-4 w-4 text-orange-600" />
+                  <WifiSlash className="h-4 w-4 text-orange-600" />
                 )}
                 <span className="text-sm">
                   {isOnline ? 'Online' : 'Offline Mode'}

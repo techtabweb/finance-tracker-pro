@@ -101,8 +101,8 @@ export function SmartBudgetPlanner() {
         expenseCount: recentExpenses.length
       };
 
-      const prompt = spark.llmPrompt`Analyze budget and spending data to provide smart recommendations: ${JSON.stringify(analysisData)}`;
-      const response = await window.spark.llm(prompt, 'gpt-4o', true);
+      const promptText = `Analyze budget and spending data to provide smart recommendations: ${JSON.stringify(analysisData)}`;
+      const response = await window.spark.llm(promptText, 'gpt-4o', true);
       
       let result;
       try {
