@@ -7,6 +7,7 @@ import { formatCurrency, getMonthName, getCurrentMonth } from '@/lib/format';
 import { AddExpenseDialog } from './AddExpenseDialog';
 import { WelcomeGuide } from './WelcomeGuide';
 import { PredictionWidget } from './PredictionWidget';
+import { MLInsightsSummary } from './MLInsightsSummary';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Target, AlertTriangle } from '@phosphor-icons/react';
@@ -378,6 +379,17 @@ export function Overview() {
 
       {/* AI Predictions Widget */}
       <PredictionWidget />
+
+      {/* ML Insights Summary */}
+      {!isNewUser && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <MLInsightsSummary />
+        </motion.div>
+      )}
 
       {/* Floating Action Button for Mobile */}
       {isMobile && (

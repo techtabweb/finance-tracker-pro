@@ -48,6 +48,29 @@ Indian users need a secure finance tracker that understands local spending patte
 10. **AI-Powered Receipt Scanning**: Smart expense entry through Google Gemini AI:
     - Camera capture or gallery upload for receipt photos
     - Advanced OCR with Google Gemini 1.5 Flash model
+    - Smart merchant recognition and category learning
+    - Automatic amount and description extraction
+11. **Smart Learning Center**: Category learning system that adapts to user preferences:
+    - Machine learning from user corrections
+    - Pattern recognition for similar merchants
+    - Keyword-based category suggestions
+    - Confidence scoring for automatic categorization
+12. **Expense Predictions**: AI-powered forecasting using historical data:
+    - Monthly spending predictions by category
+    - Budget overrun warnings with specific amounts
+    - Seasonal trend analysis and alerts
+    - Confidence intervals for prediction accuracy
+13. **ML Budget Insights**: Advanced machine learning for budget optimization:
+    - **Smart Insights**: Pattern analysis and spending anomaly detection
+    - **Spending Alerts**: Real-time overspending prevention with ML predictions
+    - **Budget Planner**: Scenario-based budget optimization with AI recommendations
+    - **Optimizations**: Data-driven budget allocation suggestions
+    - **End-of-month predictions**: ML-powered spending forecasts
+    - **Daily spending limits**: Dynamic recommendations to stay on track
+    - **Risk assessment**: Multi-level alerting (safe, caution, danger, critical)
+14. **AI Chat Interface**: Gemini-powered conversational financial assistant:
+    - Natural language expense queries and analysis
+    - Context-aware financial advice and insights
     - Automatic extraction of amount, merchant, date, and category
     - Smart categorization with confidence scores optimized for Indian receipts
     - Item-level recognition for detailed tracking
