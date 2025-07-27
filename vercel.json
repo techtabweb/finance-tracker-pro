@@ -42,7 +42,7 @@
       ]
     },
     {
-      "source": "/(.*)\\.(js|css|svg|png|jpg|jpeg|gif|ico|woff|woff2|ttf|eot)$",
+      "source": "/static/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -50,10 +50,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "app/api/**/*": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }

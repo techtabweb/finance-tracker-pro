@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+packages
+
+# Development files
+.env.example
+.devcontainer
+.git
+.github
+.vite.log
+test-ai.html
+test-imports.tsx
+
+# Documentation
+*.md
+BUGFIXES.md
+BUG_FIXES.md
+DEPLOYMENT.md
+FINANCE_TRACKER_README.md
+LICENSE
+PRD.md
+PRODUCTION_READY.md
+README.md
+SECURITY.md
+AI_RECEIPT_SCANNING_GUIDE.md
+
+# Build artifacts (will be generated)
+dist
+.tmp
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Scripts
+deploy.sh
