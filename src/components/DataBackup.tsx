@@ -48,12 +48,19 @@ export function DataBackup() {
 
   const [importOptions, setImportOptions] = useState({
     replaceExisting: false,
+    mergeExpenses: true,
+    mergeBudgets: true,
+    mergeCategories: true,
+    mergeGoals: true,
     includeExpenses: true,
     includeBudgets: true,
     includeCategories: true,
     includeGoals: true,
     includeSettings: false
   });
+
+  const [importProgress, setImportProgress] = useState(0);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
 
@@ -65,6 +72,8 @@ export function DataBackup() {
     monthlyBudget
   };
 
+  const totalRecords = expenses.length + budgets.length + savingsGoals.length;
+
   const handleExportJSON = async () => {
     try {
       setIsExporting(true);
@@ -74,7 +83,7 @@ export function DataBackup() {
       await FinanceDataManager.downloadFile(jsonData, filename, 'application/json');
       
       // Record backup history
-      addBackupRecord({
+      await addBackupRecord({
         date: new Date().toISOString(),
         type: 'export',
         format: 'json',
@@ -103,7 +112,7 @@ export function DataBackup() {
       await FinanceDataManager.downloadFile(csvData, filename, 'text/csv');
       
       // Record backup history
-      addBackupRecord({
+      await addBackupRecord({
         date: new Date().toISOString(),
         type: 'export',
         format: 'csv',
@@ -391,6 +400,76 @@ export function DataBackup() {
   };
 
   const confirmImport = async () => {
+    if (!importPreview) return;
+    
+    try {
+      setIsImporting(true);
+      setImportProgress(0);
+
+      const manager = new FinanceDataManager();
+      
+      if (importOptions.replaceExisting) {
+        setExpenses([]);
+        setBudgets([]);
+        setSavingsGoals([]);
+        setImportProgress(20);
+      }
+
+      if (importOptions.mergeExpenses && importPreview.data.expenses) {
+        setExpenses(current => importOptions.replaceExisting ? 
+          importPreview.data.expenses : 
+          [...current, ...importPreview.data.expenses]
+        );
+        setImportProgress(40);
+      }
+
+      if (importOptions.mergeBudgets && importPreview.data.budgets) {
+        setBudgets(current => importOptions.replaceExisting ? 
+          importPreview.data.budgets : 
+          [...current, ...importPreview.data.budgets]
+        );
+        setImportProgress(60);
+      }
+
+      if (importOptions.mergeGoals && importPreview.data.savingsGoals) {
+        setSavingsGoals(current => importOptions.replaceExisting ? 
+          importPreview.data.savingsGoals : 
+          [...current, ...importPreview.data.savingsGoals]
+        );
+        setImportProgress(80);
+      }
+
+      if (importPreview.data.monthlyBudget) {
+        setMonthlyBudget(importPreview.data.monthlyBudget);
+      }
+
+      setImportProgress(100);
+      
+      await addBackupRecord({
+        type: 'import',
+        filename: 'imported-data.json',
+        size: JSON.stringify(importPreview).length,
+        recordCount: (importPreview.data.expenses?.length || 0) + 
+                    (importPreview.data.budgets?.length || 0) + 
+                    (importPreview.data.savingsGoals?.length || 0)
+      });
+
+      toast.success('🎉 Data imported successfully!', {
+        description: 'Your financial data has been restored'
+      });
+
+      setImportPreview(null);
+    } catch (error) {
+      console.error('Import error:', error);
+      toast.error('Failed to import data', {
+        description: 'Please check the file format and try again'
+      });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  return (
     <div className="space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}

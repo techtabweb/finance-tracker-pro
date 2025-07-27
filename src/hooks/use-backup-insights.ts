@@ -1,5 +1,5 @@
 import { useKV } from '@github/spark/hooks';
-import { Expense, Budget, SavingsGoal } from './types';
+import { Expense, Budget, SavingsGoal } from '@/lib/types';
 
 export interface BackupHistory {
   id: string;
