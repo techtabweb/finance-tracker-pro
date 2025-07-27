@@ -216,6 +216,8 @@ Requirements:
 
   // Automatically analyze when expenses change significantly
   useEffect(() => {
+    if (!generatePredictions) return; // Ensure function is available
+    
     const lastAnalysisDate = predictions?.lastUpdated;
     const daysSinceLastAnalysis = lastAnalysisDate 
       ? Math.floor((Date.now() - new Date(lastAnalysisDate).getTime()) / (1000 * 60 * 60 * 24))
@@ -245,7 +247,9 @@ Requirements:
   };
 
   const refreshPredictions = () => {
-    generatePredictions();
+    if (generatePredictions) {
+      generatePredictions();
+    }
   };
 
   return {

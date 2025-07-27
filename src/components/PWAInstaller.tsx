@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, DeviceMobile, Monitor, WifiHigh, WifiHigh, ArrowClockwise, Share, Bell } from '@phosphor-icons/react';
+import { Download, DeviceMobile, Monitor, WifiHigh, WifiOff, ArrowClockwise, Share, Bell } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -187,9 +187,9 @@ export function PWAInstaller() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {isOnline ? (
-                  <WifiHighclassName="h-4 w-4 text-green-600" />
+                  <WifiHigh className="h-4 w-4 text-green-600" />
                 ) : (
-                  <WifiHighff className="h-4 w-4 text-orange-600" />
+                  <WifiOff className="h-4 w-4 text-orange-600" />
                 )}
                 <span className="text-sm">
                   {isOnline ? 'Online' : 'Offline Mode'}

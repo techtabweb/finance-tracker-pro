@@ -8,7 +8,7 @@ import {
   DeviceMobile, 
   Monitor, 
   WifiHigh, 
-  WifiHigh, 
+  WifiOff, 
   Download, 
   Share, 
   Bell,
@@ -124,9 +124,9 @@ export function PWAStatus() {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 {isOnline ? (
-                  <WifiHighclassName="h-4 w-4 text-green-600" />
+                  <WifiHigh className="h-4 w-4 text-green-600" />
                 ) : (
-                  <WifiHighff className="h-4 w-4 text-red-600" />
+                  <WifiOff className="h-4 w-4 text-red-600" />
                 )}
                 <span>Connection: {connectionStatus.text}</span>
               </div>
