@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useKV } from '@github/spark/hooks';
+import { useKV } from '@/hooks/use-kv';
 
 export function SwipeTutorial() {
   const isMobile = useIsMobile();

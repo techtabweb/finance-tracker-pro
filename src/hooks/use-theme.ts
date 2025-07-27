@@ -1,4 +1,4 @@
-import { useKV } from '@github/spark/hooks';
+import { useKV } from './use-kv';
 
 export type Theme = 'light' | 'dark' | 'system';
 export type FontSize = 'small' | 'medium' | 'large' | 'extra-large';

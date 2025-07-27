@@ -1,4 +1,4 @@
-import { useKV } from '@github/spark/hooks';
+import { useKV } from './use-kv';
 import { useMemo } from 'react';
 import { Expense, Budget, SavingsGoal, WellnessScore, Achievement, PersonalizedTip } from '@/lib/types';
 import { getCurrentMonth, getLastThreeMonths } from '@/lib/format';

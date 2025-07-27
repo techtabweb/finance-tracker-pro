@@ -78,7 +78,7 @@ export function SmartBudgetPlanner() {
           return acc;
         }, {} as Record<string, number>);
 
-        const amounts = Object.values(monthlySpending);
+        const amounts = Object.values(monthlySpending).filter((val): val is number => typeof val === 'number');
         const avgSpending = amounts.length > 0 ? amounts.reduce((a, b) => a + b, 0) / amounts.length : 0;
         const maxSpending = amounts.length > 0 ? Math.max(...amounts) : 0;
         const minSpending = amounts.length > 0 ? Math.min(...amounts) : 0;

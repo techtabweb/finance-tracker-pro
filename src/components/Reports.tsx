@@ -57,7 +57,7 @@ export function Reports() {
     const categoryBreakdown = Object.entries(categoryTotals)
       .map(([name, value], index) => ({
         name,
-        value,
+        value: typeof value === 'number' ? value : 0,
         color: COLORS[index % COLORS.length]
       }))
       .sort((a, b) => b.value - a.value);
@@ -94,7 +94,7 @@ export function Reports() {
     }, {} as Record<string, number>);
 
     const dailySpending = Object.entries(dailyData)
-      .map(([day, amount]) => ({ day: `${day}`, amount }))
+      .map(([day, amount]) => ({ day: `${day}`, amount: typeof amount === 'number' ? amount : 0 }))
       .sort((a, b) => parseInt(a.day) - parseInt(b.day));
 
     const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
@@ -104,8 +104,8 @@ export function Reports() {
     // Top categories
     const topCategories = categoryBreakdown.slice(0, 5).map(cat => ({
       category: cat.name,
-      amount: cat.value,
-      percentage: totalExpenses > 0 ? (cat.value / totalExpenses) * 100 : 0
+      amount: typeof cat.value === 'number' ? cat.value : 0,
+      percentage: totalExpenses > 0 ? ((typeof cat.value === 'number' ? cat.value : 0) / totalExpenses) * 100 : 0
     }));
 
     return {

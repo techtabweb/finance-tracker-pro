@@ -1,4 +1,4 @@
-import { useKV } from '@github/spark/hooks';
+import { useKV } from './use-kv';
 import { CategoryLearningPattern, LearningInsight } from '@/lib/types';
 
 export function useCategoryLearning() {
@@ -52,7 +52,9 @@ export function useCategoryLearning() {
       let matchCount = 0;
       const matchedKeywords = new Set<string>();
 
-      patterns.forEach((pattern) => {
+      // Safe check for patterns
+      if (Array.isArray(patterns)) {
+        patterns.forEach((pattern) => {
         const patternMerchant = pattern.merchant.toLowerCase();
         const patternDescription = pattern.description.toLowerCase();
 
@@ -82,12 +84,12 @@ export function useCategoryLearning() {
             matchedKeywords.add(word);
           }
         });
-      });
+      }
 
       // Only include categories with meaningful matches
       if (matchCount > 0 || score >= 20) {
         const confidence = Math.min(95, Math.max(70, score));
-        const frequency = patterns.length;
+        const frequency = Array.isArray(patterns) ? patterns.length : 0;
 
         insights.push({
           pattern: `Based on ${matchCount} similar transactions`,

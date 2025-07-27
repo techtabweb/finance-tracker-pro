@@ -71,17 +71,17 @@ export function MLInsightsSummary() {
       };
     });
 
+    const analysisData = {
+      totalSpent,
+      totalBudget,
+      utilizationRate,
+      categorySpending,
+      expenseCount: currentExpenses.length,
+      overspentCategories: categorySpending.filter(cat => cat.overspend).length
+    };
+
     try {
       setLoading(true);
-
-      const analysisData = {
-        totalSpent,
-        totalBudget,
-        utilizationRate,
-        categorySpending,
-        expenseCount: currentExpenses.length,
-        overspentCategories: categorySpending.filter(cat => cat.overspend).length
-      };
 
       const promptText = `Analyze this financial data and provide a concise ML insights summary: ${JSON.stringify(analysisData)}`;
       const response = await window.spark.llm(promptText, 'gpt-4o', true);

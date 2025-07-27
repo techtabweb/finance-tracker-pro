@@ -1,4 +1,4 @@
-import { useKV } from '@github/spark/hooks';
+import { useKV } from './use-kv';
 import { useState } from 'react';
 import { Expense, Budget, Category, SavingsGoal, DEFAULT_CATEGORIES } from '@/lib/types';
 import { getCurrentMonth } from '@/lib/format';

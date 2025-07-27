@@ -145,37 +145,39 @@ Return ONLY a valid JSON response with insights and optimizations arrays.`;
     }, {} as Record<string, number>);
 
     Object.entries(categorySpending).forEach(([category, amount]) => {
+      // Type guard to ensure amount is a number
+      const amountValue = typeof amount === 'number' ? amount : 0;
       const budget = budgets.find(b => b.category === category);
-      if (budget && amount > budget.limit * 0.8) {
+      if (budget && amountValue > budget.limit * 0.8) {
         basicInsights.push({
           id: `overspend_${category}`,
           type: 'overspending_risk',
           category,
           title: `High spending in ${category}`,
-          description: `You've spent ₹${formatCurrency(amount)} out of ₹${formatCurrency(budget.limit)} budget`,
-          impact: amount > budget.limit ? 'high' : 'medium',
+          description: `You've spent ₹${formatCurrency(amountValue)} out of ₹${formatCurrency(budget.limit)} budget`,
+          impact: amountValue > budget.limit ? 'high' : 'medium',
           confidence: 85,
-          recommendation: amount > budget.limit 
+          recommendation: amountValue > budget.limit 
             ? `Consider reducing ${category} expenses or increasing budget`
             : `Monitor ${category} spending closely this month`,
           trend: 'increasing',
           data: {
-            current: amount,
-            predicted: amount * 1.1,
-            variance: ((amount - budget.limit) / budget.limit) * 100,
+            current: amountValue,
+            predicted: amountValue * 1.1,
+            variance: ((amountValue - budget.limit) / budget.limit) * 100,
             timeframe: 'This month'
           }
         });
       }
 
-      if (budget && amount < budget.limit * 0.5) {
+      if (budget && amountValue < budget.limit * 0.5) {
         basicOptimizations.push({
           category,
           currentBudget: budget.limit,
-          suggestedBudget: Math.round(amount * 1.2),
+          suggestedBudget: Math.round(amountValue * 1.2),
           reasoning: 'Low utilization suggests budget can be reduced',
           confidence: 75,
-          potentialSavings: budget.limit - Math.round(amount * 1.2),
+          potentialSavings: budget.limit - Math.round(amountValue * 1.2),
           riskLevel: 'low'
         });
       }

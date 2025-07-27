@@ -30,7 +30,7 @@ import {
   Type
 } from 'lucide-react';
 import { useFinanceData } from '@/hooks/use-finance-data';
-import { useKV } from '@github/spark/hooks';
+import { useKV } from '@/hooks/use-kv';
 import { useTheme } from '@/hooks/use-theme';
 import { toast } from 'sonner';
 import { DataBackup } from '@/components/DataBackup';
