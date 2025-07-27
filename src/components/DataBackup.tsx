@@ -72,7 +72,7 @@ export function DataBackup() {
     monthlyBudget
   };
 
-  const totalRecords = expenses.length + budgets.length + savingsGoals.length;
+  const totalRecords = expenses.length + budgets.length + categories.length + savingsGoals.length;
 
   const handleExportJSON = async () => {
     try {
@@ -222,7 +222,6 @@ export function DataBackup() {
     }
   };
 
-  const totalRecords = expenses.length + budgets.length + categories.length + savingsGoals.length;
   const oldExpenses = expenses.filter(e => {
     const expenseDate = new Date(e.date);
     const sixMonthsAgo = new Date();
