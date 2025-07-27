@@ -128,8 +128,10 @@ export function Overview() {
         <div className="absolute -bottom-4 -left-4 text-4xl sm:text-6xl opacity-20">📊</div>
       </motion.div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* Summary Cards - Enhanced Mobile Layout */}
+      <div className={`grid gap-3 sm:gap-4 ${
+        isMobile ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4'
+      }`}>
         {summaryCards.map((card, index) => (
           <motion.div
             key={card.title}
@@ -140,8 +142,8 @@ export function Overview() {
             <Card className="relative overflow-hidden bg-card/90 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all duration-300 card-hover">
               <div className={`absolute inset-0 bg-gradient-to-br ${card.bgColor} opacity-20`}></div>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4 relative">
-                <CardTitle className={`text-xs sm:text-sm font-medium ${card.textColor}`}>
-                  {card.title}
+                <CardTitle className={`text-xs sm:text-sm font-medium ${card.textColor} leading-tight`}>
+                  {isMobile ? card.title.split(' ')[0] : card.title}
                 </CardTitle>
                 <div className="flex items-center gap-1">
                   <span className="text-lg sm:text-xl">{card.icon}</span>
@@ -149,11 +151,11 @@ export function Overview() {
                 </div>
               </CardHeader>
               <CardContent className="p-3 sm:p-4 pt-0 relative">
-                <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${card.textColor} mb-1`}>
+                <div className={`text-sm sm:text-lg lg:text-xl font-bold ${card.textColor} mb-1 break-words`}>
                   {card.value}
                 </div>
-                <p className="text-xs text-muted-foreground leading-tight">
-                  {card.subtitle}
+                <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">
+                  {isMobile ? card.subtitle.split(' ').slice(0, 2).join(' ') : card.subtitle}
                 </p>
                 {!isMobile && (
                   <div className="mt-2 text-xs font-medium text-muted-foreground">
@@ -166,8 +168,10 @@ export function Overview() {
         ))}
       </div>
 
-      {/* Budget Progress */}
-      <div className={`grid grid-cols-1 ${!isMobile ? 'lg:grid-cols-2' : ''} gap-4 sm:gap-6`}>
+      {/* Budget Progress - Enhanced Mobile Layout */}
+      <div className={`grid gap-4 sm:gap-6 ${
+        isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'
+      }`}>
         {/* Monthly Budget Progress */}
         {monthlyBudget > 0 && (
           <motion.div
@@ -179,15 +183,19 @@ export function Overview() {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-foreground">
                   <span>📅</span>
-                  Monthly Budget Progress
+                  {isMobile ? 'Monthly Budget' : 'Monthly Budget Progress'}
                   {monthlyBudgetProgress > 90 && <AlertTriangle className="w-4 h-4 text-amber-500" />}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Spent: <span className="font-medium text-foreground">{formatCurrency(totalSpent)}</span></span>
-                    <span className="text-muted-foreground">Limit: <span className="font-medium text-foreground">{formatCurrency(monthlyBudget)}</span></span>
+                    <span className="text-muted-foreground">
+                      Spent: <span className="font-medium text-foreground">{formatCurrency(totalSpent)}</span>
+                    </span>
+                    <span className="text-muted-foreground">
+                      Limit: <span className="font-medium text-foreground">{formatCurrency(monthlyBudget)}</span>
+                    </span>
                   </div>
                   <div className="relative">
                     <Progress 
@@ -198,6 +206,25 @@ export function Overview() {
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-xs font-medium text-primary-foreground drop-shadow-md">
                           {monthlyBudgetProgress.toFixed(0)}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm font-medium ${
+                      monthlyRemaining >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {monthlyRemaining >= 0 ? 'Remaining' : 'Over Budget'}: {formatCurrency(Math.abs(monthlyRemaining))}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {monthlyBudgetProgress.toFixed(1)}% used
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
                         </span>
                       </div>
                     )}

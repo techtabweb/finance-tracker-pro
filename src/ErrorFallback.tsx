@@ -1,44 +1,54 @@
-import { Alert, AlertTitle, AlertDescription } from "./components/ui/alert";
-import { Button } from "./components/ui/button";
-import { AlertTriangle, RefreshCw } from "@phosphor-icons/react";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle, RotateCcw, Home } from '@phosphor-icons/react';
 
 interface ErrorFallbackProps {
   error: Error;
   resetErrorBoundary: () => void;
 }
 
-export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
-  // When encountering an error in the development mode, rethrow it and don't display the boundary.
-  // The parent UI will take care of showing a more helpful dialog.
-  if (import.meta.env.DEV) throw error;
+export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
+  React.useEffect(() => {
+    // Log error for debugging
+    console.error('Component Error:', error);
+  }, [error]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Alert variant="destructive" className="mb-6">
-          <AlertTriangle className="w-4 h-4" />
-          <AlertTitle>This spark has encountered a runtime error</AlertTitle>
-          <AlertDescription>
-            Something unexpected happened while running the application. The error details are shown below. Contact the spark author and let them know about this issue.
-          </AlertDescription>
-        </Alert>
-        
-        <div className="bg-card border rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-sm text-muted-foreground mb-2">Error Details:</h3>
-          <pre className="text-xs text-destructive bg-muted/50 p-3 rounded border overflow-auto max-h-32">
-            {error.message}
-          </pre>
-        </div>
-        
-        <Button 
-          onClick={resetErrorBoundary} 
-          className="w-full"
-          variant="outline"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Try Again
-        </Button>
-      </div>
+    <div className="min-h-[300px] flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg border-destructive/20">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
+          </div>
+          <CardTitle className="text-lg">Something went wrong</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground text-center">
+            This section encountered an error and couldn't load properly.
+          </p>
+          <div className="flex gap-2">
+            <Button
+              onClick={resetErrorBoundary}
+              variant="default"
+              size="sm"
+              className="flex-1"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Try Again
+            </Button>
+            <Button
+              onClick={() => window.location.reload()}
+              variant="outline"
+              size="sm"
+              className="flex-1"
+            >
+              <Home className="mr-2 h-4 w-4" />
+              Reload
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

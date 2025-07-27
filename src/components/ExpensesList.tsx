@@ -49,11 +49,11 @@ export function ExpensesList() {
         transition={{ duration: 0.5 }}
       >
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
             <span>💸</span>
             Expenses Tracker
           </h2>
-          <p className="text-gray-600 text-sm mt-1">Manage and track all your spending</p>
+          <p className="text-muted-foreground text-sm mt-1">Manage and track all your spending</p>
         </div>
         <Button 
           onClick={() => setShowAddExpense(true)} 
@@ -70,7 +70,7 @@ export function ExpensesList() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-card/80 backdrop-blur-sm border-0 shadow-lg">
           <CardContent className="pt-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
@@ -80,12 +80,12 @@ export function ExpensesList() {
                     placeholder="Search expenses..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-12 rounded-xl border-0 bg-gray-50 focus:bg-white transition-colors"
+                    className="pl-12 h-12 rounded-xl border-0 bg-muted focus:bg-card transition-colors"
                   />
                 </div>
               </div>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-48 h-12 rounded-xl border-0 bg-gray-50">
+                <SelectTrigger className="w-full sm:w-48 h-12 rounded-xl border-0 bg-muted">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -162,9 +162,9 @@ export function ExpensesList() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-card/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <span>📋</span>
               {filteredExpenses.length} {filteredExpenses.length === 1 ? 'Expense' : 'Expenses'}
             </CardTitle>
@@ -178,7 +178,7 @@ export function ExpensesList() {
                     return (
                       <motion.div 
                         key={expense.id} 
-                        className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200/50 hover:shadow-md transition-all duration-200"
+                        className="flex items-center justify-between p-4 bg-gradient-to-r from-muted/50 to-muted/30 rounded-xl border border-border/50 hover:shadow-md transition-all duration-200 card-hover"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
@@ -194,23 +194,23 @@ export function ExpensesList() {
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 truncate text-sm sm:text-base">
+                            <p className="font-medium text-foreground truncate text-sm sm:text-base">
                               {expense.description || expense.category}
                             </p>
-                            <p className="text-xs sm:text-sm text-gray-600">
+                            <p className="text-xs sm:text-sm text-muted-foreground">
                               {expense.category} • {formatDate(expense.date)}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div className="text-right">
-                            <p className="font-bold text-lg text-gray-900">{formatCurrency(expense.amount)}</p>
+                            <p className="font-bold text-lg text-foreground">{formatCurrency(expense.amount)}</p>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteExpense(expense.id)}
-                            className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full h-8 w-8 p-0"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full h-8 w-8 p-0"
                           >
                             <span className="text-lg">🗑️</span>
                           </Button>
@@ -222,7 +222,7 @@ export function ExpensesList() {
               </div>
             ) : (
               <motion.div 
-                className="text-center py-12 text-gray-500"
+                className="text-center py-12 text-muted-foreground"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -230,7 +230,7 @@ export function ExpensesList() {
                 <div className="text-6xl mb-4">
                   {searchTerm || selectedCategory !== 'all' ? '🔍' : '💸'}
                 </div>
-                <p className="text-lg font-medium mb-2">
+                <p className="text-lg font-medium mb-2 text-foreground">
                   {searchTerm || selectedCategory !== 'all' ? 'No expenses found' : 'No expenses yet'}
                 </p>
                 <p className="text-sm">

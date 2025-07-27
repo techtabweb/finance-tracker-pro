@@ -75,7 +75,7 @@
   --ring: oklch(0.6 0.15 240);
 }
 
-/* High contrast mode */
+/* High contrast mode - Enhanced for better accessibility */
 .high-contrast {
   --background: oklch(1 0 0);
   --foreground: oklch(0 0 0);
@@ -83,19 +83,19 @@
   --card-foreground: oklch(0 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0 0 0);
-  --primary: oklch(0.3 0.2 240);
+  --primary: oklch(0.25 0.3 240);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0 0);
   --secondary-foreground: oklch(0 0 0);
   --muted: oklch(0.95 0 0);
-  --muted-foreground: oklch(0.3 0 0);
-  --accent: oklch(0.4 0.2 60);
+  --muted-foreground: oklch(0.25 0 0);
+  --accent: oklch(0.3 0.3 60);
   --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.4 0.3 25);
+  --destructive: oklch(0.3 0.4 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.7 0 0);
+  --border: oklch(0.6 0 0);
   --input: oklch(0.9 0 0);
-  --ring: oklch(0.3 0.2 240);
+  --ring: oklch(0.25 0.3 240);
 }
 
 .dark.high-contrast {
@@ -105,19 +105,19 @@
   --card-foreground: oklch(1 0 0);
   --popover: oklch(0.05 0 0);
   --popover-foreground: oklch(1 0 0);
-  --primary: oklch(0.7 0.2 240);
+  --primary: oklch(0.75 0.3 240);
   --primary-foreground: oklch(0 0 0);
   --secondary: oklch(0.1 0 0);
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.1 0 0);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.8 0.2 60);
+  --muted-foreground: oklch(0.75 0 0);
+  --accent: oklch(0.8 0.3 60);
   --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.8 0.3 25);
+  --destructive: oklch(0.8 0.4 25);
   --destructive-foreground: oklch(0 0 0);
-  --border: oklch(0.3 0 0);
+  --border: oklch(0.4 0 0);
   --input: oklch(0.2 0 0);
-  --ring: oklch(0.7 0.2 240);
+  --ring: oklch(0.75 0.3 240);
 }
 
 /* Font size variations */
@@ -219,6 +219,15 @@
   background: oklch(0.6 0.1 200);
 }
 
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(0.4 0.1 240);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.5 0.1 240);
+}
+
 /* Hide scrollbar utility */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -307,6 +316,33 @@
     touch-action: pan-y; /* Allow vertical scrolling but capture horizontal swipes */
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  /* Better input handling on mobile */
+  input[type="text"], 
+  input[type="number"], 
+  input[type="email"], 
+  input[type="password"], 
+  textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    -webkit-appearance: none;
+  }
+
+  /* Improve select elements on mobile */
+  select {
+    font-size: 16px !important;
+    -webkit-appearance: none;
+  }
+
+  /* Better button feedback */
+  button:active, .clickable:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  /* Improve card interactions */
+  .card-hover:active {
+    transform: scale(0.99);
   }
 }
 
@@ -417,6 +453,7 @@
   /* Improve touch targets */
   button:not(.tab-trigger) {
     padding: 12px 16px;
+    min-height: 44px;
   }
 
   /* Better touch feedback */
@@ -447,11 +484,77 @@
   /* Chat mobile optimizations */
   .mobile-chat-container {
     border-radius: 16px;
+    max-height: calc(100vh - 200px);
+    min-height: 350px;
   }
 
   .mobile-chat-input {
     border-radius: 12px;
     padding: 12px 16px;
     font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Responsive table styles */
+  .mobile-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Fix overflow issues */
+  .mobile-overflow-hidden {
+    overflow: hidden;
+  }
+
+  /* Responsive grid adjustments */
+  .mobile-grid-1 {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Text responsive sizing */
+  .mobile-text-sm {
+    font-size: 0.8rem;
+  }
+
+  .mobile-text-xs {
+    font-size: 0.7rem;
+  }
+
+  /* Better form elements on mobile */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Responsive margins and padding */
+  .mobile-p-2 { padding: 0.5rem; }
+  .mobile-p-3 { padding: 0.75rem; }
+  .mobile-p-4 { padding: 1rem; }
+  .mobile-m-2 { margin: 0.5rem; }
+  .mobile-m-3 { margin: 0.75rem; }
+  .mobile-m-4 { margin: 1rem; }
+
+  /* Safe area adjustments for newer mobile devices */
+  .mobile-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .mobile-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Better scroll behavior on mobile */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Optimize animations for mobile */
+  .mobile-reduced-motion {
+    animation-duration: 0.3s !important;
+    transition-duration: 0.3s !important;
   }
 }

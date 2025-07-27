@@ -51,11 +51,11 @@ export function BudgetsList() {
         transition={{ duration: 0.5 }}
       >
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
             <span>💰</span>
             Budget Manager
           </h2>
-          <p className="text-gray-600 text-sm mt-1">Set and track your spending limits</p>
+          <p className="text-muted-foreground text-sm mt-1">Set and track your spending limits</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button 
@@ -68,7 +68,7 @@ export function BudgetsList() {
           <Button 
             onClick={() => setShowSetBudget(true)} 
             variant="outline" 
-            className="h-12 px-6 rounded-xl border-2 border-gray-200 hover:border-gray-300"
+            className="h-12 px-6 rounded-xl border-2 border-border hover:border-border/80"
           >
             <span className="text-xl mr-2">➕</span>
             Category Budget
@@ -82,9 +82,9 @@ export function BudgetsList() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-card/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <span className="text-2xl">🎯</span>
               Monthly Budget Overview
             </CardTitle>
@@ -94,9 +94,9 @@ export function BudgetsList() {
               {monthlyBudget > 0 ? (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200/50">
+                    <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 p-4 rounded-xl border border-blue-500/20">
                       <p className="text-sm text-blue-600 mb-1">Monthly Limit</p>
-                      <p className="text-xl font-bold text-blue-900">{formatCurrency(monthlyBudget)}</p>
+                      <p className="text-xl font-bold text-foreground">{formatCurrency(monthlyBudget)}</p>
                     </div>
                     <div className="bg-gradient-to-br from-orange-50 to-red-50 p-4 rounded-xl border border-orange-200/50">
                       <p className="text-sm text-orange-600 mb-1">Total Spent</p>

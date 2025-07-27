@@ -1,117 +1,97 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React from 'react';
+import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCw, Home, Bug } from '@phosphor-icons/react';
+import { AlertTriangle, RotateCcw, Home } from '@phosphor-icons/react';
+import { motion } from 'framer-motion';
 
-interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
+interface ErrorFallbackProps {
+  error: Error;
+  resetErrorBoundary: () => void;
 }
 
-interface State {
-  hasError: boolean;
-  error?: Error;
-  errorInfo?: ErrorInfo;
-}
-
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    this.setState({ error, errorInfo });
-
-    // Log error to external service in production
-    if (process.env.NODE_ENV === 'production') {
-      // Could integrate with error reporting service here
-    }
-  }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-  };
-
-  handleReload = () => {
-    window.location.reload();
-  };
-
-  render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
-
-      return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg">
-            <CardHeader className="text-center">
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-destructive/10 rounded-full">
-                  <AlertTriangle className="w-8 h-8 text-destructive" />
-                </div>
-              </div>
-              <CardTitle className="text-xl">Something went wrong</CardTitle>
-              <p className="text-muted-foreground">
-                The Finance Tracker encountered an unexpected error.
+function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
+  return (
+    <div className="min-h-[400px] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-full max-w-md"
+      >
+        <Card className="shadow-xl border-destructive/20 bg-card/95 backdrop-blur-sm">
+          <CardHeader className="text-center pb-4">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+            </div>
+            <CardTitle className="text-lg font-semibold text-foreground">
+              Something went wrong
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg bg-muted/50 p-3">
+              <p className="text-sm text-muted-foreground text-center">
+                An unexpected error occurred while loading this section.
               </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <div className="p-3 bg-muted rounded-md">
-                  <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                    <Bug className="w-4 h-4" />
-                    Error Details (Development)
-                  </h4>
-                  <pre className="text-xs text-muted-foreground overflow-auto">
-                    {this.state.error.message}
+              {process.env.NODE_ENV === 'development' && (
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+                    Error details (dev only)
+                  </summary>
+                  <pre className="mt-2 text-xs text-muted-foreground whitespace-pre-wrap">
+                    {error.message}
                   </pre>
-                  {this.state.errorInfo && (
-                    <details className="mt-2">
-                      <summary className="text-xs cursor-pointer">Component Stack</summary>
-                      <pre className="text-xs text-muted-foreground mt-1 overflow-auto">
-                        {this.state.errorInfo.componentStack}
-                      </pre>
-                    </details>
-                  )}
-                </div>
+                </details>
               )}
-              
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button 
-                  onClick={this.handleReset} 
-                  variant="outline" 
-                  className="flex-1"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Try Again
-                </Button>
-                <Button 
-                  onClick={this.handleReload} 
-                  className="flex-1"
-                >
-                  <Home className="w-4 h-4 mr-2" />
-                  Reload App
-                </Button>
-              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={resetErrorBoundary}
+                variant="default"
+                size="sm"
+                className="flex-1"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Try again
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/'}
+                variant="outline"
+                size="sm"
+                className="flex-1"
+              >
+                <Home className="mr-2 h-4 w-4" />
+                Home
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+}
 
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground">
-                  If this error persists, try clearing your browser cache or using a different browser.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ComponentType<ErrorFallbackProps>;
+}
 
-    return this.props.children;
-  }
+export function ErrorBoundary({ children, fallback: Fallback = ErrorFallback }: ErrorBoundaryProps) {
+  return (
+    <ReactErrorBoundary
+      FallbackComponent={Fallback}
+      onError={(error, errorInfo) => {
+        // Log error for debugging in development
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error Boundary caught an error:', error, errorInfo);
+        }
+      }}
+      onReset={() => {
+        // Optionally clear any error-related state here
+        window.location.reload();
+      }}
+    >
+      {children}
+    </ReactErrorBoundary>
+  );
 }
