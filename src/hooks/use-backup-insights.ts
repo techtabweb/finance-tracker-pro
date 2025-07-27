@@ -23,10 +23,11 @@ export interface DataInsights {
 export function useBackupInsights() {
   const [backupHistory, setBackupHistory] = useKV<BackupHistory[]>('backup-history', []);
 
-  const addBackupRecord = (record: Omit<BackupHistory, 'id'>) => {
+  const addBackupRecord = (record: Omit<BackupHistory, 'id' | 'date'>) => {
     const newRecord: BackupHistory = {
       ...record,
-      id: Date.now().toString()
+      id: Date.now().toString(),
+      date: new Date().toISOString()
     };
     
     setBackupHistory((current) => [newRecord, ...(current || []).slice(0, 49)]); // Keep last 50 records

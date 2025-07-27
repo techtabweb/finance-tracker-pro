@@ -109,11 +109,10 @@ export const UserProfile = () => {
       },
       currency: current?.currency ?? 'INR',
       language: current?.language ?? 'en',
-      preferences: current?.preferences ?? {
-        theme: 'system',
-        fontSize: 'medium',
-        highContrast: false,
-        reducedMotion: false
+      preferences: {
+        defaultCategory: current?.preferences?.defaultCategory ?? 'General',
+        budgetPeriod: current?.preferences?.budgetPeriod ?? 'monthly',
+        theme: current?.preferences?.theme ?? 'system'
       }
     }));
   };

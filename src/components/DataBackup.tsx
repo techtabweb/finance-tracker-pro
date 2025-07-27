@@ -85,7 +85,6 @@ export function DataBackup() {
       
       // Record backup history
       await addBackupRecord({
-        date: new Date().toISOString(),
         type: 'export',
         format: 'json',
         recordCount: totalRecords
@@ -114,7 +113,6 @@ export function DataBackup() {
       
       // Record backup history
       await addBackupRecord({
-        date: new Date().toISOString(),
         type: 'export',
         format: 'csv',
         recordCount: expenses.length
@@ -353,15 +351,15 @@ export function DataBackup() {
       }
 
       if (importPreview.data.monthlyBudget) {
-        setMonthlyBudget(String(importPreview.data.monthlyBudget));
+        setMonthlyBudget(Number(importPreview.data.monthlyBudget));
       }
 
       setImportProgress(100);
       
       await addBackupRecord({
         type: 'import',
-        filename: 'imported-data.json',
-        size: JSON.stringify(importPreview).length,
+        format: 'json',
+        size: `${JSON.stringify(importPreview).length} bytes`,
         recordCount: (importPreview.data.expenses?.length || 0) + 
                     (importPreview.data.budgets?.length || 0) + 
                     (importPreview.data.savingsGoals?.length || 0)
