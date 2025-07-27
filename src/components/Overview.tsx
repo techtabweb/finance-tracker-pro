@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { formatCurrency, getMonthName, getCurrentMonth } from '@/lib/format';
 import { AddExpenseDialog } from './AddExpenseDialog';
 import { WelcomeGuide } from './WelcomeGuide';
+import { PredictionWidget } from './PredictionWidget';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Target, AlertTriangle } from '@phosphor-icons/react';
@@ -374,6 +375,9 @@ export function Overview() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* AI Predictions Widget */}
+      <PredictionWidget />
 
       {/* Floating Action Button for Mobile */}
       {isMobile && (

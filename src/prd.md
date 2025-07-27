@@ -65,14 +65,31 @@ Indian users need a secure finance tracker that understands local spending patte
     - Tracks learning statistics and accuracy improvements
     - Offers insights into recognized merchants and spending patterns
     - Continuous improvement through user feedback and corrections
+13. **AI Expense Prediction**: Revolutionary predictive analysis powered by Gemini AI:
+    - Analyzes historical spending patterns using advanced machine learning
+    - Predicts future expenses by category with confidence scores
+    - Considers seasonal factors specific to Indian spending (festivals, monsoons, school seasons)
+    - Identifies spending trends (increasing, decreasing, stable) with risk assessment
+    - Provides monthly, quarterly predictions with reasoning
+    - Budget impact analysis and overspending alerts
+    - Intelligent insights for better financial planning
+    - Adaptive predictions that improve with more data
+    - Helps users proactively plan budgets and avoid surprises
 
-### NEW: Learning Intelligence Features
+### NEW: AI-Powered Intelligence Features
 - **Learning Dashboard**: Dedicated tab showing AI learning progress and statistics
 - **Pattern Recognition**: System learns from user corrections and preferences
 - **Merchant Recognition**: Smart identification of frequently used merchants
 - **Accuracy Tracking**: Monitors AI suggestion accuracy over time
 - **Learning Insights**: Visual feedback on system learning progress
 - **Optimization Tools**: Features to improve learning performance
+- **Expense Prediction Tab**: Comprehensive predictive analytics with:
+  - Interactive overview of predicted spending totals
+  - Category-wise predictions with confidence metrics
+  - Risk assessment and budget impact analysis
+  - Smart alerts for potential overspending
+  - Actionable insights and recommendations
+  - Beautiful visualizations and trend indicators
 12. **AI Financial Insights**: Intelligent analysis and recommendations:
     - Spending pattern analysis and warnings
     - Budget utilization alerts and predictions
