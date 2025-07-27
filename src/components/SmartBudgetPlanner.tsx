@@ -18,6 +18,7 @@ import {
   CheckCircle,
   XCircle
 } from '@phosphor-icons/react';
+import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface BudgetRecommendation {
@@ -146,10 +147,22 @@ Focus on:
 `;
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
-      const result = JSON.parse(response);
+      
+      let result;
+      try {
+        result = JSON.parse(response);
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        throw new Error('Invalid AI response format');
+      }
 
-      setRecommendations(result.recommendations || []);
-      setScenarios(result.scenarios || []);
+      // Validate the response structure
+      if (!result || typeof result !== 'object') {
+        throw new Error('AI response is not a valid object');
+      }
+
+      setRecommendations(Array.isArray(result.recommendations) ? result.recommendations : []);
+      setScenarios(Array.isArray(result.scenarios) ? result.scenarios : []);
       
       // Set initial total budget goal
       const currentTotal = budgets.reduce((sum, b) => sum + b.limit, 0);
@@ -239,7 +252,7 @@ Focus on:
 
   const applyRecommendation = (rec: BudgetRecommendation) => {
     setBudget(rec.category, rec.recommendedBudget);
-    toast.success(`Budget for ${rec.category} updated to ₹${rec.recommendedBudget.toLocaleString()}`);
+    toast.success(`Budget for ${rec.category} updated to ₹${formatCurrency(rec.recommendedBudget)}`);
   };
 
   const applyScenario = (scenario: BudgetScenario) => {
@@ -315,19 +328,19 @@ Focus on:
             <div className="bg-blue-50 rounded-lg p-3">
               <div className="text-blue-600 font-semibold">Current Budget</div>
               <div className="text-lg font-bold text-blue-800">
-                ₹{budgets.reduce((sum, b) => sum + b.limit, 0).toLocaleString()}
+                ₹{formatCurrency(budgets.reduce((sum, b) => sum + b.limit, 0))}
               </div>
             </div>
             <div className="bg-green-50 rounded-lg p-3">
               <div className="text-green-600 font-semibold">This Month Spent</div>
               <div className="text-lg font-bold text-green-800">
-                ₹{getTotalSpent().toLocaleString()}
+                ₹{formatCurrency(getTotalSpent())}
               </div>
             </div>
             <div className="bg-purple-50 rounded-lg p-3">
               <div className="text-purple-600 font-semibold">Remaining</div>
               <div className="text-lg font-bold text-purple-800">
-                ₹{(budgets.reduce((sum, b) => sum + b.limit, 0) - getTotalSpent()).toLocaleString()}
+                ₹{formatCurrency(budgets.reduce((sum, b) => sum + b.limit, 0) - getTotalSpent())}
               </div>
             </div>
           </div>
@@ -382,19 +395,19 @@ Focus on:
                       <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
                         <div className="text-center">
                           <div className="text-sm text-gray-500">Current</div>
-                          <div className="font-semibold">₹{rec.currentBudget.toLocaleString()}</div>
+                          <div className="font-semibold">₹{formatCurrency(rec.currentBudget)}</div>
                         </div>
                         <ArrowRight className="w-5 h-5 text-gray-400" />
                         <div className="text-center">
                           <div className="text-sm text-gray-500">Recommended</div>
-                          <div className="font-semibold text-blue-600">₹{rec.recommendedBudget.toLocaleString()}</div>
+                          <div className="font-semibold text-blue-600">₹{formatCurrency(rec.recommendedBudget)}</div>
                         </div>
                         {rec.potentialSavings > 0 && (
                           <>
                             <ArrowRight className="w-5 h-5 text-gray-400" />
                             <div className="text-center">
                               <div className="text-sm text-gray-500">Savings</div>
-                              <div className="font-semibold text-green-600">₹{rec.potentialSavings.toLocaleString()}</div>
+                              <div className="font-semibold text-green-600">₹{formatCurrency(rec.potentialSavings)}</div>
                             </div>
                           </>
                         )}
@@ -453,11 +466,11 @@ Focus on:
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="bg-gray-50 rounded-lg p-3">
                         <div className="text-gray-500">Total Budget</div>
-                        <div className="font-semibold text-lg">₹{scenario.totalBudget.toLocaleString()}</div>
+                        <div className="font-semibold text-lg">₹{formatCurrency(scenario.totalBudget)}</div>
                       </div>
                       <div className="bg-green-50 rounded-lg p-3">
                         <div className="text-green-600">Expected Savings</div>
-                        <div className="font-semibold text-lg text-green-700">₹{scenario.expectedSavings.toLocaleString()}</div>
+                        <div className="font-semibold text-lg text-green-700">₹{formatCurrency(scenario.expectedSavings)}</div>
                       </div>
                     </div>
 
@@ -466,7 +479,7 @@ Focus on:
                       {Object.entries(scenario.categoryAllocations).map(([category, amount]) => (
                         <div key={category} className="flex justify-between items-center text-sm">
                           <span className="text-gray-600">{category}</span>
-                          <span className="font-medium">₹{amount.toLocaleString()}</span>
+                          <span className="font-medium">₹{formatCurrency(amount)}</span>
                         </div>
                       ))}
                     </div>

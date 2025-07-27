@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useTheme } from '@/hooks/use-theme';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Overview } from '@/components/Overview';
 import { ExpensesList } from '@/components/ExpensesList';
 import { BudgetsList } from '@/components/BudgetsList';
@@ -49,7 +50,8 @@ function App() {
   const currentTab = tabs.find(tab => tab.value === activeTab);
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-background transition-colors duration-300">
       {/* Header */}
       <motion.div 
         className="bg-card/90 backdrop-blur-md border-b border-border sticky top-0 z-50 shadow-sm"
@@ -242,7 +244,8 @@ function App() {
         richColors 
         closeButton
       />
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
 

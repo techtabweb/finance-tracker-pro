@@ -18,6 +18,7 @@ import {
   CreditCard,
   Repeat
 } from '@phosphor-icons/react';
+import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface SpendingAlert {
@@ -133,10 +134,22 @@ Focus on:
 `;
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
-      const result = JSON.parse(response);
+      
+      let result;
+      try {
+        result = JSON.parse(response);
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        throw new Error('Invalid AI response format');
+      }
 
-      setAlerts(result.alerts || []);
-      setPredictions(result.predictions || []);
+      // Validate the response structure
+      if (!result || typeof result !== 'object') {
+        throw new Error('AI response is not a valid object');
+      }
+
+      setAlerts(Array.isArray(result.alerts) ? result.alerts : []);
+      setPredictions(Array.isArray(result.predictions) ? result.predictions : []);
     } catch (error) {
       console.error('Error generating alerts:', error);
       // Fallback to basic alerts
@@ -171,8 +184,8 @@ Focus on:
           category: budget.category,
           severity: 'critical',
           title: `Budget Exceeded: ${budget.category}`,
-          message: `You've spent ₹${spent.toLocaleString()} out of ₹${budget.limit.toLocaleString()} budget (${percentage.toFixed(0)}%)`,
-          recommendation: `Reduce ${budget.category} spending or increase budget by ₹${(spent - budget.limit).toLocaleString()}`,
+          message: `You've spent ₹${formatCurrency(spent)} out of ₹${formatCurrency(budget.limit)} budget (${percentage.toFixed(0)}%)`,
+          recommendation: `Reduce ${budget.category} spending or increase budget by ₹${formatCurrency(spent - budget.limit)}`,
           amount: spent,
           threshold: budget.limit,
           confidence: 95,
@@ -248,7 +261,7 @@ Focus on:
     if (alert.type === 'budget_exceeded' && alert.amount && alert.threshold) {
       const newBudget = Math.ceil(alert.amount * 1.1); // 10% buffer
       setBudget(alert.category, newBudget);
-      toast.success(`Budget for ${alert.category} increased to ₹${newBudget.toLocaleString()}`);
+      toast.success(`Budget for ${alert.category} increased to ₹${formatCurrency(newBudget)}`);
     }
   };
 
@@ -358,17 +371,17 @@ Focus on:
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span>Current Spent:</span>
-                      <span className="font-medium">₹{prediction.currentSpent.toLocaleString()}</span>
+                      <span className="font-medium">₹{formatCurrency(prediction.currentSpent)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Predicted Total:</span>
                       <span className={`font-medium ${getRiskColor(prediction.riskLevel)}`}>
-                        ₹{prediction.predictedTotal.toLocaleString()}
+                        ₹{formatCurrency(prediction.predictedTotal)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Budget Limit:</span>
-                      <span className="font-medium">₹{prediction.budgetLimit.toLocaleString()}</span>
+                      <span className="font-medium">₹{formatCurrency(prediction.budgetLimit)}</span>
                     </div>
 
                     <Progress 
@@ -384,7 +397,7 @@ Focus on:
                         </span>
                       </div>
                       <p className="text-sm text-blue-700">
-                        Suggested daily limit: ₹{prediction.suggestedDailyLimit.toLocaleString()}
+                        Suggested daily limit: ₹{formatCurrency(prediction.suggestedDailyLimit)}
                       </p>
                     </div>
                   </div>

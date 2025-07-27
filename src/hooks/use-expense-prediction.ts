@@ -167,12 +167,23 @@ Return a JSON object with this structure:
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
 
-      const analysisResult = JSON.parse(response);
+      let analysisResult;
+      try {
+        analysisResult = JSON.parse(response);
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        throw new Error('Invalid AI response format');
+      }
+
+      // Validate the response structure
+      if (!analysisResult || typeof analysisResult !== 'object') {
+        throw new Error('AI response is not a valid object');
+      }
       
       // Validate and structure the response
       const predictionAnalysis: PredictionAnalysis = {
         totalPredictedSpending: Math.max(0, Number(analysisResult.totalPredictedSpending) || 0),
-        categoryPredictions: (analysisResult.categoryPredictions || [])
+        categoryPredictions: (Array.isArray(analysisResult.categoryPredictions) ? analysisResult.categoryPredictions : [])
           .filter((pred: any) => pred.category && pred.predictedAmount > 0)
           .map((pred: any) => ({
             category: pred.category,
@@ -184,14 +195,14 @@ Return a JSON object with this structure:
             seasonalFactor: Math.max(0.5, Math.min(2.0, Number(pred.seasonalFactor) || 1.0)),
             riskLevel: ['low', 'medium', 'high'].includes(pred.riskLevel) ? pred.riskLevel : 'medium'
           })),
-        budgetAlerts: (analysisResult.budgetAlerts || [])
+        budgetAlerts: (Array.isArray(analysisResult.budgetAlerts) ? analysisResult.budgetAlerts : [])
           .filter((alert: any) => alert.category && alert.message)
           .map((alert: any) => ({
             category: alert.category,
             message: String(alert.message).substring(0, 150),
             severity: ['warning', 'danger'].includes(alert.severity) ? alert.severity : 'warning'
           })),
-        insights: (analysisResult.insights || [])
+        insights: (Array.isArray(analysisResult.insights) ? analysisResult.insights : [])
           .filter((insight: any) => insight && typeof insight === 'string')
           .map((insight: string) => insight.substring(0, 200))
           .slice(0, 5),

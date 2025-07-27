@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { TrendingUp, TrendingDown, AlertTriangle, Target, Brain, Zap, BarChart3, Calendar, Lightbulb, Shield, Calculator } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import { formatCurrency } from '@/lib/utils';
 
 interface MLInsight {
   id: string;
@@ -133,10 +134,22 @@ Focus on:
 `;
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
-      const analysisResult = JSON.parse(response);
+      
+      let analysisResult;
+      try {
+        analysisResult = JSON.parse(response);
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        throw new Error('Invalid AI response format');
+      }
 
-      setInsights(analysisResult.insights || []);
-      setOptimizations(analysisResult.optimizations || []);
+      // Validate the response structure
+      if (!analysisResult || typeof analysisResult !== 'object') {
+        throw new Error('AI response is not a valid object');
+      }
+
+      setInsights(Array.isArray(analysisResult.insights) ? analysisResult.insights : []);
+      setOptimizations(Array.isArray(analysisResult.optimizations) ? analysisResult.optimizations : []);
     } catch (error) {
       console.error('Error generating insights:', error);
       toast.error('Failed to generate ML insights');
@@ -167,7 +180,7 @@ Focus on:
           type: 'overspending_risk',
           category,
           title: `High spending in ${category}`,
-          description: `You've spent ₹${amount.toLocaleString()} out of ₹${budget.amount.toLocaleString()} budget`,
+          description: `You've spent ₹${formatCurrency(amount)} out of ₹${formatCurrency(budget.amount)} budget`,
           impact: amount > budget.amount ? 'high' : 'medium',
           confidence: 85,
           recommendation: amount > budget.amount 
@@ -206,7 +219,7 @@ Focus on:
 
   const applyOptimization = async (optimization: BudgetOptimization) => {
     setBudget(optimization.category, optimization.suggestedBudget);
-    toast.success(`Budget for ${optimization.category} updated to ₹${optimization.suggestedBudget.toLocaleString()}`);
+    toast.success(`Budget for ${optimization.category} updated to ₹${formatCurrency(optimization.suggestedBudget)}`);
   };
 
   const getImpactColor = (impact: string) => {
@@ -335,11 +348,11 @@ Focus on:
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Current: </span>
-                          <span className="font-medium">₹{insight.data.current.toLocaleString()}</span>
+                          <span className="font-medium">₹{formatCurrency(insight.data.current)}</span>
                         </div>
                         <div>
                           <span className="text-gray-500">Predicted: </span>
-                          <span className="font-medium">₹{insight.data.predicted.toLocaleString()}</span>
+                          <span className="font-medium">₹{formatCurrency(insight.data.predicted)}</span>
                         </div>
                       </div>
 
@@ -406,15 +419,15 @@ Focus on:
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">Current Budget:</span>
-                          <span className="font-semibold">₹{optimization.currentBudget.toLocaleString()}</span>
+                          <span className="font-semibold">₹{formatCurrency(optimization.currentBudget)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">Suggested Budget:</span>
-                          <span className="font-semibold text-green-600">₹{optimization.suggestedBudget.toLocaleString()}</span>
+                          <span className="font-semibold text-green-600">₹{formatCurrency(optimization.suggestedBudget)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">Potential Savings:</span>
-                          <span className="font-semibold text-green-600">₹{optimization.potentialSavings.toLocaleString()}</span>
+                          <span className="font-semibold text-green-600">₹{formatCurrency(optimization.potentialSavings)}</span>
                         </div>
 
                         <div className="bg-green-50 rounded-lg p-4">
@@ -484,18 +497,18 @@ Focus on:
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 rounded-lg p-3">
                       <div className="text-sm text-gray-500">Current</div>
-                      <div className="text-lg font-semibold">₹{selectedInsight.data.current.toLocaleString()}</div>
+                      <div className="text-lg font-semibold">₹{formatCurrency(selectedInsight.data.current)}</div>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3">
                       <div className="text-sm text-gray-500">Predicted</div>
-                      <div className="text-lg font-semibold">₹{selectedInsight.data.predicted.toLocaleString()}</div>
+                      <div className="text-lg font-semibold">₹{formatCurrency(selectedInsight.data.predicted)}</div>
                     </div>
                   </div>
 
                   <div className="bg-yellow-50 rounded-lg p-3">
                     <div className="text-sm text-yellow-600">Variance</div>
                     <div className="text-lg font-semibold text-yellow-800">
-                      {selectedInsight.data.variance > 0 ? '+' : ''}{selectedInsight.data.variance.toFixed(1)}%
+                      {(selectedInsight.data.variance || 0) > 0 ? '+' : ''}{(selectedInsight.data.variance || 0).toFixed(1)}%
                     </div>
                   </div>
 

@@ -34,6 +34,7 @@ import { useKV } from '@github/spark/hooks';
 import { useTheme } from '@/hooks/use-theme';
 import { toast } from 'sonner';
 import { DataBackup } from '@/components/DataBackup';
+import { formatCurrency } from '@/lib/utils';
 
 export const UserProfile = () => {
   const { expenses, budgets, savingsGoals } = useFinanceData();
@@ -329,7 +330,7 @@ export const UserProfile = () => {
                     </div>
                     <div className="text-center p-4 bg-orange-500/10 rounded-lg">
                       <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                        ₹{expenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString()}
+                        ₹{formatCurrency(expenses.reduce((total, expense) => total + expense.amount, 0))}
                       </div>
                       <div className="text-sm text-muted-foreground">Total Spent</div>
                     </div>

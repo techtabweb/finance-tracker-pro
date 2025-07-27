@@ -125,7 +125,28 @@ Return JSON format:
 
     try {
       const response = await spark.llm(prompt, 'gpt-4o', true);
-      const aiSuggestion = JSON.parse(response);
+      
+      let aiSuggestion;
+      try {
+        aiSuggestion = JSON.parse(response);
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        // Fallback to default values
+        aiSuggestion = {
+          merchant: 'Unknown Store',
+          category: 'Other',
+          reasoning: 'AI parsing failed'
+        };
+      }
+
+      // Validate that aiSuggestion is an object
+      if (!aiSuggestion || typeof aiSuggestion !== 'object') {
+        aiSuggestion = {
+          merchant: 'Unknown Store',
+          category: 'Other',
+          reasoning: 'Invalid AI response'
+        };
+      }
       
       return {
         amount: 100, // Default amount - user will need to edit

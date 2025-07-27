@@ -126,7 +126,19 @@ Return a JSON array with up to 3 suggestions, ordered by confidence:
 Focus on accuracy and relevance to Indian context.`;
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
-      const suggestions = JSON.parse(response);
+      
+      let suggestions;
+      try {
+        suggestions = JSON.parse(response);
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        throw new Error('Invalid AI response format');
+      }
+
+      // Validate that suggestions is an array
+      if (!Array.isArray(suggestions)) {
+        throw new Error('AI response is not a valid array');
+      }
       
       // Validate and format the response
       const validSuggestions = suggestions

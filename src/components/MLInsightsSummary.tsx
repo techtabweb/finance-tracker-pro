@@ -16,6 +16,7 @@ import {
   Lightbulb,
   ArrowRight
 } from '@phosphor-icons/react';
+import { formatCurrency } from '@/lib/utils';
 
 interface MLSummary {
   budgetHealth: {
@@ -117,7 +118,20 @@ Focus on:
 `;
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
-      const result = JSON.parse(response);
+      
+      let result;
+      try {
+        result = JSON.parse(response);
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        throw new Error('Invalid AI response format');
+      }
+
+      // Validate the response structure
+      if (!result || typeof result !== 'object') {
+        throw new Error('AI response is not a valid object');
+      }
+      
       setSummary(result);
     } catch (error) {
       console.error('Error generating ML summary:', error);
@@ -335,7 +349,7 @@ Focus on:
                 </p>
                 {summary.topRecommendation.impact > 0 && (
                   <p className="text-blue-600 text-xs">
-                    Potential impact: ₹{summary.topRecommendation.impact.toLocaleString()}
+                    Potential impact: ₹{formatCurrency(summary.topRecommendation.impact)}
                   </p>
                 )}
               </div>
@@ -367,7 +381,7 @@ Focus on:
                   <div>
                     <span className="font-medium text-green-800">Potential Savings</span>
                     <div className="text-2xl font-bold text-green-700">
-                      ₹{summary.potentialSavings.toLocaleString()}
+                      ₹{formatCurrency(summary.potentialSavings)}
                     </div>
                   </div>
                 </div>
