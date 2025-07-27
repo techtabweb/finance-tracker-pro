@@ -49,30 +49,30 @@ export function MLInsightsSummary() {
       return;
     }
 
+    // Calculate current month data outside try block for fallback access
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const currentExpenses = expenses.filter(exp => exp.date.startsWith(currentMonth));
+    const totalSpent = currentExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+    const totalBudget = budgets.reduce((sum, budget) => sum + budget.limit, 0);
+
+    // Calculate budget utilization
+    const utilizationRate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+    
+    // Analyze spending by category
+    const categorySpending = budgets.map(budget => {
+      const categoryExpenses = currentExpenses.filter(exp => exp.category === budget.category);
+      const spent = categoryExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+      return {
+        category: budget.category,
+        spent,
+        budget: budget.limit,
+        utilization: budget.limit > 0 ? (spent / budget.limit) * 100 : 0,
+        overspend: spent > budget.limit
+      };
+    });
+
     try {
       setLoading(true);
-
-      // Calculate current month data
-      const currentMonth = new Date().toISOString().slice(0, 7);
-      const currentExpenses = expenses.filter(exp => exp.date.startsWith(currentMonth));
-      const totalSpent = currentExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const totalBudget = budgets.reduce((sum, budget) => sum + budget.limit, 0);
-
-      // Calculate budget utilization
-      const utilizationRate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-      
-      // Analyze spending by category
-      const categorySpending = budgets.map(budget => {
-        const categoryExpenses = currentExpenses.filter(exp => exp.category === budget.category);
-        const spent = categoryExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-        return {
-          category: budget.category,
-          spent,
-          budget: budget.limit,
-          utilization: budget.limit > 0 ? (spent / budget.limit) * 100 : 0,
-          overspend: spent > budget.limit
-        };
-      });
 
       const analysisData = {
         totalSpent,
@@ -136,7 +136,7 @@ Focus on:
     } catch (error) {
       console.error('Error generating ML summary:', error);
       
-      // Fallback summary
+      // Fallback summary with proper access to variables
       const fallbackSummary: MLSummary = {
         budgetHealth: {
           score: Math.max(0, 100 - utilizationRate),

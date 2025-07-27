@@ -185,7 +185,7 @@ Focus on:
         exp.category === budget.category && exp.date.startsWith(currentMonth)
       );
       const spent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const utilizationRate = spent / budget.limit;
+      const utilizationRate = budget.limit > 0 ? spent / budget.limit : 0;
 
       if (utilizationRate < 0.5) {
         // Under-utilized budget
