@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useTheme } from '@/hooks/use-theme';
+import { useTabSwipe } from '@/hooks/use-swipe';
+import { SwipeFeedback, useSwipeFeedback } from '@/components/SwipeFeedback';
+import { SwipeTutorial } from '@/components/SwipeTutorial';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Overview } from '@/components/Overview';
 import { ExpensesList } from '@/components/ExpensesList';
@@ -22,6 +25,7 @@ import { SystemValidator } from '@/components/SystemValidator';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 function App() {
   const { activeTab, setActiveTab } = useFinanceData();
@@ -98,6 +102,40 @@ function App() {
   const mobileMainTabs = tabs.filter(tab => priorityTabs.includes(tab.value));
   const mobileSecondaryTabs = tabs.filter(tab => !priorityTabs.includes(tab.value));
 
+  // Extract tab values for swipe navigation
+  const tabValues = tabs.map(tab => tab.value);
+  
+  // Setup swipe feedback
+  const { swipeState, showSwipeFeedback, currentTab: currentTabValue, nextTab, previousTab } = useSwipeFeedback(tabs, activeTab);
+  
+  // Setup swipe gestures for mobile with feedback
+  const { swipeRef, swipeProgress } = useTabSwipe(
+    tabValues,
+    activeTab,
+    (newTab) => {
+      const currentIndex = tabValues.indexOf(activeTab);
+      const newIndex = tabValues.indexOf(newTab);
+      const direction = newIndex > currentIndex || (currentIndex === tabValues.length - 1 && newIndex === 0) ? 'left' : 'right';
+      
+      // Show feedback before changing tab
+      showSwipeFeedback(direction);
+      
+      // Change tab with a slight delay for feedback
+      setTimeout(() => {
+        setActiveTab(newTab as any);
+        toast.success(`Switched to ${tabs.find(t => t.value === newTab)?.label}`, {
+          duration: 1500,
+          position: 'top-center'
+        });
+      }, 150);
+    },
+    {
+      threshold: 80, // Increased threshold for better UX
+      preventDefaultTouchmoveEvent: false, // Allow normal scrolling
+      enableHaptics: true // Enable haptic feedback
+    }
+  );
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-background transition-colors duration-300">
@@ -127,10 +165,10 @@ function App() {
               </div>
             </motion.div>
             
-            {/* Mobile current tab indicator */}
+            {/* Mobile current tab indicator with swipe hint */}
             {isMobile && currentTab && (
               <motion.div 
-                className="flex items-center gap-2 bg-primary/10 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-primary/20"
+                className="flex items-center gap-2 bg-primary/10 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-primary/20 relative"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
@@ -138,6 +176,20 @@ function App() {
               >
                 <span className="text-lg">{currentTab.icon}</span>
                 <span className="font-medium text-primary text-sm">{currentTab.shortLabel}</span>
+                
+                {/* Swipe hint animation */}
+                <motion.div
+                  className="absolute -right-1 top-1/2 -translate-y-1/2 text-xs text-primary/60"
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatDelay: 3,
+                    ease: "easeInOut"
+                  }}
+                >
+                  👈👉
+                </motion.div>
               </motion.div>
             )}
 
@@ -396,7 +448,7 @@ function App() {
             </div>
           )}
 
-          {/* Content Area */}
+          {/* Content Area with Swipe Support */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -404,8 +456,38 @@ function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
-              className={`${isMobile ? 'pb-24 mobile-content' : 'pb-6'}`}
+              className={`${isMobile ? 'pb-24 mobile-content swipe-area' : 'pb-6'} swipe-container`}
+              ref={isMobile ? swipeRef as any : undefined} // Only attach swipe to mobile
+              style={{
+                transform: isMobile && swipeProgress > 0 ? `scale(${1 - swipeProgress * 0.02})` : undefined,
+                transition: swipeProgress === 0 ? 'transform 0.3s ease' : undefined
+              }}
             >
+              {/* Swipe indicator for mobile */}
+              {isMobile && (
+                <motion.div 
+                  className="flex justify-center mb-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <div className="bg-muted/20 backdrop-blur-sm px-4 py-2 rounded-full border border-border/20">
+                    <motion.div 
+                      className="flex items-center gap-2 text-xs text-muted-foreground"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <span>👈</span>
+                      <span>Swipe to navigate</span>
+                      <span>👉</span>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
               <TabsContent value="overview" className="mt-0">
                 <Overview />
               </TabsContent>
@@ -467,6 +549,18 @@ function App() {
         richColors 
         closeButton
       />
+      
+      {/* Swipe Feedback Component */}
+      <SwipeFeedback
+        isActive={swipeState.isActive}
+        direction={swipeState.direction}
+        currentTab={currentTabValue}
+        nextTab={nextTab}
+        previousTab={previousTab}
+      />
+      
+      {/* Swipe Tutorial */}
+      <SwipeTutorial />
       </div>
     </ErrorBoundary>
   );

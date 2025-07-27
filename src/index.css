@@ -301,6 +301,61 @@
     min-height: auto;
     min-width: auto;
   }
+  
+  /* Enhanced swipe gesture area */
+  .swipe-area {
+    touch-action: pan-y; /* Allow vertical scrolling but capture horizontal swipes */
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Swipe gesture enhancements */
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.swipe-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Swipe indicator animations */
+@keyframes swipe-hint-left {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(10px); opacity: 1; }
+}
+
+@keyframes swipe-hint-right {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(-10px); opacity: 1; }
+}
+
+.swipe-hint-left {
+  animation: swipe-hint-left 2s infinite ease-in-out;
+}
+
+.swipe-hint-right {
+  animation: swipe-hint-right 2s infinite ease-in-out;
+}
+
+/* Tab transition enhancements for swipe */
+.tab-content-swipe {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-content-swipe.swiping-left {
+  transform: translateX(-10px);
+}
+
+.tab-content-swipe.swiping-right {
+  transform: translateX(10px);
 }
 
 /* Floating action button styles */
