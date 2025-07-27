@@ -32,19 +32,6 @@ export function useExpensePrediction() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Automatically analyze when expenses change significantly
-  useEffect(() => {
-    const lastAnalysisDate = predictions?.lastUpdated;
-    const daysSinceLastAnalysis = lastAnalysisDate 
-      ? Math.floor((Date.now() - new Date(lastAnalysisDate).getTime()) / (1000 * 60 * 60 * 24))
-      : 7; // Force analysis if no previous analysis
-
-    // Re-analyze if it's been more than 3 days or we have significant new data
-    if (daysSinceLastAnalysis >= 3 && expenses.length >= 10) {
-      generatePredictions();
-    }
-  }, [expenses.length, generatePredictions, predictions]);
-
   const analyzeSpendingPatterns = (expenses: Expense[]) => {
     const now = new Date();
     const categorizedData: { [category: string]: { amounts: number[], dates: string[] } } = {};
@@ -226,6 +213,19 @@ Requirements:
       setIsAnalyzing(false);
     }
   }, [expenses]);
+
+  // Automatically analyze when expenses change significantly
+  useEffect(() => {
+    const lastAnalysisDate = predictions?.lastUpdated;
+    const daysSinceLastAnalysis = lastAnalysisDate 
+      ? Math.floor((Date.now() - new Date(lastAnalysisDate).getTime()) / (1000 * 60 * 60 * 24))
+      : 7; // Force analysis if no previous analysis
+
+    // Re-analyze if it's been more than 3 days or we have significant new data
+    if (daysSinceLastAnalysis >= 3 && expenses.length >= 10) {
+      generatePredictions();
+    }
+  }, [expenses.length, generatePredictions, predictions]);
 
   const getPredictionForCategory = (category: string): ExpensePrediction | null => {
     return predictions?.categoryPredictions.find(p => p.category === category) || null;
