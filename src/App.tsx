@@ -186,8 +186,8 @@ function App() {
                     <div className="w-1 h-8 bg-gradient-to-b from-transparent via-current to-transparent rounded-full" />
                   </div>
                   
-                  <div className=\"overflow-x-auto scrollbar-hide horizontal-scroll\" ref={scrollContainerRef}>
-                    <TabsList className=\"flex w-max bg-transparent gap-2 h-auto min-w-full px-6 py-2\">
+                  <div className="overflow-x-auto scrollbar-hide horizontal-scroll" ref={scrollContainerRef}>
+                    <TabsList className="flex w-max bg-transparent gap-2 h-auto min-w-full px-6 py-2">
                       {tabs.map((tab, index) => (
                         <motion.div
                           key={tab.value}
