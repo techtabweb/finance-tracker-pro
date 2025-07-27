@@ -5,18 +5,18 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
-  Smartphone, 
+  DeviceMobile, 
   Monitor, 
-  Wifi, 
-  WifiOff, 
+  WifiHigh, 
+  WifiHigh, 
   Download, 
-  Share2, 
+  Share, 
   Bell,
-  RefreshCw,
+  ArrowClockwise,
   CheckCircle,
-  AlertTriangle,
+  Warning,
   Info,
-  Settings
+  Gear
 } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePWA, usePWAStatus } from '@/hooks/use-pwa';
@@ -72,9 +72,9 @@ export function PWAStatus() {
     const userAgent = navigator.userAgent.toLowerCase();
     
     if (/android/.test(userAgent)) {
-      return { type: 'Android', icon: Smartphone, platform: 'mobile' };
+      return { type: 'Android', icon: DeviceMobile, platform: 'mobile' };
     } else if (/iphone|ipad|ipod/.test(userAgent)) {
-      return { type: 'iOS', icon: Smartphone, platform: 'mobile' };
+      return { type: 'iOS', icon: DeviceMobile, platform: 'mobile' };
     } else if (/windows/.test(userAgent)) {
       return { type: 'Windows', icon: Monitor, platform: 'desktop' };
     } else if (/mac/.test(userAgent)) {
@@ -124,9 +124,9 @@ export function PWAStatus() {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 {isOnline ? (
-                  <Wifi className="h-4 w-4 text-green-600" />
+                  <WifiHighclassName="h-4 w-4 text-green-600" />
                 ) : (
-                  <WifiOff className="h-4 w-4 text-red-600" />
+                  <WifiHighff className="h-4 w-4 text-red-600" />
                 )}
                 <span>Connection: {connectionStatus.text}</span>
               </div>
@@ -144,7 +144,7 @@ export function PWAStatus() {
                 {pwaStatus.hasServiceWorker ? (
                   <CheckCircle className="h-4 w-4 text-green-600" />
                 ) : (
-                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <Warning className="h-4 w-4 text-orange-600" />
                 )}
                 <span>Service Worker</span>
               </div>
@@ -170,7 +170,7 @@ export function PWAStatus() {
                 >
                   {isInstalling ? (
                     <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      <ArrowClockwise className="h-4 w-4 mr-2 animate-spin" />
                       Installing...
                     </>
                   ) : (
@@ -188,7 +188,7 @@ export function PWAStatus() {
                 size="sm"
                 className="flex-1"
               >
-                <Share2 className="h-4 w-4 mr-2" />
+                <Share className="h-4 w-4 mr-2" />
                 Share
               </Button>
 
@@ -214,7 +214,7 @@ export function PWAStatus() {
                   exit={{ opacity: 0, height: 0 }}
                 >
                   <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
-                    <RefreshCw className="h-4 w-4" />
+                    <ArrowClockwise className="h-4 w-4" />
                     <AlertDescription className="flex items-center justify-between">
                       <span>App update available</span>
                       <Button onClick={updateApp} size="sm" variant="outline">
@@ -233,7 +233,7 @@ export function PWAStatus() {
               size="sm"
               className="w-full"
             >
-              <Settings className="h-4 w-4 mr-2" />
+              <Gear className="h-4 w-4 mr-2" />
               {showDetails ? 'Hide' : 'Show'} Technical Details
             </Button>
 

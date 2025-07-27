@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Upload, FileText, Database, AlertTriangle, CheckCircle, Info, FileSpreadsheet, Trash, Archive, Calendar } from '@phosphor-icons/react';
+import { Download, Upload, FileText, Database, Warning, CheckCircle, Info, File, Trash, Archive, Calendar } from '@phosphor-icons/react';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { FinanceDataManager, FinanceDataExport } from '@/lib/data-export';
 import { useBackupInsights } from '@/hooks/use-backup-insights';
@@ -20,11 +20,11 @@ import { motion } from 'framer-motion';
 
 export function DataBackup() {
   const {
-    expenses,
-    budgets,
-    categories,
-    savingsGoals,
-    monthlyBudget,
+    expenses = [],
+    budgets = [],
+    categories = [],
+    savingsGoals = [],
+    monthlyBudget = 0,
     setExpenses,
     setBudgets,
     setCategories,
@@ -482,7 +482,7 @@ export function DataBackup() {
 
                   <Card className="p-4 space-y-4">
                     <div className="flex items-center gap-2">
-                      <FileSpreadsheet size={20} className="text-green-600" />
+                      <File size={20} className="text-green-600" />
                       <div>
                         <h3 className="font-semibold">Expenses Only (CSV)</h3>
                         <p className="text-sm text-muted-foreground">
@@ -502,7 +502,7 @@ export function DataBackup() {
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         >
-                          <FileSpreadsheet size={16} />
+                          <File size={16} />
                         </motion.div>
                       ) : (
                         <Download size={16} />
@@ -643,7 +643,7 @@ export function DataBackup() {
 
                   <Card className="p-4 space-y-4">
                     <div className="flex items-center gap-2">
-                      <FileSpreadsheet size={20} className="text-green-600" />
+                      <File size={20} className="text-green-600" />
                       <div>
                         <h3 className="font-semibold">Import from CSV</h3>
                         <p className="text-sm text-muted-foreground">
@@ -677,7 +677,7 @@ export function DataBackup() {
                 {/* Validation Errors */}
                 {validationErrors.length > 0 && (
                   <Alert variant="destructive">
-                    <AlertTriangle size={16} />
+                    <Warning size={16} />
                     <AlertDescription>
                       <strong>Validation Errors:</strong>
                       <ul className="list-disc list-inside mt-2 space-y-1">
@@ -864,7 +864,7 @@ export function DataBackup() {
             </div>
 
             <Alert variant="destructive">
-              <AlertTriangle size={16} />
+              <Warning size={16} />
               <AlertDescription>
                 This action is permanent. Consider creating a backup before proceeding.
               </AlertDescription>

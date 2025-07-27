@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { 
   Target, 
-  TrendingUp, 
+  TrendUp, 
   Calculator, 
   PiggyBank, 
   Lightbulb,
@@ -44,7 +44,7 @@ interface BudgetScenario {
 }
 
 export function SmartBudgetPlanner() {
-  const { expenses, budgets, setBudget, getTotalSpent } = useFinanceData();
+  const { expenses = [], budgets = [], setBudget, getTotalSpent } = useFinanceData();
   const [recommendations, setRecommendations] = useState<BudgetRecommendation[]>([]);
   const [scenarios, setScenarios] = useState<BudgetScenario[]>([]);
   const [totalBudgetGoal, setTotalBudgetGoal] = useState<number>(0);
@@ -101,7 +101,7 @@ export function SmartBudgetPlanner() {
         expenseCount: recentExpenses.length
       };
 
-      const prompt = window.spark.llmPrompt`
+      const prompt = spark.llmPrompt`
 Analyze the following budget and spending data to provide smart budget recommendations:
 
 Data: ${JSON.stringify(analysisData)}

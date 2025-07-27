@@ -58,7 +58,7 @@ export function AccessibilitySettings() {
           className="rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
           aria-label="Open accessibility settings"
         >
-          <SettingsIcon size={24} weight="duotone" />
+          <Gear size={24} weight="duotone" />
         </Button>
       </motion.div>
     );

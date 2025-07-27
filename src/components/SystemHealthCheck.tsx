@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { X, CheckCircle, AlertTriangle, AlertCircle } from '@phosphor-icons/react';
+import { X, CheckCircle, Warning, WarningCircle } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface HealthStatus {
@@ -14,8 +14,9 @@ interface HealthStatus {
 }
 
 export function SystemHealthCheck() {
-  const { expenses, budgets, categories } = useFinanceData();
+  const { expenses = [], budgets = [], categories = [] } = useFinanceData();
   const { isDark, settings } = useTheme();
+  const safeSettings = settings || { theme: 'system', fontSize: 'medium', contrastMode: 'normal', reducedMotion: false };
   const isMobile = useIsMobile();
   const [showHealthPanel, setShowHealthPanel] = useState(false);
   const [lastHealthCheck, setLastHealthCheck] = useState<HealthStatus | null>(null);
@@ -79,7 +80,7 @@ export function SystemHealthCheck() {
     console.log(`  • Expenses: ${expenses.length}`);
     console.log(`  • Budgets: ${budgets.length}`);
     console.log(`  • Categories: ${categories.length}`);
-    console.log(`  • Theme: ${settings.theme} (${isDark ? 'dark' : 'light'})`);
+    console.log(`  • Theme: ${safeSettings.theme} (${isDark ? 'dark' : 'light'})`);
     console.log(`  • Device: ${isMobile ? 'mobile' : 'desktop'} (${window.innerWidth}px)`);
     console.log(`  • AI Chat: ${typeof window !== 'undefined' && window.spark?.llm ? 'Available' : 'Basic mode'}`);
     
@@ -97,7 +98,7 @@ export function SystemHealthCheck() {
     if (health.issues.length > 0 && health.overall === 'critical') {
       setShowHealthPanel(true);
     }
-  }, [expenses.length, budgets.length, categories.length, isDark, settings.theme, isMobile]);
+  }, [expenses.length, budgets.length, categories.length, isDark, safeSettings.theme, isMobile]);
 
   // Expose to global scope
   useEffect(() => {
@@ -107,7 +108,7 @@ export function SystemHealthCheck() {
       setShowHealthPanel(true);
       return health;
     };
-  }, [expenses.length, budgets.length, categories.length, isDark, settings.theme, isMobile]);
+  }, [expenses.length, budgets.length, categories.length, isDark, safeSettings.theme, isMobile]);
 
   if (!lastHealthCheck) return null;
 
@@ -118,9 +119,9 @@ export function SystemHealthCheck() {
       case 'good':
         return <CheckCircle className="w-5 h-5 text-blue-500" weight="fill" />;
       case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" weight="fill" />;
+        return <Warning className="w-5 h-5 text-yellow-500" weight="fill" />;
       case 'critical':
-        return <AlertCircle className="w-5 h-5 text-red-500" weight="fill" />;
+        return <WarningCircle className="w-5 h-5 text-red-500" weight="fill" />;
       default:
         return <CheckCircle className="w-5 h-5 text-gray-500" />;
     }
@@ -202,7 +203,7 @@ export function SystemHealthCheck() {
                       <ul className="space-y-1">
                         {lastHealthCheck.issues.map((issue, index) => (
                           <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                            <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                            <WarningCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                             {issue}
                           </li>
                         ))}

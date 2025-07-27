@@ -7,11 +7,11 @@ import { useWellnessScore } from '@/hooks/use-wellness-score';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Trophy, Target, TrendingUp, AlertTriangle, Star, Crown, Heart, Zap, Gift } from '@phosphor-icons/react';
+import { Trophy, Target, TrendUp, Warning, Star, Crown, Heart, Lightning, Gift } from '@phosphor-icons/react';
 
 export function Wellness() {
-  const { expenses, budgets, savingsGoals, monthlyBudget } = useFinanceData();
-  const { wellnessScore, personalizedTips, achievements, allAchievements, updateAchievements, saveWellnessScore } = useWellnessScore(
+  const { expenses = [], budgets = [], savingsGoals = [], monthlyBudget = 0 } = useFinanceData();
+  const { wellnessScore, personalizedTips, achievements = [], allAchievements, updateAchievements, saveWellnessScore } = useWellnessScore(
     expenses,
     budgets,
     savingsGoals,

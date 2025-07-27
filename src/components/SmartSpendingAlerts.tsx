@@ -7,9 +7,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { motion } from 'framer-motion';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
+  TrendUp, 
+  TrendDown, 
+  Warning, 
   Target, 
   Brain, 
   ShieldCheck,
@@ -47,7 +47,7 @@ interface SpendingPrediction {
 }
 
 export function SmartSpendingAlerts() {
-  const { expenses, budgets, setBudget } = useFinanceData();
+  const { expenses = [], budgets = [], setBudget } = useFinanceData();
   const [alerts, setAlerts] = useState<SpendingAlert[]>([]);
   const [predictions, setPredictions] = useState<SpendingPrediction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +89,7 @@ export function SmartSpendingAlerts() {
         totalDaysInMonth: endOfMonth.getDate()
       };
 
-      const prompt = window.spark.llmPrompt`
+      const prompt = spark.llmPrompt`
 Analyze the following financial data and generate smart spending alerts and predictions:
 
 Data: ${JSON.stringify(analysisData)}
@@ -296,7 +296,7 @@ Focus on:
           className="space-y-3"
         >
           <h3 className="text-lg font-semibold text-red-600 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
+            <Warning className="w-5 h-5" />
             Critical Alerts
           </h3>
           {alerts.filter(alert => alert.severity === 'critical').map((alert, index) => (

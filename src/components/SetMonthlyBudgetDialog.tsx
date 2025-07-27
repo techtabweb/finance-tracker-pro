@@ -13,8 +13,8 @@ interface SetMonthlyBudgetDialogProps {
 }
 
 export function SetMonthlyBudgetDialog({ open, onOpenChange }: SetMonthlyBudgetDialogProps) {
-  const { monthlyBudget, setMonthlyBudget, getTotalSpent } = useFinanceData();
-  const [budgetAmount, setBudgetAmount] = useState(monthlyBudget.toString());
+  const { monthlyBudget = 0, setMonthlyBudget, getTotalSpent } = useFinanceData();
+  const [budgetAmount, setBudgetAmount] = useState((monthlyBudget || 0).toString());
 
   const totalSpent = getTotalSpent();
 

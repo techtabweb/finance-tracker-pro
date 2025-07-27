@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { ChartLineUp, ChartLineDown, ChartBar, ChartPie as ChartPieIcon } from '@phosphor-icons/react';
 
 export function Analytics() {
-  const { expenses, categories, getCurrentMonthExpenses } = useFinanceData();
+  const { expenses = [], categories = [], getCurrentMonthExpenses } = useFinanceData();
   const isMobile = useIsMobile();
 
   const currentMonthExpenses = getCurrentMonthExpenses();

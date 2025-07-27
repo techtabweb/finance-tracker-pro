@@ -6,18 +6,19 @@ import { CheckCircle, XCircle, Sun, Moon, Monitor } from '@phosphor-icons/react'
 
 export function ThemeTest() {
   const { settings, updateTheme, isDark, getEffectiveTheme } = useTheme();
+  const safeSettings = settings || { theme: 'system', fontSize: 'medium', contrastMode: 'normal', reducedMotion: false };
 
   useEffect(() => {
-    console.log('Current theme settings:', settings);
+    console.log('Current theme safeSettings:', safeSettings);
     console.log('Is dark mode:', isDark);
     console.log('Effective theme:', getEffectiveTheme());
-  }, [settings, isDark, getEffectiveTheme]);
+  }, [safeSettings, isDark, getEffectiveTheme]);
 
   const testItems = [
     { name: 'Dark Mode Classes', status: document.documentElement.classList.contains('dark') },
-    { name: 'Font Size Classes', status: document.documentElement.classList.contains(`font-${settings.fontSize}`) },
-    { name: 'Contrast Classes', status: settings.contrastMode === 'high' ? document.documentElement.classList.contains('high-contrast') : true },
-    { name: 'Motion Classes', status: settings.reducedMotion ? document.documentElement.classList.contains('reduced-motion') : true },
+    { name: 'Font Size Classes', status: document.documentElement.classList.contains(`font-${safeSettings.fontSize}`) },
+    { name: 'Contrast Classes', status: safeSettings.contrastMode === 'high' ? document.documentElement.classList.contains('high-contrast') : true },
+    { name: 'Motion Classes', status: safeSettings.reducedMotion ? document.documentElement.classList.contains('reduced-motion') : true },
   ];
 
   return (
@@ -32,10 +33,10 @@ export function ThemeTest() {
           <div className="grid gap-2">
             <h3 className="font-medium">Current Settings</h3>
             <div className="text-sm space-y-1">
-              <p>Theme: {settings.theme} (Effective: {getEffectiveTheme()})</p>
-              <p>Font Size: {settings.fontSize}</p>
-              <p>Contrast: {settings.contrastMode}</p>
-              <p>Reduced Motion: {settings.reducedMotion ? 'Yes' : 'No'}</p>
+              <p>Theme: {safeSettings.theme} (Effective: {getEffectiveTheme()})</p>
+              <p>Font Size: {safeSettings.fontSize}</p>
+              <p>Contrast: {safeSettings.contrastMode}</p>
+              <p>Reduced Motion: {safeSettings.reducedMotion ? 'Yes' : 'No'}</p>
             </div>
           </div>
 

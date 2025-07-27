@@ -9,7 +9,7 @@ import {
   TrendUp, 
   Lightbulb, 
   Target, 
-  Store, 
+  Storefront, 
   ChartBar,
   CheckCircle,
   Clock
@@ -17,8 +17,8 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export function CategoryLearningInsights() {
-  const { getLearningStats, getTopMerchantsByCategory, learningPatterns } = useCategoryLearning();
-  const { categories } = useFinanceData();
+  const { getLearningStats, getTopMerchantsByCategory, learningPatterns = [] } = useCategoryLearning();
+  const { categories = [] } = useFinanceData();
   const isMobile = useIsMobile();
   
   const stats = getLearningStats();
@@ -143,7 +143,7 @@ export function CategoryLearningInsights() {
         <Card className="glass-card">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Store className="w-5 h-5 text-green-500" />
+              <Storefront className="w-5 h-5 text-green-500" />
               Smart Merchant Recognition
             </CardTitle>
           </CardHeader>

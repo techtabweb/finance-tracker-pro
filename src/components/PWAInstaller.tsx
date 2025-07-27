@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, DeviceMobile, Monitor, WifiHigh, WifiX, ArrowClockwise, Share, Bell } from '@phosphor-icons/react';
+import { Download, DeviceMobile, Monitor, WifiHigh, WifiHigh, ArrowClockwise, Share, Bell } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -187,9 +187,9 @@ export function PWAInstaller() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {isOnline ? (
-                  <Wifi className="h-4 w-4 text-green-600" />
+                  <WifiHighclassName="h-4 w-4 text-green-600" />
                 ) : (
-                  <WifiOff className="h-4 w-4 text-orange-600" />
+                  <WifiHighff className="h-4 w-4 text-orange-600" />
                 )}
                 <span className="text-sm">
                   {isOnline ? 'Online' : 'Offline Mode'}
@@ -207,7 +207,7 @@ export function PWAInstaller() {
                 size="sm"
                 className="flex-1"
               >
-                <Share2 className="h-4 w-4 mr-2" />
+                <Share className="h-4 w-4 mr-2" />
                 Share App
               </Button>
               
@@ -235,7 +235,7 @@ export function PWAInstaller() {
                     onClick={handleUpdate}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                   >
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <ArrowClockwise className="h-4 w-4 mr-2" />
                     Update Available - Restart App
                   </Button>
                 </motion.div>
@@ -257,7 +257,7 @@ export function PWAInstaller() {
         <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
-              {isMobile ? <Smartphone className="h-5 w-5" /> : <Monitor className="h-5 w-5" />}
+              {isMobile ? <DeviceMobile className="h-5 w-5" /> : <Monitor className="h-5 w-5" />}
               Install Finance Tracker
             </CardTitle>
             <CardDescription className="text-blue-700 dark:text-blue-300">
@@ -297,7 +297,7 @@ export function PWAInstaller() {
                 size="sm"
                 className="flex-1"
               >
-                <Share2 className="h-4 w-4 mr-2" />
+                <Share className="h-4 w-4 mr-2" />
                 Share
               </Button>
               
@@ -328,7 +328,7 @@ export function PWAInstaller() {
       <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-200">
-            {isMobile ? <Smartphone className="h-5 w-5" /> : <Monitor className="h-5 w-5" />}
+            {isMobile ? <DeviceMobile className="h-5 w-5" /> : <Monitor className="h-5 w-5" />}
             Install Finance Tracker
           </CardTitle>
           <CardDescription className="text-purple-700 dark:text-purple-300">
@@ -368,7 +368,7 @@ export function PWAInstaller() {
           >
             {installing ? (
               <>
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                <ArrowClockwise className="h-4 w-4 mr-2 animate-spin" />
                 Installing...
               </>
             ) : (
@@ -386,7 +386,7 @@ export function PWAInstaller() {
               size="sm"
               className="flex-1"
             >
-              <Share2 className="h-4 w-4 mr-2" />
+              <Share className="h-4 w-4 mr-2" />
               Share
             </Button>
             

@@ -12,7 +12,7 @@ import {
   Lightbulb, 
   TrendUp, 
   Robot,
-  Sparkles,
+  Sparkle,
   Star,
   Target
 } from '@phosphor-icons/react';
@@ -142,7 +142,7 @@ export function Learning() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-blue-500" />
+                      <Sparkle className="w-5 h-5 text-blue-500" />
                     </div>
                     <div>
                       <div className="font-medium text-gray-900">Learning Status</div>

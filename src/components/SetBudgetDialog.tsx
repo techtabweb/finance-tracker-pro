@@ -14,7 +14,7 @@ interface SetBudgetDialogProps {
 }
 
 export function SetBudgetDialog({ open, onOpenChange }: SetBudgetDialogProps) {
-  const { categories, budgets, setBudget } = useFinanceData();
+  const { categories = [], budgets = [], setBudget } = useFinanceData();
   const [selectedCategory, setSelectedCategory] = useState('');
   const [budgetAmount, setBudgetAmount] = useState('');
 

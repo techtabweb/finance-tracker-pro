@@ -14,7 +14,7 @@ interface AddToGoalDialogProps {
 }
 
 export function AddToGoalDialog({ open, onOpenChange, goalId }: AddToGoalDialogProps) {
-  const { savingsGoals, updateSavingsGoal } = useFinanceData();
+  const { savingsGoals = [], updateSavingsGoal } = useFinanceData();
   const [amount, setAmount] = useState('');
 
   const goal = savingsGoals.find(g => g.id === goalId);

@@ -350,8 +350,9 @@ export function useWellnessScore(
   // Update achievements when progress changes
   const updateAchievements = () => {
     setAchievements((current) => {
+      const safeCurrentAchievements = current || [];
       const updatedAchievements = allAchievements.map(achievement => {
-        const existing = current.find(a => a.id === achievement.id);
+        const existing = safeCurrentAchievements.find(a => a.id === achievement.id);
         const isCompleted = achievement.progress >= achievement.maxProgress;
         
         if (existing) {
@@ -376,7 +377,7 @@ export function useWellnessScore(
   // Save wellness score to history
   const saveWellnessScore = () => {
     setWellnessHistory((current) => {
-      const newHistory = [wellnessScore, ...current.slice(0, 29)]; // Keep last 30 scores
+      const newHistory = [wellnessScore, ...(current || []).slice(0, 29)]; // Keep last 30 scores
       return newHistory;
     });
   };

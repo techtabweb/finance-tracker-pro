@@ -13,15 +13,15 @@ import { motion } from 'framer-motion';
 import { 
   CheckCircle, 
   XCircle, 
-  AlertTriangle, 
+  Warning, 
   Monitor, 
-  Smartphone, 
+  DeviceMobile, 
   Palette,
-  Accessibility,
+  Eye,
   Shield,
-  Zap,
+  Lightning,
   Code,
-  Eye
+  Eye as EyeIcon
 } from '@phosphor-icons/react';
 
 interface SystemCheck {
@@ -35,8 +35,9 @@ interface SystemCheck {
 }
 
 export function SystemValidator() {
-  const { expenses, budgets, categories, savingsGoals } = useFinanceData();
+  const { expenses = [], budgets = [], categories = [], savingsGoals = [] } = useFinanceData();
   const { settings } = useTheme();
+  const safeSettings = settings || { theme: 'system', fontSize: 'medium', contrastMode: 'normal', reducedMotion: false };
   const isMobile = useIsMobile();
 
   // Comprehensive system validation
@@ -72,7 +73,7 @@ export function SystemValidator() {
       details: 'Text scales properly with responsive classes'
     });
 
-    // Accessibility Checks
+    // Eye Checks
     checks.push({
       id: 'color_contrast',
       category: 'accessibility',
@@ -87,8 +88,8 @@ export function SystemValidator() {
       category: 'accessibility',
       title: 'Dark Mode Support',
       description: 'Dark mode implementation and theme switching',
-      status: settings.theme ? 'pass' : 'warn',
-      details: `Current theme: ${settings.theme || 'Not set'}`,
+      status: safeSettings.theme ? 'pass' : 'warn',
+      details: `Current theme: ${safeSettings.theme || 'Not set'}`,
       fix: 'Enable theme switching in settings'
     });
 
@@ -97,8 +98,8 @@ export function SystemValidator() {
       category: 'accessibility',
       title: 'Font Size Options',
       description: 'Support for different font sizes',
-      status: settings.fontSize ? 'pass' : 'warn',
-      details: `Font size: ${settings.fontSize || 'Default'}`,
+      status: safeSettings.fontSize ? 'pass' : 'warn',
+      details: `Font size: ${safeSettings.fontSize || 'Default'}`,
       fix: 'Configure font size preferences'
     });
 
@@ -107,8 +108,8 @@ export function SystemValidator() {
       category: 'accessibility',
       title: 'Reduced Motion Support',
       description: 'Respects user motion preferences',
-      status: settings.reduceMotion !== undefined ? 'pass' : 'warn',
-      details: `Reduced motion: ${settings.reduceMotion ? 'Enabled' : 'Disabled'}`,
+      status: safeSettings.reduceMotion !== undefined ? 'pass' : 'warn',
+      details: `Reduced motion: ${safeSettings.reduceMotion ? 'Enabled' : 'Disabled'}`,
       fix: 'Configure motion preferences'
     });
 
@@ -199,17 +200,17 @@ export function SystemValidator() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pass': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'warn': return <AlertTriangle className="w-4 h-4 text-amber-500" />;
+      case 'warn': return <Warning className="w-4 h-4 text-amber-500" />;
       case 'fail': return <XCircle className="w-4 h-4 text-red-500" />;
-      default: return <AlertTriangle className="w-4 h-4 text-gray-400" />;
+      default: return <Warning className="w-4 h-4 text-gray-400" />;
     }
   };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'mobile': return <Smartphone className="w-4 h-4" />;
-      case 'accessibility': return <Accessibility className="w-4 h-4" />;
-      case 'performance': return <Zap className="w-4 h-4" />;
+      case 'mobile': return <DeviceMobile className="w-4 h-4" />;
+      case 'accessibility': return <Eye className="w-4 h-4" />;
+      case 'performance': return <Lightning className="w-4 h-4" />;
       case 'ui': return <Palette className="w-4 h-4" />;
       case 'functionality': return <Code className="w-4 h-4" />;
       default: return <Monitor className="w-4 h-4" />;
@@ -291,7 +292,7 @@ export function SystemValidator() {
 
             {(warnCount > 0 || failCount > 0) && (
               <Alert className="mt-4">
-                <AlertTriangle className="h-4 w-4" />
+                <Warning className="h-4 w-4" />
                 <AlertDescription>
                   System Check: {warnCount + failCount} warnings found. 
                   Review the details below for optimization recommendations.
@@ -320,7 +321,7 @@ export function SystemValidator() {
               <div>
                 <div className="text-muted-foreground">Device Type</div>
                 <div className="font-medium flex items-center gap-2">
-                  {isMobile ? <Smartphone className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
+                  {isMobile ? <DeviceMobile className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
                   {isMobile ? 'Mobile' : 'Desktop'}
                 </div>
               </div>
@@ -332,11 +333,11 @@ export function SystemValidator() {
               </div>
               <div>
                 <div className="text-muted-foreground">Theme</div>
-                <div className="font-medium">{settings.theme || 'System'}</div>
+                <div className="font-medium">{safeSettings.theme || 'System'}</div>
               </div>
               <div>
                 <div className="text-muted-foreground">Font Size</div>
-                <div className="font-medium">{settings.fontSize || 'Medium'}</div>
+                <div className="font-medium">{safeSettings.fontSize || 'Medium'}</div>
               </div>
             </div>
           </CardContent>

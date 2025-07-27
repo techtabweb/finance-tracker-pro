@@ -16,8 +16,9 @@ interface FunctionalityTest {
 export function FunctionalityValidator() {
   const [tests, setTests] = useState<FunctionalityTest[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const { expenses, budgets, categories, addExpense, deleteExpense } = useFinanceData();
+  const { expenses = [], budgets = [], categories = [], addExpense, deleteExpense } = useFinanceData();
   const { isDark, settings } = useTheme();
+  const safeSettings = settings || { theme: 'system', fontSize: 'medium', contrastMode: 'normal', reducedMotion: false };
   const isMobile = useIsMobile();
 
   const runTests = async () => {
@@ -49,7 +50,7 @@ export function FunctionalityValidator() {
       testResults.push({
         name: 'Theme System',
         status: themeTest && hasThemeVariables ? 'success' : 'warning',
-        message: `Theme: ${settings.theme} | Mode: ${isDark ? 'dark' : 'light'} | Variables: ${hasThemeVariables ? 'loaded' : 'missing'}`
+        message: `Theme: ${safeSettings.theme} | Mode: ${isDark ? 'dark' : 'light'} | Variables: ${hasThemeVariables ? 'loaded' : 'missing'}`
       });
     } catch (error) {
       testResults.push({
@@ -126,7 +127,7 @@ export function FunctionalityValidator() {
 
     // Test 6: AI Services (non-blocking)
     try {
-      const testPrompt = window.spark.llmPrompt`Test connection - respond with 'OK'`;
+      const testPrompt = spark.llmPrompt`Test connection - respond with 'OK'`;
       const response = await Promise.race([
         window.spark.llm(testPrompt, 'gpt-4o-mini'),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))

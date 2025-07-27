@@ -10,17 +10,17 @@ import { PredictionWidget } from './PredictionWidget';
 import { MLInsightsSummary } from './MLInsightsSummary';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, TrendingUp, TrendingDown, Target, AlertTriangle } from '@phosphor-icons/react';
+import { Plus, TrendUp, TrendDown, Target, Warning } from '@phosphor-icons/react';
 
 export function Overview() {
   const { 
     getCurrentMonthExpenses, 
     getTotalSpent, 
     getTotalBudget, 
-    monthlyBudget,
-    budgets,
-    categories,
-    expenses
+    monthlyBudget = 0,
+    budgets = [],
+    categories = [],
+    expenses = []
   } = useFinanceData();
   
   const [showAddExpense, setShowAddExpense] = useState(false);
@@ -49,7 +49,7 @@ export function Overview() {
       value: formatCurrency(totalSpent),
       subtitle: getMonthName(getCurrentMonth()),
       icon: "💸",
-      phosphorIcon: TrendingDown,
+      phosphorIcon: TrendDown,
       color: "from-red-500 to-pink-500",
       bgColor: "from-red-50 to-pink-50",
       textColor: "text-red-700",
@@ -75,7 +75,7 @@ export function Overview() {
         ? (categoryRemaining < 0 ? `₹${Math.abs(categoryRemaining)} over` : `₹${categoryRemaining} left`)
         : 'Set category limits',
       icon: "🏷️",
-      phosphorIcon: TrendingUp,
+      phosphorIcon: TrendUp,
       color: "from-green-500 to-emerald-500",
       bgColor: "from-green-50 to-emerald-50",
       textColor: "text-green-700",
@@ -88,7 +88,7 @@ export function Overview() {
         : 'On Track',
       subtitle: monthlyBudget > 0 || totalBudget > 0 ? 'Budget tracking active' : 'No budgets set',
       icon: (monthlyBudget > 0 && monthlyRemaining < 0) || (totalBudget > 0 && categoryRemaining < 0) ? "⚠️" : "✅",
-      phosphorIcon: (monthlyBudget > 0 && monthlyRemaining < 0) || (totalBudget > 0 && categoryRemaining < 0) ? AlertTriangle : Target,
+      phosphorIcon: (monthlyBudget > 0 && monthlyRemaining < 0) || (totalBudget > 0 && categoryRemaining < 0) ? Warning : Target,
       color: "from-purple-500 to-violet-500",
       bgColor: "from-purple-50 to-violet-50",
       textColor: "text-purple-700",
@@ -184,7 +184,7 @@ export function Overview() {
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-foreground">
                   <span>📅</span>
                   {isMobile ? 'Monthly Budget' : 'Monthly Budget Progress'}
-                  {monthlyBudgetProgress > 90 && <AlertTriangle className="w-4 h-4 text-amber-500" />}
+                  {monthlyBudgetProgress > 90 && <Warning className="w-4 h-4 text-amber-500" />}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -238,7 +238,7 @@ export function Overview() {
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-foreground">
                   <span>🏷️</span>
                   Category Budget Progress
-                  {categoryBudgetProgress > 90 && <AlertTriangle className="w-4 h-4 text-amber-500" />}
+                  {categoryBudgetProgress > 90 && <Warning className="w-4 h-4 text-amber-500" />}
                 </CardTitle>
               </CardHeader>
               <CardContent>

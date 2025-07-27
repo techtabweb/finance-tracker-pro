@@ -14,7 +14,8 @@ interface DiagnosticIssue {
 export function MobileDiagnostics() {
   const isMobile = useIsMobile();
   const { isDark, settings } = useTheme();
-  const { expenses, budgets, categories } = useFinanceData();
+  const safeSettings = settings || { theme: 'system', fontSize: 'medium', contrastMode: 'normal', reducedMotion: false };
+  const { expenses = [], budgets = [], categories = [] } = useFinanceData();
   const [issues, setIssues] = useState<DiagnosticIssue[]>([]);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export function MobileDiagnostics() {
     }
 
     // Check for very large font sizes that break layout
-    if (settings.fontSize === 'extra-large' && window.innerWidth < 400) {
+    if (safeSettings.fontSize === 'extra-large' && window.innerWidth < 400) {
       detectedIssues.push({
         id: 'font-large-mobile',
         type: 'info',
@@ -47,7 +48,7 @@ export function MobileDiagnostics() {
     }
 
     // Check dark mode contrast issues
-    if (isDark && settings.contrast === 'normal') {
+    if (isDark && safeSettings.contrast === 'normal') {
       detectedIssues.push({
         id: 'dark-contrast',
         type: 'info',

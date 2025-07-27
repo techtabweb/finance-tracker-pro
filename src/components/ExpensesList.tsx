@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ExpensesList() {
-  const { expenses, categories, deleteExpense } = useFinanceData();
+  const { expenses = [], categories = [], deleteExpense } = useFinanceData();
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');

@@ -374,7 +374,7 @@ export function Reports() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-red-600 font-medium flex items-center gap-1">
-                    <TrendingDown className="h-4 w-4" />
+                    <ChartLineDown className="h-4 w-4" />
                     Total Expenses
                   </p>
                   <p className="text-3xl font-bold text-red-700 mt-1">
@@ -396,7 +396,7 @@ export function Reports() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-blue-600 font-medium flex items-center gap-1">
-                    <TrendingUp className="h-4 w-4" />
+                    <ChartLineUp className="h-4 w-4" />
                     Total Budget
                   </p>
                   <p className="text-3xl font-bold text-blue-700 mt-1">

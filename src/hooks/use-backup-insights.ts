@@ -29,7 +29,7 @@ export function useBackupInsights() {
       id: Date.now().toString()
     };
     
-    setBackupHistory((current) => [newRecord, ...current.slice(0, 49)]); // Keep last 50 records
+    setBackupHistory((current) => [newRecord, ...(current || []).slice(0, 49)]); // Keep last 50 records
   };
 
   const getDataInsights = (

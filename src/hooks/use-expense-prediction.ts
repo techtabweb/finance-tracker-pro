@@ -106,7 +106,7 @@ export function useExpensePrediction() {
         }))
       };
 
-      const prompt = window.spark.llmPrompt`You are a financial AI assistant specializing in Indian spending patterns. Analyze the expense data and provide predictions.
+      const prompt = spark.llmPrompt`You are a financial AI assistant specializing in Indian spending patterns. Analyze the expense data and provide predictions.
 
 Historical Data: ${JSON.stringify(analysisData, null, 2)}
 

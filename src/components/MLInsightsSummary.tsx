@@ -7,9 +7,9 @@ import { motion } from 'framer-motion';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { 
   Brain, 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
+  TrendUp, 
+  TrendDown, 
+  Warning, 
   CheckCircle, 
   Target,
   Shield,
@@ -83,7 +83,7 @@ export function MLInsightsSummary() {
         overspentCategories: categorySpending.filter(cat => cat.overspend).length
       };
 
-      const prompt = window.spark.llmPrompt`
+      const prompt = spark.llmPrompt`
 Analyze this financial data and provide a concise ML insights summary:
 
 Data: ${JSON.stringify(analysisData)}
@@ -180,16 +180,16 @@ Focus on:
     switch (status) {
       case 'excellent': return <CheckCircle className="w-5 h-5 text-green-600" />;
       case 'good': return <CheckCircle className="w-5 h-5 text-blue-600" />;
-      case 'warning': return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
-      case 'critical': return <AlertTriangle className="w-5 h-5 text-red-600" />;
+      case 'warning': return <Warning className="w-5 h-5 text-yellow-600" />;
+      case 'critical': return <Warning className="w-5 h-5 text-red-600" />;
       default: return <Target className="w-5 h-5 text-gray-600" />;
     }
   };
 
   const getTrendIcon = (direction: string) => {
     switch (direction) {
-      case 'increasing': return <TrendingUp className="w-5 h-5 text-red-500" />;
-      case 'decreasing': return <TrendingDown className="w-5 h-5 text-green-500" />;
+      case 'increasing': return <TrendUp className="w-5 h-5 text-red-500" />;
+      case 'decreasing': return <TrendDown className="w-5 h-5 text-green-500" />;
       default: return <Target className="w-5 h-5 text-gray-500" />;
     }
   };
@@ -311,7 +311,7 @@ Focus on:
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                  <Warning className="w-5 h-5 text-orange-600" />
                   <span className="font-medium text-orange-800">
                     {summary.riskAlerts} Risk Alert{summary.riskAlerts > 1 ? 's' : ''}
                   </span>

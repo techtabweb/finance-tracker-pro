@@ -10,7 +10,7 @@ import { SmartSpendingAlerts } from '@/components/SmartSpendingAlerts';
 import { SmartBudgetPlanner } from '@/components/SmartBudgetPlanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFinanceData } from '@/hooks/use-finance-data';
-import { TrendingUp, TrendingDown, AlertTriangle, Target, Brain, Zap, BarChart3, Calendar, Lightbulb, Shield, Calculator } from '@phosphor-icons/react';
+import { TrendUp, TrendDown, Warning, Target, Brain, Lightning, ChartBar, Calendar, Lightbulb, Shield, Calculator } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/format';
 
@@ -48,7 +48,7 @@ interface BudgetOptimization {
 }
 
 export function BudgetInsights() {
-  const { expenses, budgets, setBudget, isMobile } = useFinanceData();
+  const { expenses = [], budgets = [], setBudget, isMobile } = useFinanceData();
   const [insights, setInsights] = useState<MLInsight[]>([]);
   const [optimizations, setOptimizations] = useState<BudgetOptimization[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +79,7 @@ export function BudgetInsights() {
         spent: budget.spent || 0
       }));
 
-      const prompt = window.spark.llmPrompt`
+      const prompt = spark.llmPrompt`
 You are a financial AI assistant. Analyze the following expense and budget data to provide insights and optimizations.
 
 Expense Data: ${JSON.stringify(expenseData)}
@@ -254,9 +254,9 @@ Requirements:
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'increasing': return <TrendingUp className="w-4 h-4 text-red-500" />;
-      case 'decreasing': return <TrendingDown className="w-4 h-4 text-green-500" />;
-      default: return <BarChart3 className="w-4 h-4 text-gray-500" />;
+      case 'increasing': return <TrendUp className="w-4 h-4 text-red-500" />;
+      case 'decreasing': return <TrendDown className="w-4 h-4 text-green-500" />;
+      default: return <ChartBar className="w-4 h-4 text-gray-500" />;
     }
   };
 
@@ -360,7 +360,7 @@ Requirements:
 
                       <div className="bg-blue-50 rounded-lg p-4 mb-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <Zap className="w-4 h-4 text-blue-600" />
+                          <Lightning className="w-4 h-4 text-blue-600" />
                           <span className="font-medium text-blue-900">Recommendation</span>
                         </div>
                         <p className="text-blue-800">{insight.recommendation}</p>

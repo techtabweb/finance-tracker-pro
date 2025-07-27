@@ -25,7 +25,7 @@ export function useCategoryLearning() {
       correctionReason
     };
 
-    setLearningPatterns((current) => [pattern, ...current.slice(0, 999)]); // Keep last 1000 patterns
+    setLearningPatterns((current) => [pattern, ...(current || []).slice(0, 999)]); // Keep last 1000 patterns
   };
 
   // Get personalized category suggestions based on learning patterns

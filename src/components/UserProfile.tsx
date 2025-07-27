@@ -37,9 +37,26 @@ import { DataBackup } from '@/components/DataBackup';
 import { formatCurrency } from '@/lib/utils';
 
 export const UserProfile = () => {
-  const { expenses, budgets, savingsGoals } = useFinanceData();
+  const { expenses = [], budgets = [], savingsGoals = [] } = useFinanceData();
   const { settings, updateTheme, updateFontSize, updateContrastMode, toggleReducedMotion, getEffectiveTheme } = useTheme();
-  const [userSettings, setUserSettings] = useKV('user-settings', {
+  
+  interface UserSettingsType {
+    currency: string;
+    language: string;
+    notifications: {
+      budgetAlerts: boolean;
+      goalReminders: boolean;
+      weeklyReports: boolean;
+      expenseAlerts: boolean;
+    };
+    preferences: {
+      defaultCategory: string;
+      budgetPeriod: string;
+      theme: string;
+    };
+  }
+  
+  const [userSettings, setUserSettings] = useKV<UserSettingsType>('user-settings', {
     currency: 'INR',
     language: 'en',
     notifications: {
@@ -57,25 +74,25 @@ export const UserProfile = () => {
   
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    currency: userSettings.currency,
-    language: userSettings.language,
-    defaultCategory: userSettings.preferences.defaultCategory,
-    budgetPeriod: userSettings.preferences.budgetPeriod,
-    theme: userSettings.preferences.theme
+    currency: userSettings?.currency || 'INR',
+    language: userSettings?.language || 'en',
+    defaultCategory: userSettings?.preferences?.defaultCategory || 'other',
+    budgetPeriod: userSettings?.preferences?.budgetPeriod || 'monthly',
+    theme: userSettings?.preferences?.theme || 'system'
   });
 
   const handleSaveSettings = async () => {
     setUserSettings({
-      ...userSettings,
+      ...(userSettings || {}),
       currency: formData.currency,
       language: formData.language,
       preferences: {
-        ...userSettings.preferences,
+        ...(userSettings?.preferences || {}),
         defaultCategory: formData.defaultCategory,
         budgetPeriod: formData.budgetPeriod,
         theme: formData.theme
       }
-    });
+    } as UserSettingsType);
     setIsEditing(false);
     toast.success('Settings saved successfully! ✨');
   };
@@ -84,7 +101,7 @@ export const UserProfile = () => {
     setUserSettings({
       ...userSettings,
       notifications: {
-        ...userSettings.notifications,
+        ...userSettings?.notifications,
         [key]: value
       }
     });
@@ -161,11 +178,11 @@ export const UserProfile = () => {
                       onClick={() => {
                         if (isEditing) {
                           setFormData({
-                            currency: userSettings.currency,
-                            language: userSettings.language,
-                            defaultCategory: userSettings.preferences.defaultCategory,
-                            budgetPeriod: userSettings.preferences.budgetPeriod,
-                            theme: userSettings.preferences.theme
+                            currency: userSettings?.currency,
+                            language: userSettings?.language,
+                            defaultCategory: userSettings?.preferences.defaultCategory,
+                            budgetPeriod: userSettings?.preferences.budgetPeriod,
+                            theme: userSettings?.preferences.theme
                           });
                         }
                         setIsEditing(!isEditing);
@@ -267,7 +284,7 @@ export const UserProfile = () => {
                         <IndianRupee className="w-5 h-5 text-gray-500" />
                         <div>
                           <p className="text-sm text-gray-500">Currency</p>
-                          <p className="font-medium">{userSettings.currency} - {userSettings.currency === 'INR' ? 'Indian Rupee (₹)' : userSettings.currency === 'USD' ? 'US Dollar ($)' : 'Euro (€)'}</p>
+                          <p className="font-medium">{userSettings?.currency} - {userSettings?.currency === 'INR' ? 'Indian Rupee (₹)' : userSettings?.currency === 'USD' ? 'US Dollar ($)' : 'Euro (€)'}</p>
                         </div>
                       </div>
 
@@ -275,7 +292,7 @@ export const UserProfile = () => {
                         <Globe className="w-5 h-5 text-gray-500" />
                         <div>
                           <p className="text-sm text-gray-500">Language</p>
-                          <p className="font-medium">{userSettings.language === 'en' ? 'English' : userSettings.language === 'hi' ? 'Hindi' : userSettings.language === 'ta' ? 'Tamil' : 'Telugu'}</p>
+                          <p className="font-medium">{userSettings?.language === 'en' ? 'English' : userSettings?.language === 'hi' ? 'Hindi' : userSettings?.language === 'ta' ? 'Tamil' : 'Telugu'}</p>
                         </div>
                       </div>
 
@@ -283,7 +300,7 @@ export const UserProfile = () => {
                         <Calculator className="w-5 h-5 text-gray-500" />
                         <div>
                           <p className="text-sm text-gray-500">Default Category</p>
-                          <p className="font-medium">{userSettings.preferences.defaultCategory}</p>
+                          <p className="font-medium">{userSettings?.preferences.defaultCategory}</p>
                         </div>
                       </div>
 
@@ -291,7 +308,7 @@ export const UserProfile = () => {
                         <Calendar className="w-5 h-5 text-gray-500" />
                         <div>
                           <p className="text-sm text-gray-500">Budget Period</p>
-                          <p className="font-medium capitalize">{userSettings.preferences.budgetPeriod}</p>
+                          <p className="font-medium capitalize">{userSettings?.preferences.budgetPeriod}</p>
                         </div>
                       </div>
                     </div>
@@ -372,7 +389,7 @@ export const UserProfile = () => {
                         <div
                           key={theme.value}
                           className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all hover:border-primary/50 ${
-                            settings.theme === theme.value ? 'border-primary bg-primary/5' : 'border-border'
+                            settings?.theme === theme.value ? 'border-primary bg-primary/5' : 'border-border'
                           }`}
                           onClick={() => {
                             updateTheme(theme.value as any);
@@ -384,7 +401,7 @@ export const UserProfile = () => {
                             <p className="font-medium text-foreground">{theme.label}</p>
                             <p className="text-sm text-muted-foreground">{theme.description}</p>
                           </div>
-                          {settings.theme === theme.value && (
+                          {settings?.theme === theme.value && (
                             <div className="w-2 h-2 bg-primary rounded-full" />
                           )}
                         </div>
@@ -403,7 +420,7 @@ export const UserProfile = () => {
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">Font Size</Label>
                       <Select 
-                        value={settings.fontSize} 
+                        value={settings?.fontSize} 
                         onValueChange={(value) => {
                           updateFontSize(value as any);
                           toast.success('Font size updated');
@@ -428,7 +445,7 @@ export const UserProfile = () => {
                         <p className="text-sm text-muted-foreground">Improve readability with higher contrast</p>
                       </div>
                       <Switch
-                        checked={settings.contrastMode === 'high'}
+                        checked={settings?.contrastMode === 'high'}
                         onCheckedChange={(checked) => {
                           updateContrastMode(checked ? 'high' : 'normal');
                           toast.success(`Contrast mode ${checked ? 'enabled' : 'disabled'}`);
@@ -443,10 +460,10 @@ export const UserProfile = () => {
                         <p className="text-sm text-muted-foreground">Minimize animations and transitions</p>
                       </div>
                       <Switch
-                        checked={settings.reducedMotion}
+                        checked={settings?.reducedMotion}
                         onCheckedChange={() => {
                           toggleReducedMotion();
-                          toast.success(`Motion ${settings.reducedMotion ? 'enabled' : 'reduced'}`);
+                          toast.success(`Motion ${settings?.reducedMotion ? 'enabled' : 'reduced'}`);
                         }}
                       />
                     </div>
@@ -468,7 +485,7 @@ export const UserProfile = () => {
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Current theme: {settings.theme} ({getEffectiveTheme()})
+                    Current theme: {settings?.theme} ({getEffectiveTheme()})
                   </p>
                 </div>
               </CardContent>
@@ -501,7 +518,7 @@ export const UserProfile = () => {
                         <p className="text-sm text-muted-foreground">Get notified when you're close to budget limits</p>
                       </div>
                       <Switch
-                        checked={userSettings.notifications.budgetAlerts}
+                        checked={userSettings?.notifications.budgetAlerts}
                         onCheckedChange={(checked) => handleNotificationChange('budgetAlerts', checked)}
                       />
                     </div>
@@ -512,7 +529,7 @@ export const UserProfile = () => {
                         <p className="text-sm text-muted-foreground">Notifications for large transactions</p>
                       </div>
                       <Switch
-                        checked={userSettings.notifications.expenseAlerts}
+                        checked={userSettings?.notifications.expenseAlerts}
                         onCheckedChange={(checked) => handleNotificationChange('expenseAlerts', checked)}
                       />
                     </div>
@@ -527,7 +544,7 @@ export const UserProfile = () => {
                         <p className="text-sm text-muted-foreground">Reminders about your savings goals</p>
                       </div>
                       <Switch
-                        checked={userSettings.notifications.goalReminders}
+                        checked={userSettings?.notifications.goalReminders}
                         onCheckedChange={(checked) => handleNotificationChange('goalReminders', checked)}
                       />
                     </div>
@@ -538,7 +555,7 @@ export const UserProfile = () => {
                         <p className="text-sm text-gray-500">Get weekly spending summaries</p>
                       </div>
                       <Switch
-                        checked={userSettings.notifications.weeklyReports}
+                        checked={userSettings?.notifications.weeklyReports}
                         onCheckedChange={(checked) => handleNotificationChange('weeklyReports', checked)}
                       />
                     </div>

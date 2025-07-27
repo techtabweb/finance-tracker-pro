@@ -94,7 +94,7 @@ export function SmartCategorizer({
       // Use Spark LLM for categorization
       const categoryNames = categories.map(cat => cat.name);
       
-      const prompt = window.spark.llmPrompt`You are an AI assistant specialized in categorizing Indian expenses and transactions. Analyze the following expense details and suggest the most appropriate categories.
+      const prompt = spark.llmPrompt`You are an AI assistant specialized in categorizing Indian expenses and transactions. Analyze the following expense details and suggest the most appropriate categories.
 
 Expense Details:
 - Description: "${description}"

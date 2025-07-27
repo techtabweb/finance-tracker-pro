@@ -9,7 +9,7 @@ import { SetMonthlyBudgetDialog } from './SetMonthlyBudgetDialog';
 import { motion } from 'framer-motion';
 
 export function BudgetsList() {
-  const { budgets, categories, monthlyBudget, getTotalBudget, getTotalSpent } = useFinanceData();
+  const { budgets = [], categories = [], monthlyBudget = 0, getTotalBudget, getTotalSpent } = useFinanceData();
   const [showSetBudget, setShowSetBudget] = useState(false);
   const [showSetMonthlyBudget, setShowSetMonthlyBudget] = useState(false);
 

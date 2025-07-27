@@ -28,7 +28,7 @@ import {
 
 export function ExpensePredictions() {
   const { predictions, isAnalyzing, error, generatePredictions, refreshPredictions, hasEnoughData } = useExpensePrediction();
-  const { budgets } = useFinanceData();
+  const { budgets = [] } = useFinanceData();
   const [activeTab, setActiveTab] = useState('overview');
 
   const getRiskColor = (riskLevel: string) => {
@@ -42,8 +42,8 @@ export function ExpensePredictions() {
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'increasing': return <TrendingUp className="h-4 w-4 text-red-500" />;
-      case 'decreasing': return <TrendingDown className="h-4 w-4 text-green-500" />;
+      case 'increasing': return <ChartLineUp className="h-4 w-4 text-red-500" />;
+      case 'decreasing': return <ChartLineDown className="h-4 w-4 text-green-500" />;
       case 'stable': return <Minus className="h-4 w-4 text-blue-500" />;
       default: return <Activity className="h-4 w-4 text-gray-500" />;
     }
@@ -99,7 +99,7 @@ export function ExpensePredictions() {
           variant="outline"
           className="flex items-center gap-2"
         >
-          <RefreshCw className={`h-4 w-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
+          <ArrowClockwise className={`h-4 w-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
           {isAnalyzing ? 'Analyzing...' : 'Refresh'}
         </Button>
       </motion.div>
@@ -107,7 +107,7 @@ export function ExpensePredictions() {
       {/* Error State */}
       {error && (
         <Alert className="border-red-200 bg-red-50">
-          <AlertTriangle className="h-4 w-4" />
+          <Warning className="h-4 w-4" />
           <AlertDescription className="text-red-800">
             {error}
           </AlertDescription>
@@ -122,7 +122,7 @@ export function ExpensePredictions() {
             <h3 className="text-lg font-semibold mb-2">Analyzing Your Spending Patterns</h3>
             <p className="text-gray-600 mb-4">AI is processing your expense history...</p>
             <div className="flex items-center gap-2">
-              <RefreshCw className="h-4 w-4 animate-spin" />
+              <ArrowClockwise className="h-4 w-4 animate-spin" />
               <span className="text-sm">This may take a few moments</span>
             </div>
           </CardContent>
@@ -134,7 +134,7 @@ export function ExpensePredictions() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
+              <ChartBar className="h-4 w-4" />
               Overview
             </TabsTrigger>
             <TabsTrigger value="categories" className="flex items-center gap-2">
@@ -142,7 +142,7 @@ export function ExpensePredictions() {
               Categories
             </TabsTrigger>
             <TabsTrigger value="alerts" className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4" />
+              <Warning className="h-4 w-4" />
               Alerts
             </TabsTrigger>
             <TabsTrigger value="insights" className="flex items-center gap-2">
@@ -324,7 +324,7 @@ export function ExpensePredictions() {
 
                             {prediction.seasonalFactor !== 1 && (
                               <div className="flex items-center gap-2 text-sm text-blue-600">
-                                <Zap className="h-4 w-4" />
+                                <Lightning className="h-4 w-4" />
                                 <span>
                                   Seasonal factor: {prediction.seasonalFactor > 1 ? 'Higher' : 'Lower'} spending expected
                                 </span>
@@ -350,7 +350,7 @@ export function ExpensePredictions() {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Alert className={alert.severity === 'danger' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'}>
-                      <AlertTriangle className={`h-4 w-4 ${alert.severity === 'danger' ? 'text-red-600' : 'text-yellow-600'}`} />
+                      <Warning className={`h-4 w-4 ${alert.severity === 'danger' ? 'text-red-600' : 'text-yellow-600'}`} />
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="font-semibold">{alert.category}</div>

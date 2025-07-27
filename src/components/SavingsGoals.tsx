@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function SavingsGoals() {
-  const { savingsGoals, deleteSavingsGoal } = useFinanceData();
+  const { savingsGoals = [], deleteSavingsGoal } = useFinanceData();
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddToGoal, setShowAddToGoal] = useState(false);
   const [selectedGoalId, setSelectedGoalId] = useState<string>('');

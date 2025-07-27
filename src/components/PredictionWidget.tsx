@@ -6,12 +6,12 @@ import { useFinanceData } from '@/hooks/use-finance-data';
 import { formatCurrency } from '@/lib/format';
 import { motion } from 'framer-motion';
 import { 
-  TrendingUp, 
-  TrendingDown, 
+  TrendUp, 
+  TrendDown, 
   Minus, 
   Brain,
-  Sparkles,
-  AlertTriangle,
+  Sparkle,
+  Warning,
   CheckCircle,
   ArrowRight
 } from '@phosphor-icons/react';
@@ -22,8 +22,8 @@ export function PredictionWidget() {
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'increasing': return <TrendingUp className="h-3 w-3 text-red-500" />;
-      case 'decreasing': return <TrendingDown className="h-3 w-3 text-green-500" />;
+      case 'increasing': return <TrendUp className="h-3 w-3 text-red-500" />;
+      case 'decreasing': return <TrendDown className="h-3 w-3 text-green-500" />;
       case 'stable': return <Minus className="h-3 w-3 text-blue-500" />;
       default: return <Brain className="h-3 w-3 text-gray-500" />;
     }
@@ -105,7 +105,7 @@ export function PredictionWidget() {
             <CardTitle className="flex items-center gap-2 text-lg">
               <div className="relative">
                 <span className="text-2xl">🔮</span>
-                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-purple-500" />
+                <Sparkle className="absolute -top-1 -right-1 h-3 w-3 text-purple-500" />
               </div>
               <span>AI Predictions</span>
               <Badge variant="secondary" className="ml-2">
@@ -114,7 +114,7 @@ export function PredictionWidget() {
               </Badge>
             </CardTitle>
             {hasAlerts && (
-              <AlertTriangle className="h-5 w-5 text-amber-500 animate-pulse" />
+              <Warning className="h-5 w-5 text-amber-500 animate-pulse" />
             )}
           </div>
         </CardHeader>

@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 
 export function ImportTest() {
   // Test hooks
-  const { expenses, budgets } = useFinanceData();
+  const { expenses = [], budgets = [] } = useFinanceData();
   const { applyTheme } = useTheme();
   const isMobile = useIsMobile();
 

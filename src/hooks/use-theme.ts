@@ -19,59 +19,61 @@ const defaultSettings: ThemeSettings = {
 };
 
 export function useTheme() {
-  const [settings, setSettings] = useKV('theme-settings', defaultSettings);
+  const [settings, setSettings] = useKV<ThemeSettings>('theme-settings', defaultSettings);
 
   const updateTheme = (theme: Theme) => {
-    setSettings(current => ({ ...current, theme }));
+    setSettings(current => ({ ...(current || defaultSettings), theme }));
   };
 
   const updateFontSize = (fontSize: FontSize) => {
-    setSettings(current => ({ ...current, fontSize }));
+    setSettings(current => ({ ...(current || defaultSettings), fontSize }));
   };
 
   const updateContrastMode = (contrastMode: ContrastMode) => {
-    setSettings(current => ({ ...current, contrastMode }));
+    setSettings(current => ({ ...(current || defaultSettings), contrastMode }));
   };
 
   const toggleReducedMotion = () => {
-    setSettings(current => ({ ...current, reducedMotion: !current.reducedMotion }));
+    setSettings(current => ({ ...(current || defaultSettings), reducedMotion: !(current?.reducedMotion || false) }));
   };
 
   // Apply theme to document
   const applyTheme = () => {
     const root = document.documentElement;
+    const currentSettings = settings || defaultSettings;
     
     // Remove existing theme classes
     root.classList.remove('light', 'dark', 'high-contrast', 'font-small', 'font-medium', 'font-large', 'font-extra-large', 'reduced-motion');
     
     // Apply theme
-    if (settings.theme === 'system') {
+    if (currentSettings.theme === 'system') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.classList.add(isDark ? 'dark' : 'light');
     } else {
-      root.classList.add(settings.theme);
+      root.classList.add(currentSettings.theme);
     }
     
     // Apply contrast mode
-    if (settings.contrastMode === 'high') {
+    if (currentSettings.contrastMode === 'high') {
       root.classList.add('high-contrast');
     }
     
     // Apply font size
-    root.classList.add(`font-${settings.fontSize}`);
+    root.classList.add(`font-${currentSettings.fontSize}`);
     
     // Apply reduced motion
-    if (settings.reducedMotion) {
+    if (currentSettings.reducedMotion) {
       root.classList.add('reduced-motion');
     }
   };
 
   // Get current effective theme (resolving system preference)
   const getEffectiveTheme = (): 'light' | 'dark' => {
-    if (settings.theme === 'system') {
+    const currentSettings = settings || defaultSettings;
+    if (currentSettings.theme === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    return settings.theme;
+    return currentSettings.theme;
   };
 
   return {

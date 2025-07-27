@@ -5,18 +5,18 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Smartphone, 
+  DeviceMobile, 
   Monitor, 
   Download, 
-  Share2, 
+  Share, 
   Bell,
-  RefreshCw,
+  ArrowClockwise,
   CheckCircle,
-  AlertTriangle,
-  Wifi,
-  WifiOff,
-  Settings,
-  Zap,
+  Warning,
+  WifiHighHigh,
+  WifiX,
+  Gear,
+  Lightning,
   Globe
 } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -108,7 +108,7 @@ export function PWAManager() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-blue-600" />
+                  <Lightning className="h-5 w-5 text-blue-600" />
                   Progressive Web App
                 </CardTitle>
                 <CardDescription>
@@ -117,9 +117,9 @@ export function PWAManager() {
               </div>
               <div className="flex items-center gap-2">
                 {isOnline ? (
-                  <Wifi className="h-5 w-5 text-green-600" />
+                  <WifiHigh className="h-5 w-5 text-green-600" />
                 ) : (
-                  <WifiOff className="h-5 w-5 text-red-600" />
+                  <WifiX className="h-5 w-5 text-red-600" />
                 )}
                 <Badge variant={isInstalled ? "success" : "secondary"}>
                   {isInstalled ? 'Installed' : 'Browser'}
@@ -136,7 +136,7 @@ export function PWAManager() {
                 size="sm"
                 className="flex-1"
               >
-                <Share2 className="h-4 w-4 mr-2" />
+                <Share className="h-4 w-4 mr-2" />
                 Share App
               </Button>
               
@@ -159,7 +159,7 @@ export function PWAManager() {
                   size="sm"
                   className="flex-1"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <ArrowClockwise className="h-4 w-4 mr-2" />
                   Update Available
                 </Button>
               )}
@@ -193,7 +193,7 @@ export function PWAManager() {
               
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4" />
+                  <Share className="h-4 w-4" />
                   Sharing
                 </span>
                 <StatusBadge status={getFeatureStatus('sharing')} />
@@ -211,11 +211,11 @@ export function PWAManager() {
             Installation
           </TabsTrigger>
           <TabsTrigger value="status" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
+            <Gear className="h-4 w-4" />
             Status & Details
           </TabsTrigger>
           <TabsTrigger value="features" className="flex items-center gap-2">
-            <Zap className="h-4 w-4" />
+            <Lightning className="h-4 w-4" />
             Features
           </TabsTrigger>
         </TabsList>
@@ -276,7 +276,7 @@ export function PWAManager() {
                 {/* Installation Features */}
                 <div className="space-y-3">
                   <h3 className="font-semibold flex items-center gap-2">
-                    <Smartphone className="h-5 w-5" />
+                    <DeviceMobile className="h-5 w-5" />
                     Installation Features
                   </h3>
                   <div className="grid gap-3 text-sm">
