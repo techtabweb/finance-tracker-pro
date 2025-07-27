@@ -239,10 +239,36 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Smooth horizontal scroll for desktop navigation */
+/* Smooth horizontal scroll for desktop navigation with enhanced centering */
 .horizontal-scroll {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+/* Optional: Add scroll snap for better navigation feel */
+.horizontal-scroll .tab-item {
+  scroll-snap-align: center;
+}
+
+/* Enhanced scroll animation timing */
+.horizontal-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb {
+  background: oklch(0.7 0.1 200);
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.6 0.1 200);
 }
 
 /* Mobile navigation enhancements */

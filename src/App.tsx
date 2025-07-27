@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
@@ -28,11 +28,42 @@ function App() {
   const { applyTheme, settings } = useTheme();
   const isMobile = useIsMobile();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Record<string, HTMLElement>>({});
 
   // Apply theme on mount and when settings change
   useEffect(() => {
     applyTheme();
   }, [settings, applyTheme]);
+
+  // Auto-scroll to center active tab on desktop
+  useEffect(() => {
+    if (!isMobile && scrollContainerRef.current && tabRefs.current[activeTab]) {
+      const container = scrollContainerRef.current;
+      const activeTabElement = tabRefs.current[activeTab];
+      
+      const containerRect = container.getBoundingClientRect();
+      const tabRect = activeTabElement.getBoundingClientRect();
+      
+      // Calculate the position to center the tab
+      const containerCenter = containerRect.width / 2;
+      const tabCenter = tabRect.left - containerRect.left + tabRect.width / 2;
+      const scrollOffset = tabCenter - containerCenter;
+      
+      // Smooth scroll to center the active tab
+      container.scrollTo({
+        left: container.scrollLeft + scrollOffset,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeTab, isMobile]);
+
+  // Function to store tab refs
+  const setTabRef = (value: string) => (el: HTMLElement | null) => {
+    if (el) {
+      tabRefs.current[value] = el;
+    }
+  };
 
   const tabs = [
     // Core functionality
@@ -155,8 +186,8 @@ function App() {
                     <div className="w-1 h-8 bg-gradient-to-b from-transparent via-current to-transparent rounded-full" />
                   </div>
                   
-                  <div className="overflow-x-auto scrollbar-hide horizontal-scroll">
-                    <TabsList className="flex w-max bg-transparent gap-2 h-auto min-w-full px-6 py-2">
+                  <div className=\"overflow-x-auto scrollbar-hide horizontal-scroll\" ref={scrollContainerRef}>
+                    <TabsList className=\"flex w-max bg-transparent gap-2 h-auto min-w-full px-6 py-2\">
                       {tabs.map((tab, index) => (
                         <motion.div
                           key={tab.value}
@@ -172,6 +203,7 @@ function App() {
                           className="flex-shrink-0"
                         >
                           <TabsTrigger 
+                            ref={setTabRef(tab.value)}
                             value={tab.value} 
                             className="group relative flex flex-col items-center gap-2 p-4 min-w-[110px] data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:border-primary/30 rounded-2xl transition-all duration-300 hover:bg-muted/60 hover:scale-105 text-foreground border border-transparent hover:border-border/50 bg-background/40"
                           >
