@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -52,7 +52,7 @@ export function SmartBudgetPlanner() {
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
 
   // Generate smart budget recommendations
-  const generateRecommendations = async () => {
+  const generateRecommendations = useCallback(async () => {
     if (expenses.length === 0) {
       setLoading(false);
       return;
@@ -173,7 +173,7 @@ Focus on:
     } finally {
       setLoading(false);
     }
-  };
+  }, [expenses, budgets]);
 
   // Fallback basic recommendations
   const generateBasicRecommendations = () => {
@@ -248,7 +248,7 @@ Focus on:
 
   useEffect(() => {
     generateRecommendations();
-  }, [expenses, budgets]);
+  }, [generateRecommendations]);
 
   const applyRecommendation = (rec: BudgetRecommendation) => {
     setBudget(rec.category, rec.recommendedBudget);

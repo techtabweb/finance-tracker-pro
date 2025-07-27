@@ -225,21 +225,6 @@ export function Overview() {
             </Card>
           </motion.div>
         )}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground text-center">
-                    {monthlyBudgetProgress > 100 
-                      ? `🚨 ${(monthlyBudgetProgress - 100).toFixed(1)}% over monthly budget`
-                      : `🎯 ${(100 - monthlyBudgetProgress).toFixed(1)}% remaining this month`
-                    }
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
 
         {/* Category Budget Progress */}
         {totalBudget > 0 && (

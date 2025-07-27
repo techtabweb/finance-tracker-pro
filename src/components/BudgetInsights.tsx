@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -55,7 +55,7 @@ export function BudgetInsights() {
   const [selectedInsight, setSelectedInsight] = useState<MLInsight | null>(null);
 
   // Generate ML insights using Gemini AI
-  const generateInsights = async () => {
+  const generateInsights = useCallback(async () => {
     if (expenses.length === 0) {
       setLoading(false);
       return;
@@ -180,7 +180,7 @@ Requirements:
     } finally {
       setLoading(false);
     }
-  };
+  }, [expenses, budgets]);
 
   // Fallback basic insights
   const generateBasicInsights = () => {
@@ -236,7 +236,7 @@ Requirements:
 
   useEffect(() => {
     generateInsights();
-  }, [expenses, budgets]);
+  }, [generateInsights]);
 
   const applyOptimization = async (optimization: BudgetOptimization) => {
     setBudget(optimization.category, optimization.suggestedBudget);

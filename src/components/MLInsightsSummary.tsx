@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,7 +43,7 @@ export function MLInsightsSummary() {
   const [summary, setSummary] = useState<MLSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const generateSummary = async () => {
+  const generateSummary = useCallback(async () => {
     if (expenses.length === 0 || budgets.length === 0) {
       setLoading(false);
       return;
@@ -160,11 +160,11 @@ Focus on:
     } finally {
       setLoading(false);
     }
-  };
+  }, [expenses, budgets]);
 
   useEffect(() => {
     generateSummary();
-  }, [expenses, budgets]);
+  }, [generateSummary]);
 
   const getHealthColor = (status: string) => {
     switch (status) {

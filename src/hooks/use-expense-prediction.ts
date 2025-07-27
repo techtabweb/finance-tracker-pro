@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useKV } from '@github/spark/hooks';
 import { Expense } from '@/lib/types';
 // Import removed - now using Spark LLM directly
@@ -43,7 +43,7 @@ export function useExpensePrediction() {
     if (daysSinceLastAnalysis >= 3 && expenses.length >= 10) {
       generatePredictions();
     }
-  }, [expenses.length]);
+  }, [expenses.length, generatePredictions, predictions]);
 
   const analyzeSpendingPatterns = (expenses: Expense[]) => {
     const now = new Date();
@@ -91,7 +91,7 @@ export function useExpensePrediction() {
     return patterns;
   };
 
-  const generatePredictions = async () => {
+  const generatePredictions = useCallback(async () => {
     if (expenses.length < 5) {
       setError('Need at least 5 expenses for meaningful predictions');
       return;
@@ -225,7 +225,7 @@ Requirements:
     } finally {
       setIsAnalyzing(false);
     }
-  };
+  }, [expenses]);
 
   const getPredictionForCategory = (category: string): ExpensePrediction | null => {
     return predictions?.categoryPredictions.find(p => p.category === category) || null;
