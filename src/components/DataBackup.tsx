@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Download, Upload, FileText, Database, AlertTriangle, CheckCircle, Info, FileSpreadsheet, Trash, Archive, Calendar } from '@phosphor-icons/react';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { FinanceDataManager, FinanceDataExport } from '@/lib/data-export';
@@ -228,97 +229,6 @@ export function DataBackup() {
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     return expenseDate < sixMonthsAgo;
   }).length;
-    if (!importPreview) return;
-
-    try {
-      setIsImporting(true);
-      setImportProgress(10);
-
-      const parsedData = FinanceDataManager.parseImportData(importPreview);
-      setImportProgress(30);
-
-      // Import data based on user options
-      if (importOptions.includeExpenses && parsedData.expenses.length > 0) {
-        if (importOptions.replaceExisting) {
-          setExpenses(parsedData.expenses);
-        } else {
-          setExpenses((current) => {
-            const existingIds = new Set(current.map(e => e.id));
-            const newExpenses = parsedData.expenses.filter(e => !existingIds.has(e.id));
-            return [...current, ...newExpenses];
-          });
-        }
-      }
-      setImportProgress(45);
-
-      if (importOptions.includeBudgets && parsedData.budgets.length > 0) {
-        if (importOptions.replaceExisting) {
-          setBudgets(parsedData.budgets);
-        } else {
-          setBudgets((current) => {
-            const existingIds = new Set(current.map(b => b.id));
-            const newBudgets = parsedData.budgets.filter(b => !existingIds.has(b.id));
-            return [...current, ...newBudgets];
-          });
-        }
-      }
-      setImportProgress(60);
-
-      if (importOptions.includeCategories && parsedData.categories.length > 0) {
-        if (importOptions.replaceExisting) {
-          setCategories(parsedData.categories);
-        } else {
-          setCategories((current) => {
-            const existingIds = new Set(current.map(c => c.id));
-            const newCategories = parsedData.categories.filter(c => !existingIds.has(c.id));
-            return [...current, ...newCategories];
-          });
-        }
-      }
-      setImportProgress(75);
-
-      if (importOptions.includeGoals && parsedData.savingsGoals.length > 0) {
-        if (importOptions.replaceExisting) {
-          setSavingsGoals(parsedData.savingsGoals);
-        } else {
-          setSavingsGoals((current) => {
-            const existingIds = new Set(current.map(g => g.id));
-            const newGoals = parsedData.savingsGoals.filter(g => !existingIds.has(g.id));
-            return [...current, ...newGoals];
-          });
-        }
-      }
-
-      if (importOptions.includeSettings && parsedData.monthlyBudget > 0) {
-        setMonthlyBudget(parsedData.monthlyBudget);
-      }
-      setImportProgress(100);
-
-      // Record import history
-      addBackupRecord({
-        date: new Date().toISOString(),
-        type: 'import',
-        format: 'json',
-        recordCount: Object.values(parsedData).reduce((sum, arr) => 
-          Array.isArray(arr) ? sum + arr.length : sum, 0
-        )
-      });
-
-      toast.success('🎉 Data imported successfully!', {
-        description: 'Your backup has been restored'
-      });
-
-      setShowPreviewDialog(false);
-      setImportPreview(null);
-    } catch (error) {
-      console.error('Import error:', error);
-      toast.error('Failed to import data', {
-        description: 'Please try again or contact support'
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  };
 
   const handleCleanupData = async () => {
     try {
