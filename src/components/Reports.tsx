@@ -57,10 +57,10 @@ export function Reports() {
     const categoryBreakdown = Object.entries(categoryTotals)
       .map(([name, value], index) => ({
         name,
-        value: typeof value === 'number' ? value : 0,
+        value: Number(value) || 0,
         color: COLORS[index % COLORS.length]
       }))
-      .sort((a, b) => b.value - a.value);
+      .sort((a, b) => Number(b.value) - Number(a.value));
 
     // Monthly trend
     const monthlyData = Array.from({ length: months }, (_, i) => {
@@ -104,8 +104,8 @@ export function Reports() {
     // Top categories
     const topCategories = categoryBreakdown.slice(0, 5).map(cat => ({
       category: cat.name,
-      amount: typeof cat.value === 'number' ? cat.value : 0,
-      percentage: totalExpenses > 0 ? ((typeof cat.value === 'number' ? cat.value : 0) / totalExpenses) * 100 : 0
+      amount: Number(cat.value) || 0,
+      percentage: totalExpenses > 0 ? (Number(cat.value) / totalExpenses) * 100 : 0
     }));
 
     return {

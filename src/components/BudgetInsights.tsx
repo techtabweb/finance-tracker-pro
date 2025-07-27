@@ -146,7 +146,7 @@ Return ONLY a valid JSON response with insights and optimizations arrays.`;
 
     Object.entries(categorySpending).forEach(([category, amount]) => {
       // Type guard to ensure amount is a number
-      const amountValue = typeof amount === 'number' ? amount : 0;
+      const amountValue = Number(amount) || 0;
       const budget = budgets.find(b => b.category === category);
       if (budget && amountValue > budget.limit * 0.8) {
         basicInsights.push({

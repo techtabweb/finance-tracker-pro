@@ -53,8 +53,9 @@ export function useCategoryLearning() {
       const matchedKeywords = new Set<string>();
 
       // Safe check for patterns
-      if (Array.isArray(patterns)) {
-        patterns.forEach((pattern) => {
+      const patternsArray = Array.isArray(patterns) ? patterns : [];
+      
+      patternsArray.forEach((pattern) => {
         const patternMerchant = pattern.merchant.toLowerCase();
         const patternDescription = pattern.description.toLowerCase();
 
@@ -84,12 +85,12 @@ export function useCategoryLearning() {
             matchedKeywords.add(word);
           }
         });
-      }
+      });
 
       // Only include categories with meaningful matches
       if (matchCount > 0 || score >= 20) {
         const confidence = Math.min(95, Math.max(70, score));
-        const frequency = Array.isArray(patterns) ? patterns.length : 0;
+        const frequency = patternsArray.length;
 
         insights.push({
           pattern: `Based on ${matchCount} similar transactions`,
@@ -149,13 +150,13 @@ export function useCategoryLearning() {
     
     Object.entries(merchantsByCategory).forEach(([category, merchants]) => {
       const topMerchant = Object.entries(merchants)
-        .sort(([, a], [, b]) => b - a)[0];
+        .sort(([, a], [, b]) => Number(b) - Number(a))[0];
       
-      if (topMerchant && topMerchant[1] > 1) {
+      if (topMerchant && Number(topMerchant[1]) > 1) {
         insights.push({
           category,
           merchant: topMerchant[0],
-          frequency: topMerchant[1]
+          frequency: Number(topMerchant[1])
         });
       }
     });

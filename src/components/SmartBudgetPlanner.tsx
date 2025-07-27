@@ -52,6 +52,77 @@ export function SmartBudgetPlanner() {
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
 
   // Generate smart budget recommendations
+  // Fallback basic recommendations - defined before use
+  const generateBasicRecommendations = useCallback(() => {
+    const basicRecommendations: BudgetRecommendation[] = [];
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    
+    budgets.forEach(budget => {
+      const monthlyExpenses = expenses.filter(exp => 
+        exp.category === budget.category && exp.date.startsWith(currentMonth)
+      );
+      const spent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const utilizationRate = budget.limit > 0 ? spent / budget.limit : 0;
+
+      if (utilizationRate < 0.5) {
+        // Under-utilized budget
+        const recommended = Math.max(spent * 1.2, budget.limit * 0.7);
+        basicRecommendations.push({
+          category: budget.category,
+          currentBudget: budget.limit,
+          recommendedBudget: recommended,
+          reasoning: `Low utilization (${(utilizationRate * 100).toFixed(0)}%). Consider reducing budget.`,
+          impact: 'positive',
+          confidence: 80,
+          potentialSavings: budget.limit - recommended,
+          monthlyTrend: 'stable',
+          priority: 'medium'
+        });
+      } else if (utilizationRate > 1.1) {
+        // Over budget
+        const recommended = spent * 1.1;
+        basicRecommendations.push({
+          category: budget.category,
+          currentBudget: budget.limit,
+          recommendedBudget: recommended,
+          reasoning: `Consistently overspending (${(utilizationRate * 100).toFixed(0)}%). Consider increasing budget.`,
+          impact: 'negative',
+          confidence: 90,
+          potentialSavings: 0,
+          monthlyTrend: 'increasing',
+          priority: 'high'
+        });
+      }
+    });
+
+    setRecommendations(basicRecommendations);
+    
+    // Generate basic scenarios
+    const totalBudget = budgets.reduce((sum, b) => sum + b.limit, 0);
+    const basicScenarios = [
+      {
+        id: 'conservative',
+        name: 'Conservative Plan',
+        description: 'Conservative spending with focus on savings',
+        totalBudget: totalBudget * 0.8,
+        categoryAllocations: budgets.reduce((acc, b) => ({ ...acc, [b.category]: b.limit * 0.8 }), {}),
+        expectedSavings: totalBudget * 0.2,
+        riskLevel: 'conservative'
+      },
+      {
+        id: 'moderate',
+        name: 'Balanced Plan',
+        description: 'Balanced approach with moderate savings',
+        totalBudget: totalBudget * 0.9,
+        categoryAllocations: budgets.reduce((acc, b) => ({ ...acc, [b.category]: b.limit * 0.9 }), {}),
+        expectedSavings: totalBudget * 0.1,
+        riskLevel: 'moderate'
+      }
+    ];
+
+    setScenarios(basicScenarios);
+  }, [budgets, expenses, setRecommendations, setScenarios]);
+
   const generateRecommendations = useCallback(async () => {
     if (expenses.length === 0) {
       setLoading(false);
@@ -78,10 +149,10 @@ export function SmartBudgetPlanner() {
           return acc;
         }, {} as Record<string, number>);
 
-        const amounts = Object.values(monthlySpending).filter((val): val is number => typeof val === 'number');
-        const avgSpending = amounts.length > 0 ? amounts.reduce((a, b) => a + b, 0) / amounts.length : 0;
-        const maxSpending = amounts.length > 0 ? Math.max(...amounts) : 0;
-        const minSpending = amounts.length > 0 ? Math.min(...amounts) : 0;
+        const amounts = Object.values(monthlySpending).map(val => Number(val) || 0);
+        const avgSpending = amounts.length > 0 ? amounts.reduce((a, b) => Number(a) + Number(b), 0) / amounts.length : 0;
+        const maxSpending = amounts.length > 0 ? Math.max(...amounts.map(Number)) : 0;
+        const minSpending = amounts.length > 0 ? Math.min(...amounts.map(Number)) : 0;
 
         return {
           category: budget.category,
@@ -129,78 +200,7 @@ export function SmartBudgetPlanner() {
     } finally {
       setLoading(false);
     }
-  }, [expenses, budgets]);
-
-  // Fallback basic recommendations
-  const generateBasicRecommendations = () => {
-    const basicRecommendations: BudgetRecommendation[] = [];
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    
-    budgets.forEach(budget => {
-      const monthlyExpenses = expenses.filter(exp => 
-        exp.category === budget.category && exp.date.startsWith(currentMonth)
-      );
-      const spent = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-      const utilizationRate = budget.limit > 0 ? spent / budget.limit : 0;
-
-      if (utilizationRate < 0.5) {
-        // Under-utilized budget
-        const recommended = Math.max(spent * 1.2, budget.limit * 0.7);
-        basicRecommendations.push({
-          category: budget.category,
-          currentBudget: budget.limit,
-          recommendedBudget: recommended,
-          reasoning: `Low utilization (${(utilizationRate * 100).toFixed(0)}%). Consider reducing budget.`,
-          impact: 'positive',
-          confidence: 80,
-          potentialSavings: budget.limit - recommended,
-          monthlyTrend: 'stable',
-          priority: 'medium'
-        });
-      } else if (utilizationRate > 1.1) {
-        // Over budget
-        const recommended = spent * 1.1;
-        basicRecommendations.push({
-          category: budget.category,
-          currentBudget: budget.limit,
-          recommendedBudget: recommended,
-          reasoning: `Consistently overspending (${(utilizationRate * 100).toFixed(0)}%). Consider increasing budget.`,
-          impact: 'negative',
-          confidence: 90,
-          potentialSavings: 0,
-          monthlyTrend: 'increasing',
-          priority: 'high'
-        });
-      }
-    });
-
-    setRecommendations(basicRecommendations);
-    
-    // Generate basic scenarios
-    const totalBudget = budgets.reduce((sum, b) => sum + b.limit, 0);
-    const basicScenarios: BudgetScenario[] = [
-      {
-        id: 'conservative',
-        name: 'Conservative Plan',
-        description: 'Focus on saving and essential expenses only',
-        totalBudget: totalBudget * 0.8,
-        categoryAllocations: budgets.reduce((acc, b) => ({ ...acc, [b.category]: b.limit * 0.8 }), {}),
-        expectedSavings: totalBudget * 0.2,
-        riskLevel: 'conservative'
-      },
-      {
-        id: 'moderate',
-        name: 'Balanced Plan',
-        description: 'Balanced approach with moderate savings',
-        totalBudget: totalBudget * 0.9,
-        categoryAllocations: budgets.reduce((acc, b) => ({ ...acc, [b.category]: b.limit * 0.9 }), {}),
-        expectedSavings: totalBudget * 0.1,
-        riskLevel: 'moderate'
-      }
-    ];
-
-    setScenarios(basicScenarios);
-  };
+  }, [expenses, budgets, generateBasicRecommendations]);
 
   useEffect(() => {
     generateRecommendations();

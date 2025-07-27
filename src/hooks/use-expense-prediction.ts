@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useKV } from './use-kv';
 import { Expense } from '@/lib/types';
 // Import removed - now using Spark LLM directly
@@ -31,6 +31,7 @@ export function useExpensePrediction() {
   const [predictions, setPredictions] = useKV<PredictionAnalysis | null>('expense-predictions', null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const generatePredictionsRef = useRef<(() => Promise<void>) | null>(null);
 
   const analyzeSpendingPatterns = (expenses: Expense[]) => {
     const now = new Date();
@@ -172,6 +173,11 @@ export function useExpensePrediction() {
     }
   }, [expenses]);
 
+  // Store ref to current function to avoid circular dependency
+  useEffect(() => {
+    generatePredictionsRef.current = generatePredictions;
+  }, [generatePredictions]);
+
   // Automatically analyze when expenses change significantly
   useEffect(() => {
     const lastAnalysisDate = predictions?.lastUpdated;
@@ -181,9 +187,9 @@ export function useExpensePrediction() {
 
     // Re-analyze if it's been more than 3 days or we have significant new data
     if (daysSinceLastAnalysis >= 3 && expenses && expenses.length >= 10) {
-      generatePredictions();
+      generatePredictionsRef.current?.();
     }
-  }, [expenses?.length, predictions]); // Removed generatePredictions from deps to avoid circular dependency
+  }, [expenses?.length, predictions?.lastUpdated]); // Removed generatePredictions from deps to avoid circular dependency
 
   const getPredictionForCategory = (category: string): ExpensePrediction | null => {
     return predictions?.categoryPredictions.find(p => p.category === category) || null;
@@ -203,8 +209,8 @@ export function useExpensePrediction() {
   };
 
   const refreshPredictions = useCallback(() => {
-    generatePredictions();
-  }, [generatePredictions]);
+    generatePredictionsRef.current?.();
+  }, []);
 
   return {
     predictions,
