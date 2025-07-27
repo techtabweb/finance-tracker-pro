@@ -130,56 +130,91 @@ function App() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-                {/* Desktop Navigation - Horizontal Scrolling with Indicators */}
-                {!isMobile && (
-                  <motion.div 
-                    className="mb-6"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                  >
-                    <Card className="p-4 bg-card/70 backdrop-blur-sm border-border shadow-lg relative">
-                      <div className="relative">
-                        {/* Gradient overlays for scroll indication */}
-                        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-card/70 to-transparent z-10 pointer-events-none" />
-                        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card/70 to-transparent z-10 pointer-events-none" />
-                        
-                        <div className="overflow-x-auto scrollbar-hide">
-                          <TabsList className="flex w-max bg-transparent gap-3 h-auto min-w-full px-4">
-                            {tabs.map((tab, index) => (
-                              <motion.div
-                                key={tab.value}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3, delay: index * 0.03 }}
-                                className="flex-shrink-0"
-                              >
-                                <TabsTrigger 
-                                  value={tab.value} 
-                                  className="flex flex-col items-center gap-2 p-3 min-w-[100px] data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-md data-[state=active]:border-primary/20 rounded-xl transition-all duration-300 hover:bg-muted/50 group text-foreground border border-transparent"
-                                >
-                                  <span className="text-xl group-data-[state=active]:scale-110 transition-transform">{tab.icon}</span>
-                                  <span className="text-[10px] font-medium text-center leading-tight">{tab.label}</span>
-                                </TabsTrigger>
-                              </motion.div>
-                            ))}
-                          </TabsList>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                )}
+          {/* Desktop Navigation - Enhanced Horizontal Scrolling */}
+          {!isMobile && (
+            <motion.div 
+              className="mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Card className="p-2 bg-card/80 backdrop-blur-lg border-border shadow-xl relative overflow-hidden">
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 opacity-50" />
+                
+                <div className="relative">
+                  {/* Enhanced gradient overlays for better scroll indication */}
+                  <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-card/80 via-card/60 to-transparent z-20 pointer-events-none" />
+                  <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-card/80 via-card/60 to-transparent z-20 pointer-events-none" />
+                  
+                  {/* Scroll indicators */}
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 z-30 text-muted-foreground/60">
+                    <div className="w-1 h-8 bg-gradient-to-b from-transparent via-current to-transparent rounded-full" />
+                  </div>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 z-30 text-muted-foreground/60">
+                    <div className="w-1 h-8 bg-gradient-to-b from-transparent via-current to-transparent rounded-full" />
+                  </div>
+                  
+                  <div className="overflow-x-auto scrollbar-hide horizontal-scroll">
+                    <TabsList className="flex w-max bg-transparent gap-2 h-auto min-w-full px-6 py-2">
+                      {tabs.map((tab, index) => (
+                        <motion.div
+                          key={tab.value}
+                          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ 
+                            duration: 0.4, 
+                            delay: index * 0.04,
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 30
+                          }}
+                          className="flex-shrink-0"
+                        >
+                          <TabsTrigger 
+                            value={tab.value} 
+                            className="group relative flex flex-col items-center gap-2 p-4 min-w-[110px] data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:shadow-lg data-[state=active]:border-primary/30 rounded-2xl transition-all duration-300 hover:bg-muted/60 hover:scale-105 text-foreground border border-transparent hover:border-border/50 bg-background/40"
+                          >
+                            {/* Active state background glow */}
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300" />
+                            
+                            {/* Icon with enhanced animation */}
+                            <span className="relative text-2xl group-data-[state=active]:scale-110 group-hover:scale-105 transition-all duration-300 group-data-[state=active]:drop-shadow-sm">
+                              {tab.icon}
+                            </span>
+                            
+                            {/* Label with better typography */}
+                            <span className="relative text-[11px] font-semibold text-center leading-tight group-data-[state=active]:text-primary transition-colors duration-300">
+                              {tab.label}
+                            </span>
+                            
+                            {/* Category indicator dot */}
+                            <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full transition-all duration-300 ${
+                              tab.category === 'core' ? 'bg-primary/60' :
+                              tab.category === 'ai' ? 'bg-accent/60' :
+                              tab.category === 'planning' ? 'bg-blue-500/60' :
+                              'bg-muted-foreground/40'
+                            } group-data-[state=active]:scale-125 group-data-[state=active]:bg-primary`} />
+                          </TabsTrigger>
+                        </motion.div>
+                      ))}
+                    </TabsList>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          )}
 
-          {/* Mobile Bottom Navigation - Enhanced with More Menu */}
+          {/* Mobile Bottom Navigation - Enhanced with Improved More Menu */}
           {isMobile && (
-            <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb bg-card/95 backdrop-blur-md shadow-2xl border-t border-border">
+            <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb bg-card/95 backdrop-blur-xl shadow-2xl border-t border-border">
               <motion.div
                 initial={{ opacity: 0, y: 100 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <TabsList className="flex w-full bg-transparent p-2 gap-1 h-auto">
-                  {/* Main tabs */}
+                  {/* Main tabs with enhanced styling */}
                   {mobileMainTabs.map((tab, index) => (
                     <motion.div
                       key={tab.value}
@@ -190,44 +225,137 @@ function App() {
                     >
                       <TabsTrigger 
                         value={tab.value} 
-                        className="flex flex-col items-center gap-1 p-2 w-full data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-lg transition-all duration-200 hover:bg-muted/50 text-muted-foreground"
+                        className="relative flex flex-col items-center gap-1 p-3 w-full data-[state=active]:bg-primary/15 data-[state=active]:text-primary rounded-xl transition-all duration-300 hover:bg-muted/50 text-muted-foreground group border border-transparent data-[state=active]:border-primary/20 data-[state=active]:shadow-lg"
                       >
-                        <span className="text-base">{tab.icon}</span>
-                        <span className="text-[8px] font-medium leading-tight text-center">{tab.shortLabel}</span>
+                        {/* Active indicator */}
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300" />
+                        
+                        <span className="text-lg group-data-[state=active]:scale-110 group-hover:scale-105 transition-transform duration-200">{tab.icon}</span>
+                        <span className="text-[9px] font-semibold leading-tight text-center group-data-[state=active]:text-primary">{tab.shortLabel}</span>
                       </TabsTrigger>
                     </motion.div>
                   ))}
                   
-                  {/* More button */}
+                  {/* Enhanced More button */}
                   <Sheet open={isMoreOpen} onOpenChange={setIsMoreOpen}>
                     <SheetTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="flex flex-col items-center gap-1 p-2 flex-1 rounded-lg hover:bg-muted/50 text-muted-foreground"
+                      <motion.div
+                        className="flex-1"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        <span className="text-base">⋯</span>
-                        <span className="text-[8px] font-medium leading-tight">More</span>
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          className="relative flex flex-col items-center gap-1 p-3 w-full rounded-xl hover:bg-muted/50 text-muted-foreground border border-transparent hover:border-border/50 transition-all duration-300"
+                        >
+                          {/* Notification dot for more menu */}
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-pulse" />
+                          
+                          <span className="text-lg">⚡</span>
+                          <span className="text-[9px] font-semibold leading-tight">More</span>
+                        </Button>
+                      </motion.div>
                     </SheetTrigger>
-                    <SheetContent side="bottom" className="h-[50vh] rounded-t-2xl">
-                      <SheetHeader>
-                        <SheetTitle className="text-left">More Options</SheetTitle>
+                    
+                    <SheetContent side="bottom" className="h-[60vh] rounded-t-3xl bg-card/95 backdrop-blur-xl border-t border-border">
+                      <SheetHeader className="pb-6">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <SheetTitle className="text-left text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                            More Options
+                          </SheetTitle>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Access additional features and tools
+                          </p>
+                        </motion.div>
                       </SheetHeader>
-                      <div className="grid grid-cols-4 gap-4 mt-6">
-                        {mobileSecondaryTabs.map((tab) => (
-                          <Button
-                            key={tab.value}
-                            variant={activeTab === tab.value ? "default" : "ghost"}
-                            className="flex flex-col items-center gap-2 p-4 h-auto"
-                            onClick={() => {
-                              setActiveTab(tab.value as any);
-                              setIsMoreOpen(false);
-                            }}
+                      
+                      {/* Organized categories */}
+                      <div className="space-y-6">
+                        {/* Group tabs by category */}
+                        {Object.entries(
+                          mobileSecondaryTabs.reduce((acc, tab) => {
+                            const category = tab.category;
+                            if (!acc[category]) acc[category] = [];
+                            acc[category].push(tab);
+                            return acc;
+                          }, {} as Record<string, typeof mobileSecondaryTabs>)
+                        ).map(([category, categoryTabs], categoryIndex) => (
+                          <motion.div
+                            key={category}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: categoryIndex * 0.1 }}
+                            className="space-y-3"
                           >
-                            <span className="text-xl">{tab.icon}</span>
-                            <span className="text-xs font-medium text-center leading-tight">{tab.shortLabel}</span>
-                          </Button>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${
+                                category === 'planning' ? 'bg-blue-500' :
+                                category === 'ai' ? 'bg-accent' :
+                                'bg-muted-foreground'
+                              }`} />
+                              <h3 className="text-sm font-semibold text-foreground capitalize">
+                                {category === 'ai' ? 'AI & Intelligence' : 
+                                 category === 'planning' ? 'Goals & Planning' : 
+                                 'Health & System'}
+                              </h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-4 gap-3">
+                              {categoryTabs.map((tab, tabIndex) => (
+                                <motion.div
+                                  key={tab.value}
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ 
+                                    duration: 0.3, 
+                                    delay: (categoryIndex * 0.1) + (tabIndex * 0.05) 
+                                  }}
+                                >
+                                  <Button
+                                    variant={activeTab === tab.value ? "default" : "ghost"}
+                                    className="flex flex-col items-center gap-2 p-4 h-auto w-full rounded-xl hover:bg-muted/60 transition-all duration-200 hover:scale-105 border border-transparent hover:border-border/50"
+                                    onClick={() => {
+                                      setActiveTab(tab.value as any);
+                                      setIsMoreOpen(false);
+                                    }}
+                                  >
+                                    <span className="text-xl">{tab.icon}</span>
+                                    <span className="text-[10px] font-medium text-center leading-tight">
+                                      {tab.shortLabel}
+                                    </span>
+                                  </Button>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </motion.div>
                         ))}
+                        
+                        {/* Quick stats in more menu */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.3 }}
+                          className="mt-6 p-4 bg-primary/5 rounded-2xl border border-primary/10"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-primary">13</div>
+                              <div className="text-xs text-muted-foreground">Features</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-accent">AI</div>
+                              <div className="text-xs text-muted-foreground">Powered</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-primary">🇮🇳</div>
+                              <div className="text-xs text-muted-foreground">India</div>
+                            </div>
+                          </div>
+                        </motion.div>
                       </div>
                     </SheetContent>
                   </Sheet>
