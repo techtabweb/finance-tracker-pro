@@ -24,29 +24,33 @@ export function SystemHealthCheck() {
     const issues: string[] = [];
     const suggestions: string[] = [];
     
-    // Only check for critical issues that actually affect functionality
-    if (categories.length === 0) {
-      issues.push('No expense categories found');
-      suggestions.push('Refresh the app to restore default categories');
-    }
-
-    // Check if theme variables are loaded
+    // Only check for critical issues that actually break functionality
+    // Don't warn about empty categories since we have defaults that auto-load
+    
+    // Check if theme variables are loaded properly
     const hasThemeVars = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() !== '';
     if (!hasThemeVars) {
       issues.push('Theme system not properly loaded');
       suggestions.push('Try refreshing the page');
     }
 
-    // Only warn for extremely small screens (below 280px)
-    if (isMobile && window.innerWidth < 280) {
+    // Only warn for extremely small screens that break UI (below 240px)
+    if (isMobile && window.innerWidth < 240) {
       issues.push('Screen too small for optimal experience');
       suggestions.push('Consider using in landscape mode');
     }
 
-    // Determine overall status - only show issues if there are real problems
+    // Check if Gemini API is available (just informational, not an issue)
+    const hasGeminiApi = typeof window !== 'undefined' && window.spark?.llm;
+    if (!hasGeminiApi) {
+      // This is not an issue, just use basic mode
+      // suggestions.push('AI features running in basic mode');
+    }
+
+    // Determine overall status - only show as warning/critical for real issues
     let overall: HealthStatus['overall'] = 'excellent';
     if (issues.length > 0) {
-      overall = issues.length > 1 ? 'critical' : 'warning';
+      overall = issues.length > 2 ? 'critical' : 'warning';
     }
 
     return { overall, issues, suggestions };
@@ -89,12 +93,9 @@ export function SystemHealthCheck() {
     const health = checkSystemHealth();
     setLastHealthCheck(health);
     
-    // Only show panel automatically if there are critical issues
-    if (health.issues.length > 0) {
-      const hasOnlySuggestions = health.issues.length === 0 && health.suggestions.length > 0;
-      if (!hasOnlySuggestions) {
-        setShowHealthPanel(true);
-      }
+    // Only show panel automatically if there are critical issues that need attention
+    if (health.issues.length > 0 && health.overall === 'critical') {
+      setShowHealthPanel(true);
     }
   }, [expenses.length, budgets.length, categories.length, isDark, settings.theme, isMobile]);
 
@@ -136,8 +137,8 @@ export function SystemHealthCheck() {
     return `${suggestions.length} suggestion${suggestions.length === 1 ? '' : 's'} available`;
   };
 
-  // Only show health indicator if there are actual issues
-  const shouldShowIndicator = lastHealthCheck.issues.length > 0;
+  // Only show health indicator if there are critical issues that need attention
+  const shouldShowIndicator = lastHealthCheck.issues.length > 0 && lastHealthCheck.overall !== 'excellent';
 
   return (
     <>
