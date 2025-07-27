@@ -144,7 +144,7 @@ Return ONLY a valid JSON response with insights and optimizations arrays.`;
       return acc;
     }, {} as Record<string, number>);
 
-    Object.entries(categorySpending).forEach(([category, amount]: [string, number]) => {
+    Object.entries(categorySpending).forEach(([category, amount]) => {
       // Type guard to ensure amount is a number
       const amountValue = Number(amount) || 0;
       const budget = budgets.find(b => b.category === category);

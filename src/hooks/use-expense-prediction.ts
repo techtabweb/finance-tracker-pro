@@ -31,7 +31,6 @@ export function useExpensePrediction() {
   const [predictions, setPredictions] = useKV<PredictionAnalysis | null>('expense-predictions', null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const generatePredictionsRef = useRef<(() => Promise<void>) | null>(null);
 
   const analyzeSpendingPatterns = (expenses: Expense[]) => {
     const now = new Date();
@@ -173,11 +172,6 @@ export function useExpensePrediction() {
     }
   }, [expenses]);
 
-  // Store ref to current function to avoid circular dependency
-  useEffect(() => {
-    generatePredictionsRef.current = generatePredictions;
-  }, [generatePredictions]);
-
   // Automatically analyze when expenses change significantly
   useEffect(() => {
     const lastAnalysisDate = predictions?.lastUpdated;
@@ -187,7 +181,7 @@ export function useExpensePrediction() {
 
     // Re-analyze if it's been more than 3 days or we have significant new data
     if (daysSinceLastAnalysis >= 3 && expenses && expenses.length >= 10) {
-      generatePredictionsRef.current?.();
+      generatePredictions();
     }
   }, [expenses?.length, predictions?.lastUpdated]); // Removed generatePredictions from deps to avoid circular dependency
 
@@ -209,8 +203,8 @@ export function useExpensePrediction() {
   };
 
   const refreshPredictions = useCallback(() => {
-    generatePredictionsRef.current?.();
-  }, []);
+    generatePredictions();
+  }, [generatePredictions]);
 
   return {
     predictions,

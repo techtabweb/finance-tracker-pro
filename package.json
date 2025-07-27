@@ -12,7 +12,6 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@github/spark": "^0.0.1",
         "@heroicons/react": "^2.2.0",
         "@hookform/resolvers": "^4.1.3",
         "@octokit/core": "^6.1.4",
@@ -91,9 +90,7 @@
         "typescript-eslint": "^8.25.0",
         "vite": "^6.3.5"
     },
-    "workspaces": {
-        "packages": [
-            "packages/*"
-        ]
+    "engines": {
+        "node": ">=18.0.0"
     }
 }

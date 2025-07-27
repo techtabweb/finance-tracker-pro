@@ -149,8 +149,8 @@ export function SmartBudgetPlanner() {
           return acc;
         }, {} as Record<string, number>);
 
-        const amounts = Object.values(monthlySpending).map((val: number) => Number(val) || 0);
-        const avgSpending = amounts.length > 0 ? amounts.reduce((a: number, b: number) => Number(a) + Number(b), 0) / amounts.length : 0;
+        const amounts = Object.values(monthlySpending).map(val => Number(val) || 0);
+        const avgSpending = amounts.length > 0 ? amounts.reduce((a, b) => Number(a) + Number(b), 0) / amounts.length : 0;
         const maxSpending = amounts.length > 0 ? Math.max(...amounts) : 0;
         const minSpending = amounts.length > 0 ? Math.min(...amounts) : 0;
 

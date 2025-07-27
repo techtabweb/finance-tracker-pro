@@ -1,4 +1,4 @@
-// Enhanced spark compatibility layer for development
+// Complete spark compatibility layer for standalone deployment
 
 interface UserInfo {
   avatarUrl: string;
@@ -28,11 +28,126 @@ declare global {
   }
 }
 
-// Mock storage for development
-const mockStorage = new Map<string, any>();
+// Enhanced storage using localStorage with persistence
+class EnhancedKVStore {
+  private getStorageKey(key: string): string {
+    return `finance_tracker_${key}`;
+  }
 
-// Initialize a simple mock if spark is not available
+  async keys(): Promise<string[]> {
+    const keys: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('finance_tracker_')) {
+        keys.push(key.replace('finance_tracker_', ''));
+      }
+    }
+    return keys;
+  }
+
+  async get<T>(key: string): Promise<T | undefined> {
+    try {
+      const item = localStorage.getItem(this.getStorageKey(key));
+      return item ? JSON.parse(item) : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  async set<T>(key: string, value: T): Promise<void> {
+    try {
+      localStorage.setItem(this.getStorageKey(key), JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  }
+
+  async delete(key: string): Promise<void> {
+    try {
+      localStorage.removeItem(this.getStorageKey(key));
+    } catch (error) {
+      console.warn('Failed to delete from localStorage:', error);
+    }
+  }
+}
+
+// Gemini AI integration
+const GEMINI_API_KEY = 'AIzaSyB83WwA2IAHN4U6Npa44yYPdhtzkEdwtu4';
+const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+async function callGeminiAPI(prompt: string, model: string = 'gemini-1.5-flash', jsonMode: boolean = false): Promise<string> {
+  try {
+    const response = await fetch(`${GEMINI_BASE_URL}/${model}:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: jsonMode ? `${prompt}\n\nPlease respond with valid JSON only.` : prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.8,
+          maxOutputTokens: 2048,
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    
+    if (jsonMode) {
+      // Try to extract JSON from the response
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          JSON.parse(jsonMatch[0]);
+          return jsonMatch[0];
+        } catch {
+          // If parsing fails, return a default JSON structure
+          return JSON.stringify({
+            recommendations: [],
+            insights: [],
+            predictions: []
+          });
+        }
+      }
+      return JSON.stringify({
+        recommendations: [],
+        insights: [],
+        predictions: []
+      });
+    }
+    
+    return text;
+  } catch (error) {
+    console.error('Gemini API call failed:', error);
+    
+    if (jsonMode) {
+      return JSON.stringify({
+        recommendations: [],
+        insights: [],
+        predictions: [],
+        error: 'AI service temporarily unavailable'
+      });
+    }
+    
+    return 'AI service is temporarily unavailable. Please try again later.';
+  }
+}
+
+// Initialize spark if not available
 if (typeof window !== 'undefined' && !window.spark) {
+  const kvStore = new EnhancedKVStore();
+  
   window.spark = {
     llmPrompt: (strings: TemplateStringsArray, ...values: any[]) => {
       let result = strings[0];
@@ -43,38 +158,20 @@ if (typeof window !== 'undefined' && !window.spark) {
     },
     
     llm: async (prompt: string, model?: string, jsonMode?: boolean) => {
-      // For development, return a simple mock response
-      console.log('Mock LLM call:', { prompt, model, jsonMode });
-      
-      if (jsonMode) {
-        return JSON.stringify({
-          recommendations: [],
-          insights: [],
-          predictions: []
-        });
-      }
-      
-      return 'This is a mock response. In production, this would use the actual Spark LLM.';
+      // Use Gemini API for actual AI functionality
+      const geminiModel = model === 'gpt-4o' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
+      return callGeminiAPI(prompt, geminiModel, jsonMode || false);
     },
     
-    user: async () => ({
-      avatarUrl: 'https://avatars.githubusercontent.com/u/123456?v=4',
-      email: 'user@example.com',
-      id: 'mock-user-id',
+    user: async (): Promise<UserInfo> => ({
+      avatarUrl: 'https://ui-avatars.com/api/?name=Finance+User&background=0ea5e9&color=fff',
+      email: 'user@financetracker.app',
+      id: 'standalone-user',
       isOwner: true,
-      login: 'mockuser'
+      login: 'financeuser'
     }),
     
-    kv: {
-      keys: async () => Array.from(mockStorage.keys()),
-      get: async <T>(key: string): Promise<T | undefined> => mockStorage.get(key),
-      set: async <T>(key: string, value: T): Promise<void> => {
-        mockStorage.set(key, value);
-      },
-      delete: async (key: string): Promise<void> => {
-        mockStorage.delete(key);
-      }
-    }
+    kv: kvStore
   };
 }
 

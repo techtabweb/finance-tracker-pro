@@ -56,8 +56,10 @@ export function useCategoryLearning() {
       const patternsArray = Array.isArray(patterns) ? patterns : [];
       
       patternsArray.forEach((pattern) => {
-        const patternMerchant = pattern.merchant.toLowerCase();
-        const patternDescription = pattern.description.toLowerCase();
+        if (!pattern || typeof pattern !== 'object') return;
+        
+        const patternMerchant = pattern.merchant?.toLowerCase() || '';
+        const patternDescription = pattern.description?.toLowerCase() || '';
 
         // Exact merchant match (highest weight)
         if (patternMerchant && cleanMerchant && patternMerchant === cleanMerchant) {
@@ -148,9 +150,9 @@ export function useCategoryLearning() {
 
     const insights: Array<{category: string, merchant: string, frequency: number}> = [];
     
-    Object.entries(merchantsByCategory).forEach(([category, merchants]: [string, Record<string, number>]) => {
+    Object.entries(merchantsByCategory).forEach(([category, merchants]) => {
       const topMerchant = Object.entries(merchants)
-        .sort(([, a], [, b]: [string, number]) => Number(b) - Number(a))[0];
+        .sort(([, a], [, b]) => Number(b) - Number(a))[0];
       
       if (topMerchant && Number(topMerchant[1]) > 1) {
         insights.push({
