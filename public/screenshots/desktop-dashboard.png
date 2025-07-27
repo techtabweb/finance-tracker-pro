@@ -1,0 +1,12 @@
+<!-- Placeholder desktop screenshot -->
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1920" height="1080" fill="#F8FAFC"/>
+  <rect x="0" y="0" width="1920" height="80" fill="#3B82F6"/>
+  <text x="960" y="45" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">Finance Tracker - Desktop Dashboard</text>
+  <rect x="40" y="120" width="600" height="300" rx="12" fill="white"/>
+  <text x="60" y="160" font-family="Arial" font-size="20" font-weight="bold" fill="#1F2937">Spending Analytics</text>
+  <rect x="680" y="120" width="600" height="300" rx="12" fill="white"/>
+  <text x="700" y="160" font-family="Arial" font-size="20" font-weight="bold" fill="#1F2937">Recent Expenses</text>
+  <rect x="1320" y="120" width="560" height="300" rx="12" fill="white"/>
+  <text x="1340" y="160" font-family="Arial" font-size="20" font-weight="bold" fill="#1F2937">Budget Overview</text>
+</svg>

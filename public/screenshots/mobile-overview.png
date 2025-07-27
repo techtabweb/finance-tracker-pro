@@ -1,0 +1,10 @@
+<!-- Placeholder mobile screenshot -->
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="390" height="844" fill="#F8FAFC"/>
+  <rect x="0" y="0" width="390" height="88" fill="#3B82F6"/>
+  <text x="195" y="50" font-family="Arial" font-size="20" font-weight="bold" fill="white" text-anchor="middle">Finance Tracker</text>
+  <rect x="20" y="108" width="350" height="120" rx="12" fill="white"/>
+  <text x="40" y="140" font-family="Arial" font-size="16" font-weight="bold" fill="#1F2937">Monthly Overview</text>
+  <text x="40" y="180" font-family="Arial" font-size="32" font-weight="bold" fill="#3B82F6">₹45,230</text>
+  <text x="40" y="200" font-family="Arial" font-size="14" fill="#6B7280">Total Spent This Month</text>
+</svg>

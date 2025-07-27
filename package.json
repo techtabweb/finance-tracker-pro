@@ -6,10 +6,13 @@
     "scripts": {
         "dev": "vite",
         "kill": "fuser -k 5000/tcp",
-        "build": "tsc -b --noCheck && vite build",
+        "build": "tsc --noEmit && vite build",
         "lint": "eslint .",
         "optimize": "vite optimize",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "type-check": "tsc --noEmit",
+        "deploy:preview": "vite build && vite preview",
+        "deploy:check": "npm run type-check && npm run lint && npm run build"
     },
     "dependencies": {
         "@github/spark": "^0.0.1",

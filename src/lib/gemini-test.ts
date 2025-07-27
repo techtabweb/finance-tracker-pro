@@ -48,7 +48,7 @@ export async function testExpenseCategorization() {
 
 // API key validation
 export function validateApiKey() {
-  const apiKey = 'AIzaSyB83WwA2IAHN4U6Npa44yYPdhtzkEdwtu4';
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyB83WwA2IAHN4U6Npa44yYPdhtzkEdwtu4';
   
   if (!apiKey || apiKey.length < 30) {
     throw new Error('Invalid Gemini API key');
@@ -63,7 +63,7 @@ export function printUsageInstructions() {
   console.log(`
 🤖 Gemini AI Integration Summary:
 
-API Key: AIzaSyB83WwA2IAHN4U6Npa44yYPdhtzkEdwtu4
+API Key: Environment variable VITE_GEMINI_API_KEY (fallback included for development)
 Model: gemini-1.5-flash (Free tier with vision capabilities)
 
 Features Implemented:
