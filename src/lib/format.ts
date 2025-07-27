@@ -5,6 +5,14 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
+export const formatAmount = (amount: number): string => {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(amount);
+};
+
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-IN', {
