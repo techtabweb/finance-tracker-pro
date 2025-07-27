@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
 import { useFinanceData } from '@/hooks/use-finance-data';
+import { useTheme } from '@/hooks/use-theme';
 import { Overview } from '@/components/Overview';
 import { ExpensesList } from '@/components/ExpensesList';
 import { BudgetsList } from '@/components/BudgetsList';
@@ -12,13 +13,22 @@ import { Learning } from '@/components/Learning';
 import { UserProfile } from '@/components/UserProfile';
 import { ExpensePredictions } from '@/components/ExpensePredictions';
 import { BudgetInsights } from '@/components/BudgetInsights';
+import { FinanceChat } from '@/components/FinanceChat';
+import { SystemValidator } from '@/components/SystemValidator';
 import { Card } from '@/components/ui/card';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 
 function App() {
   const { activeTab, setActiveTab } = useFinanceData();
+  const { applyTheme, settings } = useTheme();
   const isMobile = useIsMobile();
+
+  // Apply theme on mount and when settings change
+  useEffect(() => {
+    applyTheme();
+  }, [settings, applyTheme]);
 
   const tabs = [
     { value: 'overview', label: 'Overview', icon: '📊', emoji: '💰', shortLabel: 'Home' },
@@ -31,16 +41,18 @@ function App() {
     { value: 'predictions', label: 'Predictions', icon: '🔮', emoji: '🚀', shortLabel: 'Predict' },
     { value: 'analytics', label: 'Analytics', icon: '📈', emoji: '🔍', shortLabel: 'Charts' },
     { value: 'reports', label: 'Reports', icon: '📄', emoji: '📋', shortLabel: 'Reports' },
+    { value: 'chat', label: 'AI Chat', icon: '💬', emoji: '🤖', shortLabel: 'Chat' },
+    { value: 'validator', label: 'System Check', icon: '🔧', emoji: '🛠️', shortLabel: 'Check' },
     { value: 'profile', label: 'Profile', icon: '👤', emoji: '⚙️', shortLabel: 'Profile' }
   ];
 
   const currentTab = tabs.find(tab => tab.value === activeTab);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       {/* Header */}
       <motion.div 
-        className="bg-white/90 backdrop-blur-md border-b border-white/20 sticky top-0 z-50 shadow-sm"
+        className="bg-card/90 backdrop-blur-md border-b border-border sticky top-0 z-50 shadow-sm"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -55,10 +67,10 @@ function App() {
             >
               <div className="text-3xl sm:text-4xl">💳</div>
               <div>
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Finance Tracker
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                   Smart money management for India 🇮🇳
                 </p>
               </div>
@@ -67,13 +79,13 @@ function App() {
             {/* Mobile current tab indicator */}
             {isMobile && (
               <motion.div 
-                className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm"
+                className="flex items-center gap-2 bg-card/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-border"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
               >
                 <span className="text-xl">{currentTab?.icon}</span>
-                <span className="font-medium text-gray-700 text-sm">{currentTab?.shortLabel}</span>
+                <span className="font-medium text-foreground text-sm">{currentTab?.shortLabel}</span>
               </motion.div>
             )}
 
@@ -86,8 +98,8 @@ function App() {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <div className="text-center">
-                  <div className="text-xs text-gray-500">Welcome to</div>
-                  <div className="font-medium text-gray-700">Finance Tracker</div>
+                  <div className="text-xs text-muted-foreground">Welcome to</div>
+                  <div className="font-medium text-foreground">Finance Tracker</div>
                 </div>
               </motion.div>
             )}
@@ -105,8 +117,8 @@ function App() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
-                    <Card className="p-3 bg-white/70 backdrop-blur-sm border-white/30 shadow-lg">
-                      <TabsList className="grid w-full grid-cols-11 bg-transparent gap-2 h-auto">
+                    <Card className="p-3 bg-card/70 backdrop-blur-sm border-border shadow-lg">
+                      <TabsList className="grid w-full grid-cols-13 bg-transparent gap-2 h-auto">
                         {tabs.map((tab, index) => (
                           <motion.div
                             key={tab.value}
@@ -117,10 +129,10 @@ function App() {
                           >
                             <TabsTrigger 
                               value={tab.value} 
-                              className="flex flex-col items-center gap-2 p-4 h-full data-[state=active]:bg-white/90 data-[state=active]:shadow-md data-[state=active]:scale-105 rounded-xl transition-all duration-300 hover:bg-white/50 hover:scale-102 group"
+                              className="flex flex-col items-center gap-2 p-4 h-full data-[state=active]:bg-card/90 data-[state=active]:shadow-md data-[state=active]:scale-105 rounded-xl transition-all duration-300 hover:bg-card/50 hover:scale-102 group text-foreground"
                             >
                               <span className="text-2xl group-data-[state=active]:scale-110 transition-transform">{tab.icon}</span>
-                              <span className="text-xs font-medium group-data-[state=active]:text-gray-900 text-gray-700">{tab.label}</span>
+                              <span className="text-xs font-medium group-data-[state=active]:text-foreground text-muted-foreground">{tab.label}</span>
                             </TabsTrigger>
                           </motion.div>
                         ))}
@@ -131,13 +143,13 @@ function App() {
 
           {/* Mobile Bottom Navigation */}
           {isMobile && (
-            <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb bg-white/95 backdrop-blur-md shadow-2xl border-t border-gray-200/50">
+            <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-pb bg-card/95 backdrop-blur-md shadow-2xl border-t border-border">
               <motion.div
                 initial={{ opacity: 0, y: 100 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <TabsList className="grid w-full grid-cols-11 bg-transparent p-3 gap-1 h-auto">
+                <TabsList className="grid w-full grid-cols-13 bg-transparent p-3 gap-1 h-auto">
                   {tabs.map((tab, index) => (
                     <motion.div
                       key={tab.value}
@@ -147,7 +159,7 @@ function App() {
                     >
                       <TabsTrigger 
                         value={tab.value} 
-                        className="flex flex-col items-center gap-1 p-2 h-full data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 rounded-xl transition-all duration-200 hover:bg-gray-100"
+                        className="flex flex-col items-center gap-1 p-2 h-full data-[state=active]:bg-primary/20 data-[state=active]:text-primary rounded-xl transition-all duration-200 hover:bg-muted text-muted-foreground"
                       >
                         <span className="text-lg">{tab.icon}</span>
                         <span className="text-[9px] font-medium leading-tight">{tab.shortLabel}</span>
@@ -207,6 +219,14 @@ function App() {
               
               <TabsContent value="reports" className="mt-0">
                 <Reports />
+              </TabsContent>
+              
+              <TabsContent value="chat" className="mt-0">
+                <FinanceChat />
+              </TabsContent>
+              
+              <TabsContent value="validator" className="mt-0">
+                <SystemValidator />
               </TabsContent>
               
               <TabsContent value="profile" className="mt-0">

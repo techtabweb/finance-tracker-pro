@@ -23,15 +23,21 @@ import {
   Database,
   Download,
   Upload,
-  Calendar
+  Calendar,
+  Eye,
+  VolumeX,
+  Zap,
+  Type
 } from 'lucide-react';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useKV } from '@github/spark/hooks';
+import { useTheme } from '@/hooks/use-theme';
 import { toast } from 'sonner';
 import { DataBackup } from '@/components/DataBackup';
 
 export const UserProfile = () => {
   const { expenses, budgets, savingsGoals } = useFinanceData();
+  const { settings, updateTheme, updateFontSize, updateContrastMode, toggleReducedMotion, getEffectiveTheme } = useTheme();
   const [userSettings, setUserSettings] = useKV('user-settings', {
     currency: 'INR',
     language: 'en',
@@ -109,10 +115,14 @@ export const UserProfile = () => {
       </motion.div>
 
       <Tabs defaultValue="settings" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings size={16} />
             Settings
+          </TabsTrigger>
+          <TabsTrigger value="theme" className="flex items-center gap-2">
+            <Palette size={16} />
+            Theme
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell size={16} />
@@ -305,29 +315,164 @@ export const UserProfile = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{expenses.length}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Total Expenses</div>
+                    <div className="text-center p-4 bg-primary/10 rounded-lg">
+                      <div className="text-2xl font-bold text-primary">{expenses.length}</div>
+                      <div className="text-sm text-muted-foreground">Total Expenses</div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div className="text-center p-4 bg-green-500/10 rounded-lg">
                       <div className="text-2xl font-bold text-green-600 dark:text-green-400">{budgets.length}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Active Budgets</div>
+                      <div className="text-sm text-muted-foreground">Active Budgets</div>
                     </div>
-                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div className="text-center p-4 bg-purple-500/10 rounded-lg">
                       <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{savingsGoals.length}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Savings Goals</div>
+                      <div className="text-sm text-muted-foreground">Savings Goals</div>
                     </div>
-                    <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <div className="text-center p-4 bg-orange-500/10 rounded-lg">
                       <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                         ₹{expenses.reduce((total, expense) => total + expense.amount, 0).toLocaleString()}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Total Spent</div>
+                      <div className="text-sm text-muted-foreground">Total Spent</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="theme" className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="w-5 h-5" />
+                  Theme & Appearance
+                </CardTitle>
+                <CardDescription>Customize the look and feel of your app</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {/* Theme Selection */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-foreground flex items-center gap-2">
+                      <Monitor className="w-4 h-4" />
+                      Color Theme
+                    </h3>
+                    <div className="space-y-3">
+                      {[
+                        { value: 'light', label: 'Light', icon: Sun, description: 'Clean and bright interface' },
+                        { value: 'dark', label: 'Dark', icon: Moon, description: 'Easy on the eyes' },
+                        { value: 'system', label: 'System', icon: Monitor, description: 'Follow system preference' }
+                      ].map((theme) => (
+                        <div
+                          key={theme.value}
+                          className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all hover:border-primary/50 ${
+                            settings.theme === theme.value ? 'border-primary bg-primary/5' : 'border-border'
+                          }`}
+                          onClick={() => {
+                            updateTheme(theme.value as any);
+                            toast.success(`Theme changed to ${theme.label}`);
+                          }}
+                        >
+                          <theme.icon className="w-5 h-5 text-muted-foreground" />
+                          <div className="flex-1">
+                            <p className="font-medium text-foreground">{theme.label}</p>
+                            <p className="text-sm text-muted-foreground">{theme.description}</p>
+                          </div>
+                          {settings.theme === theme.value && (
+                            <div className="w-2 h-2 bg-primary rounded-full" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Accessibility Options */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-foreground flex items-center gap-2">
+                      <Eye className="w-4 h-4" />
+                      Accessibility
+                    </h3>
+                    
+                    {/* Font Size */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Font Size</Label>
+                      <Select 
+                        value={settings.fontSize} 
+                        onValueChange={(value) => {
+                          updateFontSize(value as any);
+                          toast.success('Font size updated');
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">Small</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="large">Large</SelectItem>
+                          <SelectItem value="extra-large">Extra Large</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* High Contrast */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-foreground">High Contrast</p>
+                        <p className="text-sm text-muted-foreground">Improve readability with higher contrast</p>
+                      </div>
+                      <Switch
+                        checked={settings.contrastMode === 'high'}
+                        onCheckedChange={(checked) => {
+                          updateContrastMode(checked ? 'high' : 'normal');
+                          toast.success(`Contrast mode ${checked ? 'enabled' : 'disabled'}`);
+                        }}
+                      />
+                    </div>
+
+                    {/* Reduced Motion */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-foreground">Reduce Motion</p>
+                        <p className="text-sm text-muted-foreground">Minimize animations and transitions</p>
+                      </div>
+                      <Switch
+                        checked={settings.reducedMotion}
+                        onCheckedChange={() => {
+                          toggleReducedMotion();
+                          toast.success(`Motion ${settings.reducedMotion ? 'enabled' : 'reduced'}`);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Theme Preview */}
+                <div className="mt-6 p-4 border border-border rounded-lg bg-muted/30">
+                  <h4 className="font-medium text-foreground mb-3">Theme Preview</h4>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="h-16 bg-card border border-border rounded flex items-center justify-center">
+                      <span className="text-xs text-card-foreground">Card</span>
+                    </div>
+                    <div className="h-16 bg-primary rounded flex items-center justify-center">
+                      <span className="text-xs text-primary-foreground">Primary</span>
+                    </div>
+                    <div className="h-16 bg-secondary rounded flex items-center justify-center">
+                      <span className="text-xs text-secondary-foreground">Secondary</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Current theme: {settings.theme} ({getEffectiveTheme()})
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">
@@ -347,12 +492,12 @@ export const UserProfile = () => {
               <CardContent className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Budget & Spending</h3>
+                    <h3 className="font-semibold text-foreground">Budget & Spending</h3>
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Budget Alerts</p>
-                        <p className="text-sm text-gray-500">Get notified when you're close to budget limits</p>
+                        <p className="font-medium text-foreground">Budget Alerts</p>
+                        <p className="text-sm text-muted-foreground">Get notified when you're close to budget limits</p>
                       </div>
                       <Switch
                         checked={userSettings.notifications.budgetAlerts}
@@ -362,8 +507,8 @@ export const UserProfile = () => {
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Expense Alerts</p>
-                        <p className="text-sm text-gray-500">Notifications for large transactions</p>
+                        <p className="font-medium text-foreground">Expense Alerts</p>
+                        <p className="text-sm text-muted-foreground">Notifications for large transactions</p>
                       </div>
                       <Switch
                         checked={userSettings.notifications.expenseAlerts}
@@ -373,12 +518,12 @@ export const UserProfile = () => {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Goals & Reports</h3>
+                    <h3 className="font-semibold text-foreground">Goals & Reports</h3>
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Goal Reminders</p>
-                        <p className="text-sm text-gray-500">Reminders about your savings goals</p>
+                        <p className="font-medium text-foreground">Goal Reminders</p>
+                        <p className="text-sm text-muted-foreground">Reminders about your savings goals</p>
                       </div>
                       <Switch
                         checked={userSettings.notifications.goalReminders}

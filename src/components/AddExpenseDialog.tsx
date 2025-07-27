@@ -174,7 +174,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                 className={`${isMobile ? 'h-12 text-lg' : 'h-11'} pl-8`}
                 required
               />
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₹</span>
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">₹</span>
             </div>
           </motion.div>
 

@@ -10,7 +10,7 @@ export function useFinanceData() {
   const [categories, setCategories] = useKV<Category[]>('categories', DEFAULT_CATEGORIES);
   const [savingsGoals, setSavingsGoals] = useKV<SavingsGoal[]>('savings-goals', []);
   const [monthlyBudget, setMonthlyBudget] = useKV<number>('monthly-budget', 0);
-  const [activeTab, setActiveTab] = useState<'overview' | 'expenses' | 'budgets' | 'analytics' | 'goals' | 'wellness' | 'learning' | 'insights' | 'predictions' | 'reports' | 'profile'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'expenses' | 'budgets' | 'analytics' | 'goals' | 'wellness' | 'learning' | 'insights' | 'predictions' | 'reports' | 'chat' | 'validator' | 'profile'>('overview');
 
   const addExpense = (expense: Omit<Expense, 'id'>) => {
     try {

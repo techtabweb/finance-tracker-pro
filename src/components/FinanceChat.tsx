@@ -376,7 +376,7 @@ Provide a comprehensive, personalized response based on their actual financial d
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -392,7 +392,7 @@ Provide a comprehensive, personalized response based on their actual financial d
               AI Finance Assistant
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Powered by AI • Get personalized insights
+              Powered by Gemini AI • Get personalized insights
             </p>
           </div>
         </div>
@@ -425,12 +425,12 @@ Provide a comprehensive, personalized response based on their actual financial d
           isMobile 
             ? 'mobile-chat-container h-[calc(100vh-280px)] min-h-[350px] max-h-[calc(100vh-200px)]' 
             : 'h-[650px]'
-        } flex flex-col w-full shadow-xl border-0 bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-md overflow-hidden`}>
+        } flex flex-col w-full shadow-xl border border-border bg-card/90 backdrop-blur-md overflow-hidden`}>
           
           {/* Header */}
-          <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6 py-3 sm:py-4 border-b bg-card/50 backdrop-blur-sm">
+          <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6 py-3 sm:py-4 border-b border-border bg-card/50 backdrop-blur-sm">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm sm:text-lg flex items-center gap-2">
+              <CardTitle className="text-sm sm:text-lg flex items-center gap-2 text-foreground">
                 <motion.span 
                   className="text-lg"
                   animate={{ rotate: [0, 10, 0] }}
