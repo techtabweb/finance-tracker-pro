@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useTheme } from '@/hooks/use-theme';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { callGeminiApi } from '@/lib/gemini-api';
+// Import removed - now using Spark LLM directly
 import { formatCurrency, formatAmount, getCurrentMonth } from '@/lib/format';
 import { toast } from 'sonner';
 
@@ -126,24 +126,25 @@ export function FunctionalityValidator() {
 
     // Test 6: AI Services (non-blocking)
     try {
-      const testPrompt = "Test connection - respond with 'OK'";
+      const testPrompt = spark.llmPrompt`Test connection - respond with 'OK'`;
       const response = await Promise.race([
-        callGeminiApi(testPrompt, { temperature: 0.1, maxTokens: 10 }),
+        spark.llm(testPrompt, 'gpt-4o-mini'),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
       ]);
       
       testResults.push({
         name: 'AI Services',
         status: 'success',
-        message: `AI chat operational and responsive`
+        message: `Spark LLM operational and responsive`
       });
     } catch (error) {
       // Check if Spark LLM is available as fallback
       const hasSparkLLM = typeof window !== 'undefined' && window.spark?.llm;
       testResults.push({
         name: 'AI Services',
-        status: hasSparkLLM ? 'success' : 'info',
-        message: hasSparkLLM ? 'Using Spark AI (fully functional)' : 'Basic chat available (external AI offline)'
+        status: hasSparkLLM ? 'warning' : 'error',
+        message: hasSparkLLM ? 'Spark LLM available but response error' : 'Spark LLM not available',
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
 

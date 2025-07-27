@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useTheme } from '@/hooks/use-theme';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { callGeminiApi } from '@/lib/gemini-api';
+// Import removed - now using Spark LLM directly
 import { motion } from 'framer-motion';
 import { 
   CheckCircle, 
@@ -157,21 +157,21 @@ export function SystemValidator() {
     },
     {
       category: 'AI Integration',
-      name: 'Gemini API Connectivity',
+      name: 'Spark LLM Connectivity',
       test: async () => {
         try {
-          const testPrompt = 'Hello, this is a connectivity test. Please respond with "OK".';
-          const response = await callGeminiApi(testPrompt, { temperature: 0, maxTokens: 10 });
+          const testPrompt = spark.llmPrompt`Hello, this is a connectivity test. Please respond with just "OK".`;
+          const response = await spark.llm(testPrompt, 'gpt-4o-mini');
           
           if (response && response.toLowerCase().includes('ok')) {
-            return { status: 'pass', message: 'Gemini AI API working correctly' };
+            return { status: 'pass', message: 'Spark LLM API working correctly' };
           }
           
-          return { status: 'warning', message: 'Gemini API responded but response unclear' };
+          return { status: 'warning', message: 'Spark LLM responded but response unclear' };
         } catch (error) {
           return { 
             status: 'fail', 
-            message: 'Gemini API connection failed',
+            message: 'Spark LLM connection failed',
             details: error instanceof Error ? error.message : 'Unknown error'
           };
         }

@@ -145,7 +145,7 @@ Focus on:
 6. Actionable insights
 `;
 
-      const response = await spark.llm(prompt, 'gemini-1.5-flash', true);
+      const response = await spark.llm(prompt, 'gpt-4o', true);
       const result = JSON.parse(response);
 
       setRecommendations(result.recommendations || []);

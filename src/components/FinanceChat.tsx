@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { callGeminiApi } from '@/lib/gemini-api';
+// Import removed - now using Spark LLM directly
 import { formatAmount, getCurrentMonth } from '@/lib/format';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -270,7 +270,7 @@ Ask me anything about your finances! 💰`,
     try {
       const financialContext = prepareFinancialContext();
       
-      const prompt = `You are an advanced AI financial advisor specialized in personal finance analysis for Indian users. You have complete access to their financial data and should provide insightful, actionable analysis based on real numbers.
+      const prompt = spark.llmPrompt`You are an advanced AI financial advisor specialized in personal finance analysis for Indian users. You have complete access to their financial data and should provide insightful, actionable analysis based on real numbers.
 
 COMPREHENSIVE FINANCIAL DATA:
 ${JSON.stringify(financialContext, null, 2)}
@@ -311,10 +311,7 @@ EXAMPLE INSIGHTS TO CONSIDER:
 
 Provide a comprehensive, personalized response based on their actual financial data.`;
 
-      const response = await callGeminiApi(prompt, {
-        temperature: 0.3,
-        maxTokens: 1024
-      });
+      const response = await spark.llm(prompt, 'gpt-4o');
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),

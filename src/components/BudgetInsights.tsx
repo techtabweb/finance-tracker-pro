@@ -132,7 +132,7 @@ Focus on:
 6. Actionable recommendations with specific amounts in INR
 `;
 
-      const response = await spark.llm(prompt, 'gemini-1.5-flash', true);
+      const response = await spark.llm(prompt, 'gpt-4o', true);
       const analysisResult = JSON.parse(response);
 
       setInsights(analysisResult.insights || []);

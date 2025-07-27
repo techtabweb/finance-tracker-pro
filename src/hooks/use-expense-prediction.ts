@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useKV } from '@github/spark/hooks';
 import { Expense } from '@/lib/types';
-import { callGeminiApi } from '@/lib/gemini-api';
+// Import removed - now using Spark LLM directly
 
 export interface ExpensePrediction {
   category: string;
@@ -119,7 +119,7 @@ export function useExpensePrediction() {
         }))
       };
 
-      const prompt = `Analyze the following Indian expense data and predict future spending patterns. Consider seasonal factors, trends, and typical Indian spending behaviors.
+      const prompt = spark.llmPrompt`Analyze the following Indian expense data and predict future spending patterns. Consider seasonal factors, trends, and typical Indian spending behaviors.
 
 Historical Data:
 ${JSON.stringify(analysisData, null, 2)}
@@ -165,11 +165,7 @@ Return a JSON object with this structure:
   ]
 }`;
 
-      const response = await callGeminiApi(prompt, {
-        jsonMode: true,
-        temperature: 0.3,
-        maxTokens: 4096
-      });
+      const response = await spark.llm(prompt, 'gpt-4o', true);
 
       const analysisResult = JSON.parse(response);
       

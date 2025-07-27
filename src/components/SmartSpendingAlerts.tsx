@@ -132,7 +132,7 @@ Focus on:
 5. Daily spending limits to stay on track
 `;
 
-      const response = await spark.llm(prompt, 'gemini-1.5-flash', true);
+      const response = await spark.llm(prompt, 'gpt-4o', true);
       const result = JSON.parse(response);
 
       setAlerts(result.alerts || []);
