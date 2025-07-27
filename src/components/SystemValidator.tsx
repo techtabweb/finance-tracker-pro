@@ -108,8 +108,8 @@ export function SystemValidator() {
       category: 'accessibility',
       title: 'Reduced Motion Support',
       description: 'Respects user motion preferences',
-      status: safeSettings.reduceMotion !== undefined ? 'pass' : 'warn',
-      details: `Reduced motion: ${safeSettings.reduceMotion ? 'Enabled' : 'Disabled'}`,
+      status: safeSettings.reducedMotion !== undefined ? 'pass' : 'warn',
+      details: `Reduced motion: ${safeSettings.reducedMotion ? 'Enabled' : 'Disabled'}`,
       fix: 'Configure motion preferences'
     });
 

@@ -82,7 +82,7 @@ export function SystemHealthCheck() {
     console.log(`  • Categories: ${categories.length}`);
     console.log(`  • Theme: ${safeSettings.theme} (${isDark ? 'dark' : 'light'})`);
     console.log(`  • Device: ${isMobile ? 'mobile' : 'desktop'} (${window.innerWidth}px)`);
-    console.log(`  • AI Chat: ${typeof window !== 'undefined' && window.spark?.llm ? 'Available' : 'Basic mode'}`);
+    console.log(`  • AI Chat: ${typeof window.spark?.llm === 'function' ? 'Available' : 'Basic mode'}`);
     
     console.groupEnd();
     

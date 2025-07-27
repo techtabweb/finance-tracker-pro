@@ -101,51 +101,7 @@ export function SmartBudgetPlanner() {
         expenseCount: recentExpenses.length
       };
 
-      const prompt = spark.llmPrompt`
-Analyze the following budget and spending data to provide smart budget recommendations:
-
-Data: ${JSON.stringify(analysisData)}
-
-Generate a response in this JSON format:
-{
-  "recommendations": [
-    {
-      "category": "category_name",
-      "currentBudget": current_budget_amount,
-      "recommendedBudget": recommended_budget_amount,
-      "reasoning": "detailed_explanation_for_recommendation",
-      "impact": "positive|neutral|negative",
-      "confidence": confidence_0_to_100,
-      "potentialSavings": potential_savings_amount,
-      "monthlyTrend": "increasing|decreasing|stable",
-      "priority": "high|medium|low"
-    }
-  ],
-  "scenarios": [
-    {
-      "id": "scenario_id",
-      "name": "Scenario Name",
-      "description": "Brief description of the budget strategy",
-      "totalBudget": total_budget_amount,
-      "categoryAllocations": {
-        "category1": allocation_amount,
-        "category2": allocation_amount
-      },
-      "expectedSavings": expected_savings_amount,
-      "riskLevel": "conservative|moderate|aggressive"
-    }
-  ]
-}
-
-Focus on:
-1. Data-driven budget recommendations based on actual spending patterns
-2. Identifying overspending and underspending categories
-3. Optimizing budget allocation for better financial health
-4. Creating multiple budget scenarios (conservative, moderate, aggressive)
-5. Specific amounts in INR
-6. Actionable insights
-`;
-
+      const prompt = spark.llmPrompt`Analyze budget and spending data to provide smart recommendations: ${JSON.stringify(analysisData)}`;
       const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       let result;

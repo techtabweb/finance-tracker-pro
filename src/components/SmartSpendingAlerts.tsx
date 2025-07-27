@@ -89,50 +89,7 @@ export function SmartSpendingAlerts() {
         totalDaysInMonth: endOfMonth.getDate()
       };
 
-      const prompt = spark.llmPrompt`
-Analyze the following financial data and generate smart spending alerts and predictions:
-
-Data: ${JSON.stringify(analysisData)}
-
-Generate responses in this JSON format:
-{
-  "alerts": [
-    {
-      "id": "unique_id",
-      "type": "budget_exceeded|unusual_spending|trend_alert|goal_impact",
-      "category": "category_name",
-      "severity": "low|medium|high|critical",
-      "title": "Alert title",
-      "message": "Detailed message about the issue",
-      "recommendation": "Actionable recommendation",
-      "amount": amount_if_applicable,
-      "threshold": threshold_if_applicable,
-      "confidence": confidence_0_to_100,
-      "actionable": true_or_false
-    }
-  ],
-  "predictions": [
-    {
-      "category": "category_name",
-      "currentSpent": current_spent_amount,
-      "predictedTotal": predicted_month_total,
-      "budgetLimit": budget_limit,
-      "riskLevel": "safe|caution|danger|critical",
-      "confidence": confidence_0_to_100,
-      "daysRemaining": days_remaining,
-      "suggestedDailyLimit": suggested_daily_limit
-    }
-  ]
-}
-
-Focus on:
-1. Budget overspending alerts
-2. Unusual spending pattern detection
-3. End-of-month predictions
-4. Actionable recommendations with specific amounts in INR
-5. Daily spending limits to stay on track
-`;
-
+      const prompt = spark.llmPrompt`Analyze financial data and generate smart spending alerts: ${JSON.stringify(analysisData)}`;
       const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       let result;

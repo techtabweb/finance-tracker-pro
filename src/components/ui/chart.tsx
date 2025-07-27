@@ -232,7 +232,7 @@ function ChartTooltipContent({
                     </div>
                     {item.value && (
                       <span className="text-foreground font-mono font-medium tabular-nums">
-                        {formatCurrency(typeof item.value === 'string' ? parseFloat(item.value) || 0 : item.value)}
+                        {formatCurrency(Array.isArray(item.value) ? 0 : (typeof item.value === 'string' ? parseFloat(item.value) || 0 : item.value))}
                       </span>
                     )}
                   </div>

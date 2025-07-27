@@ -48,7 +48,7 @@ export function MobileDiagnostics() {
     }
 
     // Check dark mode contrast issues
-    if (isDark && safeSettings.contrast === 'normal') {
+    if (isDark && safeSettings.contrastMode === 'normal') {
       detectedIssues.push({
         id: 'dark-contrast',
         type: 'info',

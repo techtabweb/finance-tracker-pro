@@ -40,13 +40,13 @@ export function useBackupInsights() {
     const totalRecords = expenses.length + budgets.length + goals.length;
     const sortedExpenses = expenses.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
-    const lastBackup = backupHistory.find(b => b.type === 'export');
+    const lastBackup = (backupHistory || []).find(b => b.type === 'export');
     const daysSinceLastBackup = lastBackup 
       ? Math.floor((Date.now() - new Date(lastBackup.date).getTime()) / (1000 * 60 * 60 * 24))
       : Infinity;
 
     let backupFrequency: DataInsights['backupFrequency'] = 'never';
-    if (backupHistory.filter(b => b.type === 'export').length === 0) {
+    if ((backupHistory || []).filter(b => b.type === 'export').length === 0) {
       backupFrequency = 'never';
     } else if (daysSinceLastBackup <= 7) {
       backupFrequency = 'frequent';
@@ -83,7 +83,7 @@ export function useBackupInsights() {
     }
 
     return {
-      totalBackups: backupHistory.filter(b => b.type === 'export').length,
+      totalBackups: (backupHistory || []).filter(b => b.type === 'export').length,
       lastBackupDate: lastBackup?.date,
       oldestExpense: sortedExpenses.length > 0 ? sortedExpenses[0].date : undefined,
       newestExpense: sortedExpenses.length > 0 ? sortedExpenses[sortedExpenses.length - 1].date : undefined,

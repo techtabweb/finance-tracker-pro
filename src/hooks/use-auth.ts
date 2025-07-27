@@ -80,7 +80,7 @@ export const useAuth = () => {
       }
 
       // Check if user already exists
-      if (userCredentials[email.toLowerCase()]) {
+      if (userCredentials && userCredentials[email.toLowerCase()]) {
         return { success: false, error: 'An account with this email already exists' };
       }
 
@@ -136,7 +136,7 @@ export const useAuth = () => {
       }
 
       const emailLower = email.toLowerCase();
-      const userCred = userCredentials[emailLower];
+      const userCred = userCredentials && userCredentials[emailLower];
 
       if (!userCred) {
         return { success: false, error: 'Invalid email or password' };
@@ -149,7 +149,7 @@ export const useAuth = () => {
       }
 
       // Get user data
-      const user = users[userCred.userId];
+      const user = users && users[userCred.userId];
       if (!user) {
         return { success: false, error: 'User account not found' };
       }
@@ -207,12 +207,14 @@ export const useAuth = () => {
     try {
       // Remove user data
       setUsers(currentUsers => {
+        if (!currentUsers) return {};
         const { [currentUser.id]: removed, ...rest } = currentUsers;
         return rest;
       });
 
       // Remove credentials
       setUserCredentials(currentCreds => {
+        if (!currentCreds) return {};
         const { [currentUser.email]: removed, ...rest } = currentCreds;
         return rest;
       });

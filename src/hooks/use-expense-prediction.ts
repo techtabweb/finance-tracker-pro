@@ -106,49 +106,7 @@ export function useExpensePrediction() {
         }))
       };
 
-      const prompt = spark.llmPrompt`You are a financial AI assistant specializing in Indian spending patterns. Analyze the expense data and provide predictions.
-
-Historical Data: ${JSON.stringify(analysisData, null, 2)}
-
-Recent Patterns: ${patterns.map(p => `${p.category}: Monthly Average ₹${p.monthlyAverage.toFixed(0)}, Trend: ${p.trend}, Transactions: ${p.transactionCount}`).join('\n')}
-
-Return ONLY a valid JSON response in this exact format (no additional text):
-
-{
-  "categoryPredictions": [
-    {
-      "category": "Food & Dining",
-      "predictedAmount": 5000,
-      "confidence": 85,
-      "period": "monthly",
-      "reasoning": "Based on consistent spending pattern with slight upward trend",
-      "trend": "increasing",
-      "seasonalFactor": 1.1,
-      "riskLevel": "medium"
-    }
-  ],
-  "insights": [
-    "Your food spending tends to increase during festival seasons",
-    "Transportation costs are stable month-to-month"
-  ],
-  "totalPredictedSpending": 15000,
-  "budgetAlerts": [
-    {
-      "category": "Entertainment",
-      "message": "Predicted spending may exceed typical budget by 20%",
-      "severity": "warning"
-    }
-  ]
-}
-
-Requirements:
-- Focus on Indian spending patterns and festivals
-- All amounts in Indian Rupees
-- Confidence scores between 70-95
-- Provide 2-4 actionable insights
-- Include seasonal factors (festivals, monsoons, etc.)
-- Risk levels: low, medium, high
-- Trends: increasing, decreasing, stable`;
+      const prompt = spark.llmPrompt`Analyze expense data and provide predictions for Indian spending patterns. Data: ${JSON.stringify(analysisData, null, 2)}`;
 
       const response = await window.spark.llm(prompt, 'gpt-4o', true);
 

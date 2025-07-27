@@ -19,11 +19,11 @@ export function useFinanceData() {
         id: Date.now().toString(),
       };
       
-      setExpenses((current) => [newExpense, ...current]);
+      setExpenses((current) => [newExpense, ...(current || [])]);
       
       // Update budget spent amount
       setBudgets((current) => 
-        current.map(budget => 
+        (current || []).map(budget => 
           budget.category === expense.category
             ? { ...budget, spent: budget.spent + expense.amount }
             : budget
@@ -37,17 +37,17 @@ export function useFinanceData() {
 
   const deleteExpense = (expenseId: string) => {
     try {
-      const expense = expenses.find(e => e.id === expenseId);
+      const expense = (expenses || []).find(e => e.id === expenseId);
       if (!expense) {
         console.warn('Expense not found for deletion:', expenseId);
         return;
       }
 
-      setExpenses((current) => current.filter(e => e.id !== expenseId));
+      setExpenses((current) => (current || []).filter(e => e.id !== expenseId));
       
       // Update budget spent amount
       setBudgets((current) => 
-        current.map(budget => 
+        (current || []).map(budget => 
           budget.category === expense.category
             ? { ...budget, spent: Math.max(0, budget.spent - expense.amount) }
             : budget
@@ -60,7 +60,7 @@ export function useFinanceData() {
   };
 
   const setBudget = (category: string, limit: number) => {
-    const currentMonthExpenses = expenses.filter(expense => 
+    const currentMonthExpenses = (expenses || []).filter(expense => 
       expense.category === category && 
       expense.date.startsWith(getCurrentMonth())
     );
@@ -68,15 +68,16 @@ export function useFinanceData() {
     const spent = currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     
     setBudgets((current) => {
-      const existingBudget = current.find(b => b.category === category);
+      const currentBudgets = current || [];
+      const existingBudget = currentBudgets.find(b => b.category === category);
       if (existingBudget) {
-        return current.map(budget =>
+        return currentBudgets.map(budget =>
           budget.category === category
             ? { ...budget, limit, spent }
             : budget
         );
       } else {
-        return [...current, {
+        return [...currentBudgets, {
           id: Date.now().toString(),
           category,
           limit,
@@ -88,7 +89,7 @@ export function useFinanceData() {
 
   const getCurrentMonthExpenses = () => {
     const currentMonth = getCurrentMonth();
-    return expenses.filter(expense => expense.date.startsWith(currentMonth));
+    return (expenses || []).filter(expense => expense.date.startsWith(currentMonth));
   };
 
   const getTotalSpent = () => {
@@ -96,7 +97,7 @@ export function useFinanceData() {
   };
 
   const getTotalBudget = () => {
-    return budgets.reduce((sum, budget) => sum + budget.limit, 0);
+    return (budgets || []).reduce((sum, budget) => sum + budget.limit, 0);
   };
 
   const addSavingsGoal = (goal: Omit<SavingsGoal, 'id'>) => {
@@ -104,12 +105,12 @@ export function useFinanceData() {
       ...goal,
       id: Date.now().toString(),
     };
-    setSavingsGoals((current) => [newGoal, ...current]);
+    setSavingsGoals((current) => [newGoal, ...(current || [])]);
   };
 
   const updateSavingsGoal = (goalId: string, amount: number) => {
     setSavingsGoals((current) =>
-      current.map(goal =>
+      (current || []).map(goal =>
         goal.id === goalId
           ? { ...goal, current: Math.min(goal.target, goal.current + amount) }
           : goal
@@ -118,7 +119,7 @@ export function useFinanceData() {
   };
 
   const deleteSavingsGoal = (goalId: string) => {
-    setSavingsGoals((current) => current.filter(goal => goal.id !== goalId));
+    setSavingsGoals((current) => (current || []).filter(goal => goal.id !== goalId));
   };
 
   return {

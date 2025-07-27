@@ -101,7 +101,10 @@ export const UserProfile = () => {
     setUserSettings({
       ...userSettings,
       notifications: {
-        ...userSettings?.notifications,
+        budgetAlerts: userSettings?.notifications?.budgetAlerts ?? false,
+        goalReminders: userSettings?.notifications?.goalReminders ?? false,
+        weeklyReports: userSettings?.notifications?.weeklyReports ?? false,
+        expenseAlerts: userSettings?.notifications?.expenseAlerts ?? false,
         [key]: value
       }
     });
@@ -178,11 +181,11 @@ export const UserProfile = () => {
                       onClick={() => {
                         if (isEditing) {
                           setFormData({
-                            currency: userSettings?.currency,
-                            language: userSettings?.language,
-                            defaultCategory: userSettings?.preferences.defaultCategory,
-                            budgetPeriod: userSettings?.preferences.budgetPeriod,
-                            theme: userSettings?.preferences.theme
+                            currency: userSettings?.currency || 'INR',
+                            language: userSettings?.language || 'English',
+                            defaultCategory: userSettings?.preferences?.defaultCategory || 'Other',
+                            budgetPeriod: userSettings?.preferences?.budgetPeriod || 'monthly',
+                            theme: userSettings?.preferences?.theme || 'system'
                           });
                         }
                         setIsEditing(!isEditing);

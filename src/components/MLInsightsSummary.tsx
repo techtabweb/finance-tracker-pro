@@ -83,40 +83,7 @@ export function MLInsightsSummary() {
         overspentCategories: categorySpending.filter(cat => cat.overspend).length
       };
 
-      const prompt = spark.llmPrompt`
-Analyze this financial data and provide a concise ML insights summary:
-
-Data: ${JSON.stringify(analysisData)}
-
-Generate a response in this JSON format:
-{
-  "budgetHealth": {
-    "score": score_0_to_100,
-    "status": "excellent|good|warning|critical",
-    "message": "brief_status_message"
-  },
-  "spendingTrend": {
-    "direction": "increasing|decreasing|stable",
-    "percentage": change_percentage,
-    "prediction": "brief_prediction_text"
-  },
-  "topRecommendation": {
-    "category": "category_name",
-    "action": "recommended_action",
-    "impact": estimated_savings_in_inr
-  },
-  "riskAlerts": number_of_risk_categories,
-  "potentialSavings": total_potential_savings_inr
-}
-
-Focus on:
-1. Overall budget health assessment
-2. Spending trend analysis
-3. Most impactful recommendation
-4. Risk assessment
-5. Savings opportunities
-`;
-
+      const prompt = spark.llmPrompt`Analyze this financial data and provide a concise ML insights summary: ${JSON.stringify(analysisData)}`;
       const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       let result;

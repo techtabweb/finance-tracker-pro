@@ -199,7 +199,8 @@ export function DataBackup() {
 
       // Merge with existing expenses
       setExpenses((current) => {
-        const existingIds = new Set(current.map(e => e.id));
+        const currentExpenses = current || [];
+        const existingIds = new Set(currentExpenses.map(e => e.id));
         const newExpenses = importedExpenses.filter(e => !existingIds.has(e.id));
         setImportProgress(90);
         
@@ -208,7 +209,7 @@ export function DataBackup() {
         });
         
         setImportProgress(100);
-        return [...current, ...newExpenses];
+        return [...currentExpenses, ...newExpenses];
       });
     } catch (error) {
       console.error('CSV import error:', error);
@@ -248,7 +249,8 @@ export function DataBackup() {
 
       if (cleanupOptions.includeExpenses) {
         setExpenses((current) => {
-          const filtered = current.filter(expense => {
+          const currentExpenses = current || [];
+          const filtered = currentExpenses.filter(expense => {
             const expenseDate = new Date(expense.date);
             const shouldRemove = expenseDate < cutoffDate;
             if (shouldRemove && cleanupOptions.categories.length > 0) {
@@ -264,13 +266,14 @@ export function DataBackup() {
 
       if (cleanupOptions.includeBudgets) {
         setBudgets((current) => {
-          const filtered = current.filter(budget => {
+          const currentBudgets = current || [];
+          const filtered = currentBudgets.filter(budget => {
             if (cleanupOptions.categories.length > 0) {
               return !cleanupOptions.categories.includes(budget.category);
             }
             return false; // Remove all if no specific categories
           });
-          removedCount += current.length - filtered.length;
+          removedCount += currentBudgets.length - filtered.length;
           return filtered;
         });
         setImportProgress(70);
@@ -278,15 +281,16 @@ export function DataBackup() {
 
       if (cleanupOptions.includeGoals) {
         setSavingsGoals((current) => {
+          const currentGoals = current || [];
           // Only remove completed goals older than cutoff
-          const filtered = current.filter(goal => {
+          const filtered = currentGoals.filter(goal => {
             if (goal.current >= goal.target) {
               const goalDate = new Date(goal.deadline);
               return goalDate >= cutoffDate;
             }
             return true;
           });
-          removedCount += current.length - filtered.length;
+          removedCount += currentGoals.length - filtered.length;
           return filtered;
         });
       }
@@ -349,7 +353,7 @@ export function DataBackup() {
       }
 
       if (importPreview.data.monthlyBudget) {
-        setMonthlyBudget(importPreview.data.monthlyBudget);
+        setMonthlyBudget(Number(importPreview.data.monthlyBudget));
       }
 
       setImportProgress(100);

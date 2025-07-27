@@ -25,7 +25,7 @@ export function Analytics() {
   }).filter(item => item.value > 0) || [];
 
   // Monthly trend data (last 6 months)
-  const monthlyData = [];
+  const monthlyData: { month: string; amount: number }[] = [];
   for (let i = 5; i >= 0; i--) {
     const date = new Date();
     date.setMonth(date.getMonth() - i);

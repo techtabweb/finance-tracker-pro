@@ -13,7 +13,7 @@ import {
   ArrowClockwise,
   CheckCircle,
   Warning,
-  WifiHighHigh,
+  WifiHigh,
   WifiX,
   Gear,
   Lightning,
@@ -91,7 +91,7 @@ export function PWAManager() {
   };
 
   const StatusBadge = ({ status }: { status: string }) => {
-    const variant = status === 'enabled' ? 'success' : status === 'available' ? 'warning' : 'secondary';
+    const variant = status === 'enabled' ? 'default' : status === 'available' ? 'secondary' : 'secondary';
     return <Badge variant={variant}>{status}</Badge>;
   };
 
@@ -121,7 +121,7 @@ export function PWAManager() {
                 ) : (
                   <WifiX className="h-5 w-5 text-red-600" />
                 )}
-                <Badge variant={isInstalled ? "success" : "secondary"}>
+                <Badge variant={isInstalled ? "default" : "secondary"}>
                   {isInstalled ? 'Installed' : 'Browser'}
                 </Badge>
               </div>

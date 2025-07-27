@@ -36,7 +36,7 @@ export function useCategoryLearning() {
     if (!cleanMerchant && !cleanDescription) return [];
 
     // Group patterns by category
-    const categoryGroups = learningPatterns.reduce((groups, pattern) => {
+    const categoryGroups = (learningPatterns || []).reduce((groups, pattern) => {
       const category = pattern.userSelectedCategory;
       if (!groups[category]) {
         groups[category] = [];
@@ -107,12 +107,13 @@ export function useCategoryLearning() {
 
   // Get learning statistics
   const getLearningStats = () => {
-    const totalPatterns = learningPatterns.length;
-    const categoriesLearned = new Set(learningPatterns.map(p => p.userSelectedCategory)).size;
-    const merchantsLearned = new Set(learningPatterns.map(p => p.merchant.toLowerCase())).size;
+    const patterns = learningPatterns || [];
+    const totalPatterns = patterns.length;
+    const categoriesLearned = new Set(patterns.map(p => p.userSelectedCategory)).size;
+    const merchantsLearned = new Set(patterns.map(p => p.merchant.toLowerCase())).size;
     
     // Calculate accuracy of AI suggestions vs user corrections
-    const aiSuggestions = learningPatterns.filter(p => p.aiSuggestedCategory);
+    const aiSuggestions = patterns.filter(p => p.aiSuggestedCategory);
     const correctAISuggestions = aiSuggestions.filter(p => p.aiSuggestedCategory === p.userSelectedCategory);
     const aiAccuracy = aiSuggestions.length > 0 ? (correctAISuggestions.length / aiSuggestions.length) * 100 : 0;
 
@@ -121,13 +122,14 @@ export function useCategoryLearning() {
       categoriesLearned,
       merchantsLearned,
       aiAccuracy: Math.round(aiAccuracy),
-      lastLearning: learningPatterns[0]?.timestamp
+      lastLearning: patterns[0]?.timestamp
     };
   };
 
   // Get top merchants by category for insights
   const getTopMerchantsByCategory = () => {
-    const merchantsByCategory = learningPatterns.reduce((acc, pattern) => {
+    const patterns = learningPatterns || [];
+    const merchantsByCategory = patterns.reduce((acc, pattern) => {
       const category = pattern.userSelectedCategory;
       const merchant = pattern.merchant.trim();
       

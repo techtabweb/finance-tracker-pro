@@ -192,7 +192,7 @@ Ask me anything about your finances! 💰`,
       ?.reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
     // Calculate monthly trends (last 3 months)
-    const monthlyTrends = [];
+    const monthlyTrends: { month: string; total: number; expenseCount: number }[] = [];
     for (let i = 0; i < 3; i++) {
       const targetDate = new Date();
       targetDate.setMonth(targetDate.getMonth() - i);
@@ -270,46 +270,12 @@ Ask me anything about your finances! 💰`,
     try {
       const financialContext = prepareFinancialContext();
       
-      const prompt = spark.llmPrompt`You are an advanced AI financial advisor specialized in personal finance analysis for Indian users. You have complete access to their financial data and should provide insightful, actionable analysis based on real numbers.
+      const prompt = spark.llmPrompt`You are an AI financial advisor for Indian users. Analyze their financial data and answer their question: "${messageText}"
 
-COMPREHENSIVE FINANCIAL DATA:
+FINANCIAL DATA:
 ${JSON.stringify(financialContext, null, 2)}
 
-USER QUESTION: "${messageText}"
-
-ANALYSIS GUIDELINES:
-1. **Data-Driven Responses**: Use actual numbers from their financial data, not generic advice
-2. **Indian Context**: Consider Indian financial habits, festivals, currency (₹), and economic patterns
-3. **Actionable Insights**: Provide specific, implementable recommendations
-4. **Trend Analysis**: Identify patterns in spending, budgeting, and saving behaviors
-5. **Budget Health**: Assess budget adherence and suggest improvements
-6. **Savings Optimization**: Evaluate savings goals progress and suggest strategies
-7. **Spending Patterns**: Highlight concerning trends or positive behaviors
-
-RESPONSE STRUCTURE:
-- **Direct Answer**: Start with a clear answer to their specific question
-- **Key Insights**: 2-3 data-backed insights from their actual spending
-- **Recommendations**: Practical steps they can take immediately
-- **Trend Highlights**: Important patterns from their transaction history
-
-FORMATTING RULES:
-- Use ₹ symbol for all amounts (format: ₹1,23,456)
-- Include percentages for comparisons and progress
-- Use bullet points (•) for lists
-- Add relevant emojis for better readability
-- Keep total response under 350 words unless detailed analysis is requested
-- End with a relevant follow-up question to continue the conversation
-
-EXAMPLE INSIGHTS TO CONSIDER:
-- Budget utilization vs. targets
-- Category-wise spending trends
-- Monthly spending consistency
-- Savings goal progress rates
-- Seasonal spending patterns
-- High-value transaction analysis
-- Budget deficit/surplus analysis
-
-Provide a comprehensive, personalized response based on their actual financial data.`;
+Provide a helpful response with actual numbers from their data, using Indian Rupees (₹) format.`;
 
       const response = await spark.llm(prompt, 'gpt-4o');
 

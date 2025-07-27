@@ -42,7 +42,7 @@ export function AIInsights() {
 
     // Spending pattern analysis
     const thisMonth = new Date().getMonth();
-    const thisMonthExpenses = expenses.filter(expense => 
+    const thisMonthExpenses = (expenses || []).filter(expense => 
       new Date(expense.date).getMonth() === thisMonth
     );
     
@@ -64,7 +64,7 @@ export function AIInsights() {
       }
 
       // Budget analysis
-      const monthlyBudget = budgets.find(b => b.category === 'Monthly Total');
+      const monthlyBudget = (budgets || []).find(b => b.category === 'Monthly Total');
       if (monthlyBudget && totalThisMonth > monthlyBudget.limit * 0.8) {
         newInsights.push({
           id: 'budget-warning',
@@ -79,9 +79,9 @@ export function AIInsights() {
     }
 
     // Category analysis
-    const categorySpending = categories.map(category => ({
+    const categorySpending = (categories || []).map(category => ({
       ...category,
-      total: expenses
+      total: (expenses || [])
         .filter(exp => exp.category === category.name)
         .reduce((sum, exp) => sum + exp.amount, 0)
     })).sort((a, b) => b.total - a.total);
@@ -99,7 +99,7 @@ export function AIInsights() {
     }
 
     // Positive insights
-    const recentExpenses = expenses.slice(-10);
+    const recentExpenses = (expenses || []).slice(-10);
     const hasGoodDescriptions = recentExpenses.filter(exp => exp.description.length > 5).length;
     
     if (hasGoodDescriptions >= 8) {
@@ -115,7 +115,7 @@ export function AIInsights() {
     }
 
     // Smart tips
-    const foodExpenses = expenses.filter(exp => exp.category === 'Food & Dining');
+    const foodExpenses = (expenses || []).filter(exp => exp.category === 'Food & Dining');
     if (foodExpenses.length > 5) {
       const avgFoodExpense = foodExpenses.reduce((sum, exp) => sum + exp.amount, 0) / foodExpenses.length;
       if (avgFoodExpense > 300) {
@@ -132,7 +132,7 @@ export function AIInsights() {
     }
 
     // Weekend spending pattern
-    const weekendExpenses = expenses.filter(exp => {
+    const weekendExpenses = (expenses || []).filter(exp => {
       const day = new Date(exp.date).getDay();
       return day === 0 || day === 6; // Sunday or Saturday
     });
@@ -158,10 +158,10 @@ export function AIInsights() {
   };
 
   useEffect(() => {
-    if (expenses.length > 0 && !lastAnalysis) {
+    if ((expenses || []).length > 0 && !lastAnalysis) {
       generateInsights();
     }
-  }, [expenses.length]);
+  }, [(expenses || []).length]);
 
   const getInsightIcon = (type: string) => {
     switch (type) {
@@ -192,7 +192,7 @@ export function AIInsights() {
     }
   };
 
-  if (expenses.length === 0) {
+  if ((expenses || []).length === 0) {
     return null;
   }
 

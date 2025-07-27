@@ -8,7 +8,7 @@ import {
   DeviceMobile, 
   Monitor, 
   WifiHigh, 
-  WifiOff, 
+  WifiX, 
   Download, 
   Share, 
   Bell,
@@ -102,7 +102,7 @@ export function PWAStatus() {
                 <DeviceIcon className="h-5 w-5" />
                 PWA Status - {deviceInfo.type}
               </CardTitle>
-              <Badge variant={isInstalled ? "success" : canInstall ? "warning" : "secondary"}>
+              <Badge variant={isInstalled ? "default" : canInstall ? "secondary" : "secondary"}>
                 {isInstalled ? 'Installed' : canInstall ? 'Ready to Install' : 'Available'}
               </Badge>
             </div>

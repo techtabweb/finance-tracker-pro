@@ -102,26 +102,7 @@ export function ReceiptScanner({ onExpenseScanned, onScanningStateChange }: Rece
     const filename = imageFile.name.toLowerCase();
     
     // Use AI to predict category and merchant based on common patterns
-    const prompt = spark.llmPrompt`Based on the filename "${filename}" and typical Indian receipt patterns, suggest:
-
-1. Most likely merchant/store type
-2. Most probable expense category
-3. Estimated confidence level
-
-Consider common Indian businesses like:
-- Supermarkets: Big Bazaar, DMart, Reliance Fresh, Spencer's
-- Restaurants: McDonald's, KFC, Domino's, local restaurants
-- Fuel: BPCL, IOCL, HP
-- Shopping: Amazon, Flipkart, local stores
-- Utilities: Airtel, Jio, BSNL
-
-Return JSON format:
-{
-  "merchant": "predicted merchant name",
-  "category": "most likely category from: Groceries, Food & Dining, Transportation, Shopping, Utilities, Healthcare, Entertainment, Other",
-  "confidence": "confidence percentage 60-85",
-  "reasoning": "brief explanation"
-}`;
+    const prompt = spark.llmPrompt`Based on the filename "${filename}" suggest merchant type, expense category, and confidence level for an Indian receipt.`;
 
     try {
       const response = await window.spark.llm(prompt, 'gpt-4o', true);

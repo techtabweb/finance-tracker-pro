@@ -48,7 +48,7 @@ interface BudgetOptimization {
 }
 
 export function BudgetInsights() {
-  const { expenses = [], budgets = [], setBudget, isMobile } = useFinanceData();
+  const { expenses = [], budgets = [], setBudget } = useFinanceData();
   const [insights, setInsights] = useState<MLInsight[]>([]);
   const [optimizations, setOptimizations] = useState<BudgetOptimization[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,61 +79,12 @@ export function BudgetInsights() {
         spent: budget.spent || 0
       }));
 
-      const prompt = spark.llmPrompt`
-You are a financial AI assistant. Analyze the following expense and budget data to provide insights and optimizations.
+      const prompt = spark.llmPrompt`You are a financial AI assistant. Analyze the following expense and budget data to provide insights and optimizations.
 
 Expense Data: ${JSON.stringify(expenseData)}
 Budget Data: ${JSON.stringify(budgetData)}
 
-Return ONLY a valid JSON response in this exact format (no additional text):
-
-{
-  "insights": [
-    {
-      "id": "insight_1",
-      "type": "spending_pattern",
-      "category": "Food",
-      "title": "High spending pattern detected",
-      "description": "Detailed analysis of the spending pattern",
-      "impact": "high",
-      "confidence": 85,
-      "recommendation": "Specific actionable advice",
-      "action": {
-        "type": "adjust_budget",
-        "value": 5000,
-        "category": "Food"
-      },
-      "trend": "increasing",
-      "data": {
-        "current": 8000,
-        "predicted": 9000,
-        "variance": 12.5,
-        "timeframe": "This month"
-      }
-    }
-  ],
-  "optimizations": [
-    {
-      "category": "Transport",
-      "currentBudget": 3000,
-      "suggestedBudget": 2500,
-      "reasoning": "Low utilization suggests budget reduction",
-      "confidence": 75,
-      "potentialSavings": 500,
-      "riskLevel": "low"
-    }
-  ]
-}
-
-Requirements:
-- Focus on Indian spending patterns and currency (INR)
-- Provide at least 1-3 actionable insights
-- Include budget optimization suggestions
-- Use actual data from the provided expenses and budgets
-- Confidence scores should be realistic (60-95)
-- All amounts should be in Indian Rupees
-`;
-
+Return ONLY a valid JSON response with insights and optimizations arrays.`;
       const response = await window.spark.llm(prompt, 'gpt-4o', true);
       
       // Handle empty or invalid response
