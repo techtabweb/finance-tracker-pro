@@ -1,0 +1,5 @@
+// This file is deprecated - now using Spark LLM API instead of direct Gemini API calls
+// All receipt scanning and categorization now uses spark.llm() function
+// See ReceiptScanner.tsx and other components for the new implementation
+
+/* DEPRECATED CODE - DO NOT USE */

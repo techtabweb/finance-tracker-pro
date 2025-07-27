@@ -1,25 +1,75 @@
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-  }).format(amount);
+export const formatCurrency = (amount: number | null | undefined): string => {
+  try {
+    const numValue = Number(amount);
+    const safeValue = isNaN(numValue) || amount === null || amount === undefined ? 0 : numValue;
+    
+    if (typeof safeValue !== 'number' || !isFinite(safeValue)) {
+      return '₹0';
+    }
+    
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+    }).format(safeValue);
+  } catch (error) {
+    console.error('Error formatting currency:', error, 'Amount:', amount);
+    return '₹0';
+  }
 };
 
-export const formatAmount = (amount: number): string => {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'decimal',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
+export const formatAmount = (amount: number | null | undefined): string => {
+  try {
+    const numValue = Number(amount);
+    const safeValue = isNaN(numValue) || amount === null || amount === undefined ? 0 : numValue;
+    
+    if (typeof safeValue !== 'number' || !isFinite(safeValue)) {
+      return '0';
+    }
+    
+    return new Intl.NumberFormat('en-IN', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(safeValue);
+  } catch (error) {
+    console.error('Error formatting amount:', error, 'Amount:', amount);
+    return '0';
+  }
 };
 
-export const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-IN', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
+export const formatDate = (dateString: string | null | undefined): string => {
+  try {
+    if (!dateString) {
+      return new Date().toLocaleDateString('en-IN', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+    
+    const date = new Date(dateString);
+    
+    if (isNaN(date.getTime())) {
+      return new Date().toLocaleDateString('en-IN', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+    
+    return date.toLocaleDateString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error, 'Date string:', dateString);
+    return new Date().toLocaleDateString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
 };
 
 export const getCurrentMonth = (): string => {

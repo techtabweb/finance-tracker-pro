@@ -12,9 +12,24 @@ export function cn(...inputs: ClassValue[]) {
  * @returns Formatted currency string
  */
 export function formatCurrency(value: number | null | undefined, defaultValue = 0): string {
-  const numValue = Number(value);
-  const safeValue = isNaN(numValue) || value === null || value === undefined ? defaultValue : numValue;
-  return safeValue.toLocaleString('en-IN');
+  try {
+    const numValue = Number(value);
+    const safeValue = isNaN(numValue) || value === null || value === undefined ? defaultValue : numValue;
+    
+    // Ensure the value is a valid number before calling toLocaleString
+    if (typeof safeValue !== 'number' || !isFinite(safeValue)) {
+      return '0';
+    }
+    
+    return new Intl.NumberFormat('en-IN', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(safeValue);
+  } catch (error) {
+    console.error('Error formatting currency:', error, 'Value:', value);
+    return '0';
+  }
 }
 
 /**

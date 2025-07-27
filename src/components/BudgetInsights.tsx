@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { TrendingUp, TrendingDown, AlertTriangle, Target, Brain, Zap, BarChart3, Calendar, Lightbulb, Shield, Calculator } from '@phosphor-icons/react';
 import { toast } from 'sonner';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/lib/format';
 
 interface MLInsight {
   id: string;
@@ -80,64 +80,74 @@ export function BudgetInsights() {
       }));
 
       const prompt = spark.llmPrompt`
-Analyze the following financial data and provide machine learning insights for budget optimization and overspending prevention:
+You are a financial AI assistant. Analyze the following expense and budget data to provide insights and optimizations.
 
 Expense Data: ${JSON.stringify(expenseData)}
 Budget Data: ${JSON.stringify(budgetData)}
 
-Please provide insights in the following JSON format:
+Return ONLY a valid JSON response in this exact format (no additional text):
+
 {
   "insights": [
     {
-      "id": "unique_id",
-      "type": "spending_pattern|budget_optimization|overspending_risk|seasonal_trend|category_anomaly",
-      "category": "category_name_if_applicable",
-      "title": "Brief insight title",
-      "description": "Detailed description of the pattern or finding",
-      "impact": "high|medium|low",
-      "confidence": confidence_score_0_to_100,
-      "recommendation": "Actionable recommendation",
+      "id": "insight_1",
+      "type": "spending_pattern",
+      "category": "Food",
+      "title": "High spending pattern detected",
+      "description": "Detailed analysis of the spending pattern",
+      "impact": "high",
+      "confidence": 85,
+      "recommendation": "Specific actionable advice",
       "action": {
-        "type": "adjust_budget|set_alert|schedule_review",
-        "value": numerical_value_if_applicable,
-        "category": "category_if_applicable"
+        "type": "adjust_budget",
+        "value": 5000,
+        "category": "Food"
       },
-      "trend": "increasing|decreasing|stable",
+      "trend": "increasing",
       "data": {
-        "current": current_value,
-        "predicted": predicted_value,
-        "variance": variance_percentage,
-        "timeframe": "description_of_timeframe"
+        "current": 8000,
+        "predicted": 9000,
+        "variance": 12.5,
+        "timeframe": "This month"
       }
     }
   ],
   "optimizations": [
     {
-      "category": "category_name",
-      "currentBudget": current_budget_amount,
-      "suggestedBudget": suggested_budget_amount,
-      "reasoning": "explanation_for_suggestion",
-      "confidence": confidence_score_0_to_100,
-      "potentialSavings": potential_savings_amount,
-      "riskLevel": "low|medium|high"
+      "category": "Transport",
+      "currentBudget": 3000,
+      "suggestedBudget": 2500,
+      "reasoning": "Low utilization suggests budget reduction",
+      "confidence": 75,
+      "potentialSavings": 500,
+      "riskLevel": "low"
     }
   ]
 }
 
-Focus on:
-1. Spending pattern analysis
-2. Budget optimization opportunities
-3. Overspending risk prediction
-4. Seasonal trends
-5. Category anomalies
-6. Actionable recommendations with specific amounts in INR
+Requirements:
+- Focus on Indian spending patterns and currency (INR)
+- Provide at least 1-3 actionable insights
+- Include budget optimization suggestions
+- Use actual data from the provided expenses and budgets
+- Confidence scores should be realistic (60-95)
+- All amounts should be in Indian Rupees
 `;
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
       
+      // Handle empty or invalid response
+      if (!response || response.trim() === '') {
+        console.error('Empty response from AI');
+        throw new Error('Empty AI response');
+      }
+      
       let analysisResult;
       try {
-        analysisResult = JSON.parse(response);
+        // Try to extract JSON if response contains additional text
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        const jsonString = jsonMatch ? jsonMatch[0] : response;
+        analysisResult = JSON.parse(jsonString);
       } catch (parseError) {
         console.error('Failed to parse AI response:', parseError, 'Response:', response);
         throw new Error('Invalid AI response format');
@@ -145,11 +155,22 @@ Focus on:
 
       // Validate the response structure
       if (!analysisResult || typeof analysisResult !== 'object') {
+        console.error('Invalid analysis result:', analysisResult);
         throw new Error('AI response is not a valid object');
       }
 
-      setInsights(Array.isArray(analysisResult.insights) ? analysisResult.insights : []);
-      setOptimizations(Array.isArray(analysisResult.optimizations) ? analysisResult.optimizations : []);
+      // Ensure we have valid arrays
+      const validInsights = Array.isArray(analysisResult.insights) ? analysisResult.insights : [];
+      const validOptimizations = Array.isArray(analysisResult.optimizations) ? analysisResult.optimizations : [];
+
+      // If we got valid data, use it; otherwise fall back to basic analysis
+      if (validInsights.length > 0 || validOptimizations.length > 0) {
+        setInsights(validInsights);
+        setOptimizations(validOptimizations);
+      } else {
+        console.log('No valid insights from AI, using fallback analysis');
+        generateBasicInsights();
+      }
     } catch (error) {
       console.error('Error generating insights:', error);
       toast.error('Failed to generate ML insights');

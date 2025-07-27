@@ -119,57 +119,64 @@ export function useExpensePrediction() {
         }))
       };
 
-      const prompt = spark.llmPrompt`Analyze the following Indian expense data and predict future spending patterns. Consider seasonal factors, trends, and typical Indian spending behaviors.
+      const prompt = spark.llmPrompt`You are a financial AI assistant specializing in Indian spending patterns. Analyze the expense data and provide predictions.
 
-Historical Data:
-${JSON.stringify(analysisData, null, 2)}
+Historical Data: ${JSON.stringify(analysisData, null, 2)}
 
-Recent Expenses by Category:
-${patterns.map(p => `${p.category}: Monthly Average ₹${p.monthlyAverage.toFixed(0)}, Trend: ${p.trend}, Transactions: ${p.transactionCount}`).join('\n')}
+Recent Patterns: ${patterns.map(p => `${p.category}: Monthly Average ₹${p.monthlyAverage.toFixed(0)}, Trend: ${p.trend}, Transactions: ${p.transactionCount}`).join('\n')}
 
-Please provide detailed predictions considering:
-1. Indian seasonal spending (festivals, monsoons, school seasons)
-2. Economic patterns in India
-3. Category-specific trends
-4. Risk factors for overspending
+Return ONLY a valid JSON response in this exact format (no additional text):
 
-For each category with significant data, predict:
-- Expected monthly spending
-- Confidence level (70-95%)
-- Trend direction
-- Risk assessment
-- Reasoning
-
-Return a JSON object with this structure:
 {
   "categoryPredictions": [
     {
-      "category": "string",
-      "predictedAmount": number,
-      "confidence": number,
+      "category": "Food & Dining",
+      "predictedAmount": 5000,
+      "confidence": 85,
       "period": "monthly",
-      "reasoning": "string",
-      "trend": "increasing|decreasing|stable",
-      "seasonalFactor": number,
-      "riskLevel": "low|medium|high"
+      "reasoning": "Based on consistent spending pattern with slight upward trend",
+      "trend": "increasing",
+      "seasonalFactor": 1.1,
+      "riskLevel": "medium"
     }
   ],
-  "insights": ["string array of key insights"],
-  "totalPredictedSpending": number,
+  "insights": [
+    "Your food spending tends to increase during festival seasons",
+    "Transportation costs are stable month-to-month"
+  ],
+  "totalPredictedSpending": 15000,
   "budgetAlerts": [
     {
-      "category": "string",
-      "message": "string",
-      "severity": "warning|danger"
+      "category": "Entertainment",
+      "message": "Predicted spending may exceed typical budget by 20%",
+      "severity": "warning"
     }
   ]
-}`;
+}
+
+Requirements:
+- Focus on Indian spending patterns and festivals
+- All amounts in Indian Rupees
+- Confidence scores between 70-95
+- Provide 2-4 actionable insights
+- Include seasonal factors (festivals, monsoons, etc.)
+- Risk levels: low, medium, high
+- Trends: increasing, decreasing, stable`;
 
       const response = await spark.llm(prompt, 'gpt-4o', true);
 
+      // Handle empty or invalid response
+      if (!response || response.trim() === '') {
+        console.error('Empty response from AI');
+        throw new Error('Empty AI response');
+      }
+
       let analysisResult;
       try {
-        analysisResult = JSON.parse(response);
+        // Try to extract JSON if response contains additional text
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        const jsonString = jsonMatch ? jsonMatch[0] : response;
+        analysisResult = JSON.parse(jsonString);
       } catch (parseError) {
         console.error('Failed to parse AI response:', parseError, 'Response:', response);
         throw new Error('Invalid AI response format');
