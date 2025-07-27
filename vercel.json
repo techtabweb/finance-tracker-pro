@@ -1,6 +1,3 @@
-# Vercel Deployment Configuration
-# This file ensures proper build and routing for the SPA
-
 {
   "version": 2,
   "buildCommand": "npm run build",
