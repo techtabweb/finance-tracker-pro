@@ -27,13 +27,16 @@ import {
   Eye,
   VolumeX,
   Zap,
-  Type
+  Type,
+  Key
 } from 'lucide-react';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useKV } from '@/hooks/use-kv';
 import { useTheme } from '@/hooks/use-theme';
+import { useApiKey } from '@/hooks/use-api-key';
 import { toast } from 'sonner';
 import { DataBackup } from '@/components/DataBackup';
+import { ApiKeySettings } from '@/components/ApiKeySettings';
 import { formatCurrency } from '@/lib/utils';
 
 export const UserProfile = () => {
@@ -143,10 +146,14 @@ export const UserProfile = () => {
       </motion.div>
 
       <Tabs defaultValue="settings" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings size={16} />
             Settings
+          </TabsTrigger>
+          <TabsTrigger value="apikey" className="flex items-center gap-2">
+            <Key size={16} />
+            API Key
           </TabsTrigger>
           <TabsTrigger value="theme" className="flex items-center gap-2">
             <Palette size={16} />
@@ -366,6 +373,16 @@ export const UserProfile = () => {
               </Card>
             </motion.div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="apikey" className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <ApiKeySettings />
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="theme" className="space-y-6">

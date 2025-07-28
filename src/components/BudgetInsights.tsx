@@ -10,7 +10,8 @@ import { SmartSpendingAlerts } from '@/components/SmartSpendingAlerts';
 import { SmartBudgetPlanner } from '@/components/SmartBudgetPlanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFinanceData } from '@/hooks/use-finance-data';
-import { TrendUp, TrendDown, Warning, Target, Brain, Lightning, ChartBar, Calendar, Lightbulb, Shield, Calculator } from '@phosphor-icons/react';
+import { geminiService } from '@/services/gemini';
+import { TrendUp, TrendDown, Warning, Target, Brain, Lightning, ChartBar, Calendar, Lightbulb, Shield, Calculator, Key } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/format';
 
@@ -54,6 +55,47 @@ export function BudgetInsights() {
   const [loading, setLoading] = useState(true);
   const [selectedInsight, setSelectedInsight] = useState<MLInsight | null>(null);
 
+  // Fallback analysis when AI is not available
+  const performFallbackAnalysis = () => {
+    const basicInsights: MLInsight[] = [];
+    
+    // Analyze spending patterns
+    const categorySpending = expenses.reduce((acc, expense) => {
+      acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+      return acc;
+    }, {} as Record<string, number>);
+
+    Object.entries(categorySpending).forEach(([category, amount]: [string, number]) => {
+      const amountValue = Number(amount) || 0;
+      const budget = budgets.find(b => b.category === category);
+      if (budget && amountValue > budget.limit * 0.8) {
+        basicInsights.push({
+          id: `overspend_${category}`,
+          type: 'overspending_risk',
+          category,
+          title: `High spending in ${category}`,
+          description: `You've spent ₹${formatCurrency(amountValue)} out of ₹${formatCurrency(budget.limit)} budget`,
+          impact: amountValue > budget.limit ? 'high' : 'medium',
+          confidence: 85,
+          recommendation: amountValue > budget.limit 
+            ? `Consider reducing ${category} expenses or increasing budget`
+            : `Monitor ${category} spending closely this month`,
+          trend: 'increasing',
+          data: {
+            current: amountValue,
+            predicted: amountValue * 1.1,
+            variance: ((amountValue - budget.limit) / budget.limit) * 100,
+            timeframe: 'This month'
+          }
+        });
+      }
+    });
+
+    setInsights(basicInsights);
+    setOptimizations([]);
+    setLoading(false);
+  };
+
   // Generate ML insights using Gemini AI
   const generateInsights = useCallback(async () => {
     if (expenses.length === 0) {
@@ -64,50 +106,29 @@ export function BudgetInsights() {
     try {
       setLoading(true);
 
-      // Prepare expense data for analysis
-      const expenseData = expenses.map(expense => ({
-        amount: expense.amount,
-        category: expense.category,
-        date: expense.date,
-        month: new Date(expense.date).getMonth(),
-        weekday: new Date(expense.date).getDay()
-      }));
-
-      const budgetData = budgets.map(budget => ({
-        category: budget.category,
-        amount: budget.limit,
-        spent: budget.spent || 0
-      }));
-
-      const promptText = `You are a financial AI assistant. Analyze the following expense and budget data to provide insights and optimizations.
-
-Expense Data: ${JSON.stringify(expenseData)}
-Budget Data: ${JSON.stringify(budgetData)}
-
-Return ONLY a valid JSON response with insights and optimizations arrays.`;
-      const response = await window.spark.llm(promptText, 'gpt-4o', true);
-      
-      // Handle empty or invalid response
-      if (!response || response.trim() === '') {
-        console.error('Empty response from AI');
-        throw new Error('Empty AI response');
+      // Check if Gemini API is configured
+      if (!geminiService.isConfigured()) {
+        // Use fallback analysis
+        performFallbackAnalysis();
+        return;
       }
+
+      // Use Gemini service for insights
+      const response = await geminiService.generateInsights(expenses, budgets);
       
+      // If we get a string response, parse it
       let analysisResult;
       try {
-        // Try to extract JSON if response contains additional text
-        const jsonMatch = response.match(/\{[\s\S]*\}/);
-        const jsonString = jsonMatch ? jsonMatch[0] : response;
-        analysisResult = JSON.parse(jsonString);
+        if (typeof response === 'string') {
+          const jsonMatch = response.match(/\{[\s\S]*\}/);
+          const jsonString = jsonMatch ? jsonMatch[0] : response;
+          analysisResult = JSON.parse(jsonString);
+        } else {
+          analysisResult = response;
+        }
       } catch (parseError) {
-        console.error('Failed to parse AI response:', parseError, 'Response:', response);
+        console.error('Failed to parse AI response:', parseError);
         throw new Error('Invalid AI response format');
-      }
-
-      // Validate the response structure
-      if (!analysisResult || typeof analysisResult !== 'object') {
-        console.error('Invalid analysis result:', analysisResult);
-        throw new Error('AI response is not a valid object');
       }
 
       // Ensure we have valid arrays
@@ -124,10 +145,9 @@ Return ONLY a valid JSON response with insights and optimizations arrays.`;
       }
     } catch (error) {
       console.error('Error generating insights:', error);
-      toast.error('Failed to generate ML insights');
       
-      // Fallback with basic analysis
-      generateBasicInsights();
+      // Use fallback analysis when AI fails
+      performFallbackAnalysis();
     } finally {
       setLoading(false);
     }
@@ -238,6 +258,27 @@ Return ONLY a valid JSON response with insights and optimizations arrays.`;
 
   return (
     <div className="space-y-6">
+      {/* API Key Configuration Alert */}
+      {!geminiService.isConfigured() && (
+        <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800">
+          <Key className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="flex items-center justify-between">
+            <span className="text-blue-800 dark:text-blue-200">
+              🤖 Configure your Gemini API key to unlock advanced AI-powered budget insights
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.hash = '#profile'}
+              className="ml-2 border-blue-300 text-blue-700 hover:bg-blue-100"
+            >
+              <Key className="w-3 h-3 mr-1" />
+              Setup API Key
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -245,7 +286,9 @@ Return ONLY a valid JSON response with insights and optimizations arrays.`;
         className="text-center"
       >
         <h2 className="text-2xl font-bold text-gray-900 mb-2">🧠 ML Budget Insights</h2>
-        <p className="text-gray-600">AI-powered budget optimization and overspending prevention</p>
+        <p className="text-gray-600">
+          {geminiService.isConfigured() ? 'AI-powered budget optimization and overspending prevention' : 'Basic budget analysis (AI features available with API key)'}
+        </p>
       </motion.div>
 
       <Tabs defaultValue="insights" className="w-full">

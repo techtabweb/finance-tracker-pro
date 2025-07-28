@@ -6,6 +6,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/co
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useTheme } from '@/hooks/use-theme';
 import { useTabSwipe } from '@/hooks/use-swipe';
+import { useApiKey } from '@/hooks/use-api-key';
+import { geminiService } from '@/services/gemini';
 import { SwipeFeedback, useSwipeFeedback } from '@/components/SwipeFeedback';
 import { SwipeTutorial } from '@/components/SwipeTutorial';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -30,10 +32,21 @@ import { toast } from 'sonner';
 function App() {
   const { activeTab, setActiveTab } = useFinanceData();
   const { applyTheme, settings } = useTheme();
+  const { getApiKey, isConfigured } = useApiKey();
   const isMobile = useIsMobile();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLElement>>({});
+
+  // Initialize Gemini service with stored API key
+  useEffect(() => {
+    if (isConfigured) {
+      const apiKey = getApiKey();
+      if (apiKey) {
+        geminiService.setApiKey(apiKey);
+      }
+    }
+  }, [isConfigured, getApiKey]);
 
   // Apply theme on mount and when settings change
   useEffect(() => {

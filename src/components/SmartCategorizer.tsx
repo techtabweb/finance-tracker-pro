@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useCategoryLearning } from '@/hooks/use-category-learning';
+import { geminiService } from '@/services/gemini';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkle, CheckCircle, Robot, Brain, Star } from '@phosphor-icons/react';
+import { Sparkle, CheckCircle, Robot, Brain, Star, Warning } from '@phosphor-icons/react';
 
 interface CategorySuggestion {
   category: string;
@@ -91,64 +93,56 @@ export function SmartCategorizer({
     setIsAnalyzing(true);
     
     try {
-      // Use Spark LLM for categorization
-      const categoryNames = categories.map(cat => cat.name);
-      
-      const promptText = `Categorize Indian expense: "${description}" from merchant "${merchant || 'Unknown'}". Available categories: ${categoryNames.join(', ')}`;
-
-      const response = await window.spark.llm(promptText, 'gpt-4o', true);
-      
-      let suggestions;
-      try {
-        suggestions = JSON.parse(response);
-      } catch (parseError) {
-        console.error('Failed to parse AI response:', parseError, 'Response:', response);
-        throw new Error('Invalid AI response format');
+      // Check if Gemini API is configured
+      if (!geminiService.isConfigured()) {
+        // Show a helpful message and return without analysis
+        setSuggestions(prev => [
+          ...prev.filter(s => s.source !== 'ai'),
+          {
+            category: 'Other',
+            confidence: 0,
+            reason: 'Configure Gemini API key in settings to enable AI categorization',
+            source: 'ai' as const
+          }
+        ]);
+        return;
       }
 
-      // Validate that suggestions is an array
-      if (!Array.isArray(suggestions)) {
-        throw new Error('AI response is not a valid array');
-      }
+      // Use Gemini service for categorization
+      const result = await geminiService.analyzeExpense(`${merchant || ''} ${description}`.trim());
       
-      // Validate and format the response
-      const validSuggestions = suggestions
-        .filter((suggestion: any) => 
-          suggestion.category && 
-          suggestion.confidence && 
-          categoryNames.includes(suggestion.category)
-        )
-        .map((suggestion: any) => ({
-          category: suggestion.category,
-          confidence: Math.min(99, Math.max(70, Number(suggestion.confidence))),
-          reason: String(suggestion.reason || 'AI suggested match').substring(0, 100)
-        }))
-        .slice(0, 3);
+      if (result.category && result.confidence > 0) {
+        const aiSuggestion: CategorySuggestion = {
+          category: result.category,
+          confidence: Math.round(result.confidence * 100), // Convert to percentage
+          reason: `AI analyzed: "${description}" from "${merchant || 'merchant'}"`,
+          source: 'ai' as const
+        };
 
-      // Convert to our CategorySuggestion format
-      const aiSuggestions: CategorySuggestion[] = validSuggestions.map(suggestion => ({
-        category: suggestion.category,
-        confidence: suggestion.confidence,
-        reason: suggestion.reason,
-        source: 'ai' as const
-      }));
+        setLastAiSuggestion(result.category);
+        
+        // Combine with existing learned suggestions
+        const existingLearned = suggestions.filter(s => s.source === 'learned');
+        const combinedSuggestions = [
+          ...existingLearned,
+          aiSuggestion
+        ].slice(0, 3);
 
-      // Store the top AI suggestion for learning
-      if (aiSuggestions.length > 0) {
-        setLastAiSuggestion(aiSuggestions[0].category);
+        setSuggestions(combinedSuggestions);
       }
-
-      // Combine with existing learned suggestions, prioritizing learned ones
-      const existingLearned = suggestions.filter(s => s.source === 'learned');
-      const combinedSuggestions = [
-        ...existingLearned,
-        ...aiSuggestions.filter(ai => !existingLearned.some(learned => learned.category === ai.category))
-      ].slice(0, 3);
-
-      setSuggestions(combinedSuggestions);
       
     } catch (error) {
-      console.error('Gemini categorization error:', error);
+      console.error('Error getting AI suggestions:', error);
+      // Add a helpful error message
+      setSuggestions(prev => [
+        ...prev.filter(s => s.source !== 'ai'),
+        {
+          category: 'Other',
+          confidence: 0,
+          reason: error instanceof Error ? error.message : 'AI categorization failed - check API key in settings',
+          source: 'ai' as const
+        }
+      ]);
       
       // Fallback to rule-based categorization
       const categoryRules = {
@@ -320,14 +314,23 @@ export function SmartCategorizer({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
+          {!geminiService.isConfigured() && (
+            <Alert className="mb-3">
+              <Warning className="h-4 w-4" />
+              <AlertDescription>
+                Configure your Gemini API key in Profile → API Key to enable AI-powered categorization.
+              </AlertDescription>
+            </Alert>
+          )}
           <Button 
             type="button"
             variant="outline" 
+            disabled={!geminiService.isConfigured()}
             onClick={analyzeForCategory}
-            className={`w-full ${isMobile ? 'h-10' : 'h-9'} text-sm bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100`}
+            className={`w-full ${isMobile ? 'h-10' : 'h-9'} text-sm bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100 disabled:opacity-50`}
           >
             <Sparkle className="w-4 h-4 mr-2" />
-            Get AI Category Suggestions (Gemini)
+            {geminiService.isConfigured() ? 'Get AI Category Suggestions (Gemini)' : 'AI Categorization (Needs API Key)'}
           </Button>
         </motion.div>
       )}

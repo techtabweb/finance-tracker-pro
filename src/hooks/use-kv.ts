@@ -1,37 +1,50 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Simple localStorage-based KV store for client-side data persistence
-export function useKV<T>(key: string, defaultValue: T): [T, (value: T | ((current: T) => T)) => void, () => void] {
-  const [value, setValue] = useState<T>(() => {
+// Simple localStorage-based key-value storage hook
+export function useKV<T>(key: string, defaultValue: T) {
+  const [value, setValue] = useState<T>(defaultValue);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load initial value from localStorage
+  useEffect(() => {
     try {
       const stored = localStorage.getItem(key);
-      return stored ? JSON.parse(stored) : defaultValue;
-    } catch {
-      return defaultValue;
+      if (stored !== null) {
+        setValue(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error(`Error loading ${key} from localStorage:`, error);
+    } finally {
+      setIsLoaded(true);
     }
-  });
+  }, [key]);
 
-  const setStoredValue = useCallback((newValue: T | ((current: T) => T)) => {
-    try {
-      const valueToStore = typeof newValue === 'function' 
-        ? (newValue as (current: T) => T)(value)
+  // Update function
+  const updateValue = useCallback((newValue: T | ((prevValue: T) => T)) => {
+    setValue(prevValue => {
+      const nextValue = typeof newValue === 'function' 
+        ? (newValue as (prevValue: T) => T)(prevValue)
         : newValue;
       
-      setValue(valueToStore);
-      localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(`Error setting localStorage key "${key}":`, error);
-    }
-  }, [key, value]);
+      try {
+        localStorage.setItem(key, JSON.stringify(nextValue));
+      } catch (error) {
+        console.error(`Error saving ${key} to localStorage:`, error);
+      }
+      
+      return nextValue;
+    });
+  }, [key]);
 
+  // Delete function
   const deleteValue = useCallback(() => {
     try {
       localStorage.removeItem(key);
       setValue(defaultValue);
     } catch (error) {
-      console.error(`Error removing localStorage key "${key}":`, error);
+      console.error(`Error deleting ${key} from localStorage:`, error);
     }
   }, [key, defaultValue]);
 
-  return [value, setStoredValue, deleteValue];
+  return [value, updateValue, deleteValue, isLoaded] as const;
 }

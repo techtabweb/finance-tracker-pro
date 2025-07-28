@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useKV } from './use-kv';
 import { Expense } from '@/lib/types';
-// Import removed - now using Spark LLM directly
+import { geminiService } from '@/services/gemini';
 
 export interface ExpensePrediction {
   category: string;
@@ -31,6 +31,44 @@ export function useExpensePrediction() {
   const [predictions, setPredictions] = useKV<PredictionAnalysis | null>('expense-predictions', null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Fallback prediction generation when AI is not available
+  const generateFallbackPredictions = (expenseData: Expense[]): PredictionAnalysis => {
+    const categorySpending: Record<string, number[]> = {};
+    
+    // Group expenses by category and month
+    expenseData.forEach(expense => {
+      if (!categorySpending[expense.category]) {
+        categorySpending[expense.category] = [];
+      }
+      categorySpending[expense.category].push(expense.amount);
+    });
+
+    const categoryPredictions: ExpensePrediction[] = Object.entries(categorySpending)
+      .map(([category, amounts]) => {
+        const average = amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length;
+        const trend = amounts.length > 2 && amounts[amounts.length - 1] > amounts[0] ? 'increasing' : 'stable';
+        
+        return {
+          category,
+          predictedAmount: Math.round(average * 1.1), // 10% increase prediction
+          confidence: 75,
+          period: 'monthly' as const,
+          reasoning: `Based on ${amounts.length} transactions with average of ₹${Math.round(average)}`,
+          trend,
+          seasonalFactor: 1.0,
+          riskLevel: average > 5000 ? 'medium' : 'low'
+        };
+      });
+
+    return {
+      totalPredictedSpending: categoryPredictions.reduce((sum, pred) => sum + pred.predictedAmount, 0),
+      categoryPredictions,
+      budgetAlerts: [],
+      insights: ['Basic predictions generated without AI - configure API key for advanced insights'],
+      lastUpdated: new Date().toISOString()
+    };
+  };
 
   const analyzeSpendingPatterns = (expenses: Expense[]) => {
     const now = new Date();
@@ -106,31 +144,17 @@ export function useExpensePrediction() {
         }))
       };
 
-      const promptText = `Analyze expense data and provide predictions for Indian spending patterns. Data: ${JSON.stringify(analysisData, null, 2)}`;
-
-      const response = await window.spark.llm(promptText, 'gpt-4o', true);
-
-      // Handle empty or invalid response
-      if (!response || response.trim() === '') {
-        console.error('Empty response from AI');
-        throw new Error('Empty AI response');
+      // Check if Gemini API is configured
+      if (!geminiService.isConfigured()) {
+        // Use fallback predictions
+        const fallbackPredictions = generateFallbackPredictions(expenses);
+        setPredictions(fallbackPredictions);
+        setError(null);
+        return;
       }
 
-      let analysisResult;
-      try {
-        // Try to extract JSON if response contains additional text
-        const jsonMatch = response.match(/\{[\s\S]*\}/);
-        const jsonString = jsonMatch ? jsonMatch[0] : response;
-        analysisResult = JSON.parse(jsonString);
-      } catch (parseError) {
-        console.error('Failed to parse AI response:', parseError, 'Response:', response);
-        throw new Error('Invalid AI response format');
-      }
-
-      // Validate the response structure
-      if (!analysisResult || typeof analysisResult !== 'object') {
-        throw new Error('AI response is not a valid object');
-      }
+      // Use Gemini service for predictions
+      const analysisResult = await geminiService.predictExpenses(expenses);
       
       // Validate and structure the response
       const predictionAnalysis: PredictionAnalysis = {

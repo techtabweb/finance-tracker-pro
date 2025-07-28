@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useFinanceData } from '@/hooks/use-finance-data';
 import { useIsMobile } from '@/hooks/use-mobile';
-// Import removed - now using Spark LLM directly
+import { geminiService } from '@/services/gemini';
 import { formatAmount, getCurrentMonth } from '@/lib/format';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -19,7 +20,9 @@ import {
   Target,
   Sparkle,
   ArrowClockwise,
-  Lightbulb
+  Lightbulb,
+  Warning,
+  Key
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
@@ -268,16 +271,26 @@ Ask me anything about your finances! 💰`,
     setIsLoading(true);
 
     try {
+      // Check if Gemini API is configured
+      if (!geminiService.isConfigured()) {
+        const errorMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          type: 'assistant',
+          content: '🔑 I need a Gemini API key to analyze your finances. Please configure your API key in Profile → API Key settings to enable AI chat features.',
+          timestamp: new Date().toISOString(),
+          metadata: {
+            type: 'error',
+            confidence: 0
+          }
+        };
+        
+        setMessages(prev => [...prev, errorMessage]);
+        return;
+      }
+
       const financialContext = prepareFinancialContext();
       
-      const promptText = `You are an AI financial advisor for Indian users. Analyze their financial data and answer their question: "${messageText}"
-
-FINANCIAL DATA:
-${JSON.stringify(financialContext, null, 2)}
-
-Provide a helpful response with actual numbers from their data, using Indian Rupees (₹) format.`;
-
-      const response = await spark.llm(promptText, 'gpt-4o');
+      const response = await geminiService.chatWithFinances(messageText, financialContext);
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -376,6 +389,33 @@ Provide a helpful response with actual numbers from their data, using Indian Rup
           </Badge>
         </div>
       </motion.div>
+
+      {/* API Key Configuration Warning */}
+      {!geminiService.isConfigured() && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
+          <Alert className="bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800">
+            <Warning className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="flex items-center justify-between">
+              <span className="text-orange-800 dark:text-orange-200">
+                🔑 Configure your Gemini API key to enable AI chat features
+              </span>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.hash = '#profile'}
+                className="ml-2 border-orange-300 text-orange-700 hover:bg-orange-100"
+              >
+                <Key className="w-3 h-3 mr-1" />
+                Setup
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </motion.div>
+      )}
 
       {/* Chat Interface */}
       <motion.div
