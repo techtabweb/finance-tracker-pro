@@ -31,6 +31,7 @@ export function useExpensePrediction() {
   const [predictions, setPredictions] = useKV<PredictionAnalysis | null>('expense-predictions', null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const generatePredictionsRef = useRef<(() => Promise<void>) | null>(null);
 
   // Fallback prediction generation when AI is not available
   const generateFallbackPredictions = (expenseData: Expense[]): PredictionAnalysis => {
@@ -196,6 +197,9 @@ export function useExpensePrediction() {
     }
   }, [expenses]);
 
+  // Update ref for circular dependency avoidance
+  generatePredictionsRef.current = generatePredictions;
+
   // Automatically analyze when expenses change significantly
   useEffect(() => {
     const lastAnalysisDate = predictions?.lastUpdated;
@@ -227,8 +231,8 @@ export function useExpensePrediction() {
   };
 
   const refreshPredictions = useCallback(() => {
-    generatePredictions();
-  }, [generatePredictions]);
+    generatePredictionsRef.current?.();
+  }, []);
 
   return {
     predictions,

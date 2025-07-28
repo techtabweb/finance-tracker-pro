@@ -218,7 +218,7 @@ Ask me anything about your finances! 💰`,
     }, {} as Record<string, number>) || {};
 
     const topCategories = Object.entries(allTimeCategories)
-      .sort(([, a], [, b]: [string, number]) => Number(b) - Number(a))
+      .sort(([, a], [, b]) => (typeof b === 'number' ? b : Number(b)) - (typeof a === 'number' ? a : Number(a)))
       .slice(0, 5)
       .map(([category, amount]) => ({ category, amount: Number(amount) || 0 }));
 
@@ -279,8 +279,7 @@ Ask me anything about your finances! 💰`,
           content: '🔑 I need a Gemini API key to analyze your finances. Please configure your API key in Profile → API Key settings to enable AI chat features.',
           timestamp: new Date().toISOString(),
           metadata: {
-            type: 'error',
-            confidence: 0
+            analysisType: 'error'
           }
         };
         

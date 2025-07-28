@@ -60,7 +60,7 @@ export function Reports() {
         value: Number(value) || 0,
         color: COLORS[index % COLORS.length]
       }))
-      .sort((a, b) => Number(b.value) - Number(a.value));
+      .sort((a, b) => b.value - a.value);
 
     // Monthly trend
     const monthlyData = Array.from({ length: months }, (_, i) => {
@@ -104,8 +104,8 @@ export function Reports() {
     // Top categories
     const topCategories: Array<{ category: string; amount: number; percentage: number }> = categoryBreakdown.slice(0, 5).map(cat => ({
       category: cat.name,
-      amount: Number(cat.value) || 0,
-      percentage: totalExpenses > 0 ? (Number(cat.value) / totalExpenses) * 100 : 0
+      amount: cat.value,
+      percentage: totalExpenses > 0 ? (cat.value / totalExpenses) * 100 : 0
     }));
 
     return {

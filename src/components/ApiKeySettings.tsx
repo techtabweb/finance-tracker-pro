@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import { useApiKey } from '@/hooks/use-api-key';
 import { geminiService } from '@/services/gemini';
 import { toast } from 'sonner';
-import { Key, Shield, CheckCircle, AlertCircle, Eye, EyeOff, Settings, Trash2 } from '@phosphor-icons/react';
+import { Key, Shield, CheckCircle, Warning, Eye, EyeSlash, Gear, Trash } from '@phosphor-icons/react';
 
 export function ApiKeySettings() {
   const { apiKeyData, isLoading, saveApiKey, clearApiKey, validateApiKey, isConfigured } = useApiKey();
@@ -120,7 +120,7 @@ export function ApiKeySettings() {
               {isConfigured ? (
                 <CheckCircle className="h-3 w-3" />
               ) : (
-                <AlertCircle className="h-3 w-3" />
+                <Warning className="h-3 w-3" />
               )}
               {isConfigured ? 'Configured' : 'Not Configured'}
             </Badge>
@@ -147,7 +147,7 @@ export function ApiKeySettings() {
                     size="sm"
                     onClick={() => setShowKey(!showKey)}
                   >
-                    {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showKey ? <EyeSlash className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
                 <div className="flex gap-2">
@@ -164,7 +164,7 @@ export function ApiKeySettings() {
                     size="sm"
                     onClick={handleClear}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -177,7 +177,7 @@ export function ApiKeySettings() {
             </div>
           ) : (
             <Alert>
-              <AlertCircle className="h-4 w-4" />
+              <Warning className="h-4 w-4" />
               <AlertDescription>
                 No API key configured. Add your Gemini API key below to enable AI-powered features.
               </AlertDescription>
@@ -191,7 +191,7 @@ export function ApiKeySettings() {
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-accent/10 rounded-lg">
-              <Settings className="h-5 w-5 text-accent" />
+              <Gear className="h-5 w-5 text-accent" />
             </div>
             <div>
               <CardTitle>Gemini AI Configuration</CardTitle>
@@ -217,7 +217,7 @@ export function ApiKeySettings() {
                 variant="outline"
                 onClick={() => setShowKey(!showKey)}
               >
-                {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showKey ? <EyeSlash className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
               <Button
                 onClick={handleSave}

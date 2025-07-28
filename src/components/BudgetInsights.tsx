@@ -65,8 +65,8 @@ export function BudgetInsights() {
       return acc;
     }, {} as Record<string, number>);
 
-    Object.entries(categorySpending).forEach(([category, amount]: [string, number]) => {
-      const amountValue = Number(amount) || 0;
+    Object.entries(categorySpending).forEach(([category, amount]) => {
+      const amountValue = typeof amount === 'number' ? amount : Number(amount) || 0;
       const budget = budgets.find(b => b.category === category);
       if (budget && amountValue > budget.limit * 0.8) {
         basicInsights.push({
@@ -164,9 +164,9 @@ export function BudgetInsights() {
       return acc;
     }, {} as Record<string, number>);
 
-    Object.entries(categorySpending).forEach(([category, amount]: [string, number]) => {
+    Object.entries(categorySpending).forEach(([category, amount]) => {
       // Type guard to ensure amount is a number
-      const amountValue = Number(amount) || 0;
+      const amountValue = typeof amount === 'number' ? amount : Number(amount) || 0;
       const budget = budgets.find(b => b.category === category);
       if (budget && amountValue > budget.limit * 0.8) {
         basicInsights.push({
