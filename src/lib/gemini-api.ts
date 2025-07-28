@@ -3,15 +3,20 @@
  * Uses Google's Gemini AI model for receipt scanning and expense categorization
  */
 
-interface GeminiApiConfig {
-  apiKey: string;
-  model: string;
-  baseUrl: string;
+const API_KEYS = [
+  'AIzaSyBX0JrHM3BKpOSaG4KbDMtOwwv_AekgxT8',
+  'AIzaSyAv6VA8VBLwWwVY5Q_hsj2iQITyJ_CvBDs',
+  'AIzaSyDTp1JrJ_p5SP_uJOJFCmiufuC_kz-UvW4',
+  'AIzaSyD6Q-h3nRkphE3Jwcj0dBj58l2Wxj_qnko'
+];
+
+function getRandomApiKey(): string {
+  const index = Math.floor(Math.random() * API_KEYS.length);
+  return API_KEYS[index];
 }
 
-const CONFIG: GeminiApiConfig = {
-  apiKey: import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyB83WwA2IAHN4U6Npa44yYPdhtzkEdwtu4',
-  model: 'gemini-1.5-flash', // Best free model for vision + text
+const CONFIG = {
+  model: 'gemini-1.5-flash',
   baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models'
 };
 
@@ -75,7 +80,8 @@ export async function callGeminiApi(
     maxTokens = 8192
   } = options;
 
-  // Prepare the request
+  const apiKey = getRandomApiKey();
+
   const requestBody: GeminiRequest = {
     contents: [{
       parts: []
@@ -89,10 +95,8 @@ export async function callGeminiApi(
     }
   };
 
-  // Add text prompt
   requestBody.contents[0].parts.push({ text: prompt });
 
-  // Add image if provided
   if (imageData) {
     requestBody.contents[0].parts.push({
       inline_data: {
@@ -103,9 +107,9 @@ export async function callGeminiApi(
   }
 
   try {
-    const url = `${CONFIG.baseUrl}/${CONFIG.model}:generateContent?key=${CONFIG.apiKey}`;
+    const url = `${CONFIG.baseUrl}/${CONFIG.model}:generateContent?key=${apiKey}`;
     
-    console.log('🤖 Calling Gemini API:', CONFIG.model);
+    console.log('🤖 Calling Gemini API with key:', apiKey);
     
     const response = await fetch(url, {
       method: 'POST',
@@ -157,7 +161,6 @@ export async function callGeminiApi(
   }
 }
 
-// Specific function for receipt scanning
 export async function scanReceiptWithGemini(
   imageBase64: string,
   imageMimeType: string = 'image/jpeg'
@@ -218,7 +221,6 @@ If you cannot clearly read certain fields, use your best interpretation based on
 
     const extractedData = JSON.parse(response);
     
-    // Validate and sanitize the response
     return {
       amount: Math.max(0, Number(extractedData.amount) || 0),
       merchant: String(extractedData.merchant || 'Unknown Merchant').trim(),
@@ -236,7 +238,6 @@ If you cannot clearly read certain fields, use your best interpretation based on
   }
 }
 
-// Specific function for expense categorization
 export async function categorizeExpenseWithGemini(
   description: string,
   merchant: string = '',
@@ -285,7 +286,6 @@ Focus on accuracy and relevance to Indian context.`;
 
     const suggestions = JSON.parse(response);
     
-    // Validate and format the response
     return suggestions
       .filter((suggestion: any) => 
         suggestion.category && 
